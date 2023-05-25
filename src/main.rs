@@ -62,9 +62,11 @@ fn print_memory_info() {
 
 fn print_drives_info() {
   let drives = hardware::drive::scan_drives();
-  println!( "[DRIVES]" );
-  for drive in drives {
-    println!( "{}: {}MB", drive.model, drive.size.mb );
+  if !drives.is_empty() { 
+    println!( "[DRIVES]" );
+    for drive in drives {
+      println!( "{}: {}MB", drive.model, drive.size.mb );
+    }
   }
 }
 
