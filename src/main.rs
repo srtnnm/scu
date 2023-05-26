@@ -33,10 +33,11 @@ fn print_system_info() {
 
 fn print_pkgs_info() {
   let pkg_info = software::packages::get_info();
-  if pkg_info.manager != "Unknown" {
+  if !pkg_info.is_empty() {
     println!( "[PACKAGES]" );
-    println!( "Manager:  {}", pkg_info.manager );
-    println!( "Packages: {}", pkg_info.count_of_packages );
+    for manager in pkg_info {
+      println!( "({}): {}", manager.manager, manager.count_of_packages );
+    }
   }
 }
 
@@ -52,11 +53,11 @@ fn print_cpu_info() {
 fn print_memory_info() {
   let mem_info = hardware::ram::get_info();
   println!( "[MEMORY]" );
-  println!( "Total:      {}MB", mem_info.total.mb );
-  println!( "Used:       {}MB", mem_info.used.mb  );
+  println!( "Total:      {}MiB", mem_info.total.mb );
+  println!( "Used:       {}MiB", mem_info.used.mb  );
   if mem_info.swap_enabled {
-    println!( "Swap total: {}MB", mem_info.swap_total.mb );
-    println!( "Swap used:  {}MB", mem_info.swap_used.mb );
+    println!( "Swap total: {}MiB", mem_info.swap_total.mb );
+    println!( "Swap used:  {}MiB", mem_info.swap_used.mb );
   }
 }
 
@@ -65,7 +66,7 @@ fn print_drives_info() {
   if !drives.is_empty() {
     println!( "[DRIVES]" );
     for drive in drives {
-      println!( "{}: {}MB", drive.model, drive.size.mb );
+      println!( "{}: {}MiB", drive.model, drive.size.mb );
     }
   }
 }
