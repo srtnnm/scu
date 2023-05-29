@@ -12,11 +12,10 @@ pub struct Drive {
 fn get_devtype( content: String ) -> String {
   for line in content.split( '\n' ) {
     if line.contains( "DEVTYPE=" ) {
-      let devtype = line.split( "DEVTYPE=" )
+      return line.split( "DEVTYPE=" )
         .nth(1)
         .unwrap()
         .to_string();
-      return devtype;
     }
   }
 
@@ -27,7 +26,8 @@ fn get_devtype( content: String ) -> String {
 pub fn scan_drives() -> Vec<Drive> {
   let mut result: Vec<Drive> = Vec::new();
 
-  for block_device in fs::read_dir( "/sys/block" ).unwrap() {
+  let mut block_devices = fs::read_dir( "/sys/block" ).expect( "NO /sys/block DIRECTORY" );
+  for block_device in block_devices {
     let device = block_device.unwrap()
       .file_name()
       .into_string()
@@ -40,7 +40,7 @@ pub fn scan_drives() -> Vec<Drive> {
 
     if device.starts_with( "dm" )
       || device.starts_with( "loop" )
-      || get_devtype( fs::read_to_string( device_uevent ).unwrap() ) != String::from( "disk" ) {
+      || get_devtype( fs::read_to_string( device_uevent.clone() ).expect( format!( "NO {} FILE", device_uevent ).as_str() ) ) != String::from( "disk" ) {
       continue;
     }
     

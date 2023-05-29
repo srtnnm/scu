@@ -31,7 +31,7 @@ pub fn get_info() -> RAMInfo {
   let mut swap_total: i64 = 0;
   let mut swap_free: i64 = 0;
 
-  for line in fs::read_to_string( "/proc/meminfo" ).unwrap()
+  for line in fs::read_to_string( "/proc/meminfo" ).expect( "NO /proc/meminfo FILE" )
     .split( '\n' ) {
       if line.contains( "MemTotal" ) {
         total = extract_i64( line );

@@ -29,7 +29,7 @@ pub fn get_info() -> CPUInfo {
   let mut cores: i8 = 0;
 
   // parse /proc/cpuinfo
-  for line in fs::read_to_string( "/proc/cpuinfo" ).unwrap()
+  for line in fs::read_to_string( "/proc/cpuinfo" ).expect( "NO /proc/cpuinfo FILE" )
     .split( '\n' ) {
       if line.is_empty() { break; }
 
