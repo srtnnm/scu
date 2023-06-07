@@ -5,8 +5,6 @@ mod software;
 
 mod utils;
 
-
-
 fn print_system_info() {
     let distro_name = software::os::get_name();
     let uptime = software::os::get_uptime();

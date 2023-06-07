@@ -33,7 +33,7 @@ pub fn get_info() -> Vec<PackageManager> {
     }
     for manager in managers {
         let mut manager_info = PackageManager {
-            manager: manager.clone(),
+            manager,
             count_of_packages: 0,
         };
 

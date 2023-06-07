@@ -25,8 +25,6 @@ pub fn scan_drives() -> Vec<Drive> {
     for block_device in block_devices {
         let device = block_device.unwrap().file_name().into_string().unwrap();
 
-        let model: String;
-
         let device_data = format!("/sys/block/{}/device", device);
         let device_uevent = format!("/sys/block/{}/uevent", device);
 
@@ -41,13 +39,13 @@ pub fn scan_drives() -> Vec<Drive> {
             continue;
         }
 
-        if fs::metadata(format!("{}/model", device_data)).is_ok() {
-            model = fs::read_to_string(format!("{}/model", device_data))
+        let model = if fs::metadata(format!("{}/model", device_data)).is_ok() {
+            fs::read_to_string(format!("{}/model", device_data))
                 .unwrap()
-                .replace('\n', "");
+                .replace('\n', "")
         } else {
-            model = device.clone();
-        }
+            device.clone()
+        };
         let size = utils::converter::memory_size_from_blocks(
             fs::read_to_string(format!("/sys/block/{}/size", device))
                 .unwrap()
