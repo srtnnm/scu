@@ -5,7 +5,7 @@ mod software;
 
 mod utils;
 
-use whoami;
+
 
 fn print_system_info() {
     let distro_name = software::os::get_name();

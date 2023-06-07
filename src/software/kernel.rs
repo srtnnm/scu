@@ -8,7 +8,7 @@ pub struct Kernel {
 
 pub fn get_info() -> Kernel {
     let version_re = Regex::new(r"(\d\.?)+").unwrap();
-    if !fs::metadata("/proc/version").is_ok() {
+    if fs::metadata("/proc/version").is_err() {
         return Kernel {
             full_version: String::from("Unknown"),
             version: String::from("Unknown"),

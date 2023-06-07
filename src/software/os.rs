@@ -5,13 +5,13 @@ use std::fs;
 pub fn get_name() -> String {
     let mut result: String = String::from("Unknown");
 
-    if !fs::metadata("/etc/os-release").is_ok() {
+    if fs::metadata("/etc/os-release").is_err() {
         return result;
     }
 
     for line in fs::read_to_string("/etc/os-release").unwrap().split('\n') {
         if line.contains("NAME") {
-            result = line.split("NAME=").nth(1).unwrap().replace("\"", "");
+            result = line.split("NAME=").nth(1).unwrap().replace('\"', "");
         }
     }
 

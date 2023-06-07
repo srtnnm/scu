@@ -81,7 +81,7 @@ pub fn frequency_from_hz(_hz: i64) -> Frequency {
     Frequency {
         hz: _hz,
         mhz: _hz as i32 / 1000,
-        ghz: _hz as f32 / 1000000 as f32,
+        ghz: _hz as f32 / 1000000_f32,
     }
 }
 
@@ -89,6 +89,6 @@ pub fn frequency_from_mhz(_mhz: i32) -> Frequency {
     Frequency {
         hz: _mhz as i64 * 1000,
         mhz: _mhz,
-        ghz: _mhz as f32 / 1000 as f32,
+        ghz: _mhz as f32 / 1000_f32,
     }
 }

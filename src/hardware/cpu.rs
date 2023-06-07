@@ -41,7 +41,7 @@ pub fn get_info() -> CPUInfo {
         } else if line.contains("cpu cores\t:") && cores == 0 {
             cores = line.split(": ").nth(1).unwrap().parse::<i8>().unwrap();
         } else if line.contains("processor\t:") {
-            threads = line.split(": ").nth(1).unwrap().parse::<i8>().unwrap() + 1 as i8;
+            threads = line.split(": ").nth(1).unwrap().parse::<i8>().unwrap() + 1_i8;
         } else {
             continue;
         }
@@ -56,10 +56,10 @@ pub fn get_info() -> CPUInfo {
     }
 
     CPUInfo {
-        model: model,
-        vendor: vendor,
-        max_freq: max_freq,
-        cores: cores,
-        threads: threads,
+        model,
+        vendor,
+        max_freq,
+        cores,
+        threads,
     }
 }

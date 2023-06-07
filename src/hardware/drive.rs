@@ -35,8 +35,8 @@ pub fn scan_drives() -> Vec<Drive> {
             || device.starts_with("sr")
             || get_devtype(
                 fs::read_to_string(device_uevent.clone())
-                    .expect(format!("NO {} FILE", device_uevent).as_str()),
-            ) != String::from("disk")
+                    .unwrap_or_else(|_| panic!("NO {} FILE", device_uevent)),
+            ) != *"disk"
         {
             continue;
         }
@@ -58,8 +58,8 @@ pub fn scan_drives() -> Vec<Drive> {
 
         result.push(Drive {
             path: format!("/dev/{}", device),
-            model: model,
-            size: size,
+            model,
+            size,
         });
     }
 
