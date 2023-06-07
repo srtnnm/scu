@@ -8,6 +8,7 @@ pub struct CPUInfo {
   pub vendor:   String,
   pub max_freq: utils::converter::Frequency,
   pub cores:    i8,
+  pub threads:  i8,
 }
 
 // additional info are in /sys/devices/system/cpu
@@ -27,20 +28,19 @@ pub fn get_info() -> CPUInfo {
   let mut vendor: String = String::from( "" );
   let mut max_freq = utils::converter::frequency_from_hz( 0 );
   let mut cores: i8 = 0;
+  let mut threads: i8 = 0;
 
   // parse /proc/cpuinfo
   for line in fs::read_to_string( "/proc/cpuinfo" ).expect( "NO /proc/cpuinfo FILE" )
     .split( '\n' ) {
-      if line.is_empty() { break; }
-
-      if line.contains( "model name\t:" )
+      if line.contains( "model name\t:" ) && model.is_empty()
       {
         model = String::from(
           line.split( ": " )
           .nth(1)
           .unwrap()
           );
-      } else if line.contains( "vendor_id\t:" ) {
+      } else if line.contains( "vendor_id\t:" ) && vendor.is_empty() {
         vendor = String::from(
           match line.split( ": " )
           .nth(1)
@@ -51,12 +51,20 @@ pub fn get_info() -> CPUInfo {
           }
 
           );
-      } else if line.contains( "cpu cores\t:" ) {
+      } else if line.contains( "cpu cores\t:" ) && cores == 0 {
         cores = line.split( ": " )
           .nth(1)
           .unwrap()
           .parse::<i8>()
           .unwrap();
+      } else if line.contains( "processor\t:" ) {
+        threads = line.split( ": " )
+          .nth(1)
+          .unwrap()
+          .parse::<i8>()
+          .unwrap() + 1 as i8;
+      } else {
+        continue;
       }
     }
 
@@ -74,5 +82,6 @@ pub fn get_info() -> CPUInfo {
     vendor:   vendor,
     max_freq: max_freq,
     cores:    cores,
+    threads:  threads,
   }
 }

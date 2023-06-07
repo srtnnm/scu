@@ -26,20 +26,21 @@ fn get_devtype( content: String ) -> String {
 pub fn scan_drives() -> Vec<Drive> {
   let mut result: Vec<Drive> = Vec::new();
 
-  let mut block_devices = fs::read_dir( "/sys/block" ).expect( "NO /sys/block DIRECTORY" );
+  let block_devices = fs::read_dir( "/sys/block" ).expect( "NO /sys/block DIRECTORY" );
   for block_device in block_devices {
     let device = block_device.unwrap()
       .file_name()
       .into_string()
       .unwrap();
-    let mut model: String = String::from( "Unknown" );
-    let mut size = utils::converter::memory_size_from_blocks( 0 );
+
+    let model: String;
 
     let device_data = format!( "/sys/block/{}/device", device );
     let device_uevent = format!( "/sys/block/{}/uevent", device );
 
     if device.starts_with( "dm" )
       || device.starts_with( "loop" )
+      || device.starts_with( "sr"  )
       || get_devtype( fs::read_to_string( device_uevent.clone() ).expect( format!( "NO {} FILE", device_uevent ).as_str() ) ) != String::from( "disk" ) {
       continue;
     }
@@ -50,7 +51,7 @@ pub fn scan_drives() -> Vec<Drive> {
     } else {
       model = device.clone();
     }
-    size = utils::converter::memory_size_from_blocks(
+    let size = utils::converter::memory_size_from_blocks(
       fs::read_to_string( format!( "/sys/block/{}/size", device ) ).unwrap()
       .replace( '\n', "" )
       .parse::<i64>()

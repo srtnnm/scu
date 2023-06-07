@@ -12,7 +12,7 @@ use whoami;
 
 fn print_system_info() {
   let distro_name    = software::os::get_name();
-  let uptime         = software::os::get_uptime();
+  let uptime           = software::os::get_uptime();
   let hostname       = software::os::get_hostname();
   let shell          = software::os::get_shell();
   let kernel_info    = software::kernel::get_info();
@@ -48,6 +48,7 @@ fn print_cpu_info() {
   println!( "Model:    {}", cpu_info.model );
   println!( "Max freq: {}GHz", cpu_info.max_freq.ghz );
   println!( "Cores:    {}", cpu_info.cores );
+  println!( "Threads:  {}", cpu_info.threads );
 }
 
 fn print_memory_info() {

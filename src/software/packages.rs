@@ -40,6 +40,7 @@ pub fn get_info() -> Vec<PackageManager> {
         .iter()
         .map(|s| s.to_string())
         .collect();
+      
       manager_info.count_of_packages = Command::new( manager ).args( args )
         .output()
         .unwrap()
