@@ -15,7 +15,7 @@ pub fn detect() -> String {
             } else {
                 "Unknown"
             }
-        },
+        }
         "s6-svscan" => "s6",
         "upstart" => "Upstart",
         s => s,
