@@ -3,9 +3,8 @@ use std::path::Path;
 
 pub fn detect() -> String {
     let proc_info = process::get_info(1).unwrap();
-    let comm = proc_info.command;
 
-    (match comm.trim() {
+    (match proc_info.command.trim() {
         "systemd" => "SystemD",
         "openrc-init" | "init-openrc" => "OpenRC",
         "runit" => "Runit",
