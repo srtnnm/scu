@@ -18,6 +18,33 @@ fn extract_i64(_str: &str) -> i64 {
     re.find(_str).unwrap().as_str().parse::<i64>().unwrap()
 }
 
+fn extract_model_name(mut _str: String) -> String {
+    for trash in [
+        "Intel",
+        "Core",
+        "AMD",
+        "\\((TM|tm)\\)",
+        "\\((R|r)\\)",
+        "CPU",
+        "Processor",
+        "[Dual,Quad,Six,Eight]-Core",
+        "[[:digit:]]+-Core", // regular expression for "2-Core", "4-Core", etc.
+        "Technologies, Inc",
+    ] {
+        let re = Regex::new(trash).unwrap();
+        _str = match re.find(&_str) {
+            Some(part) => _str.replace(part.as_str(), ""),
+            None => _str,
+        };
+    }
+
+    if _str.contains('@') {
+        _str = _str.split('@').next().unwrap().to_string();
+    }
+
+    _str.trim().to_string()
+}
+
 pub fn get_info() -> CPUInfo {
     let mut model: String = String::from("");
     let mut vendor: String = String::from("");
@@ -54,6 +81,8 @@ pub fn get_info() -> CPUInfo {
             fs::read_to_string(max_freq_file_path).unwrap().as_str(),
         ));
     }
+
+    model = extract_model_name(model);
 
     CPUInfo {
         model,

@@ -1,10 +1,12 @@
+use crate::utils::process;
 use std::path::Path;
 
 pub fn detect() -> String {
-    let comm = std::fs::read_to_string("/proc/1/comm").unwrap_or("Unknown".into());
+    let proc_info = process::get_info(1).unwrap();
+    let comm = proc_info.command;
 
     (match comm.trim() {
-        "systemd" => "Systemd",
+        "systemd" => "SystemD",
         "openrc-init" | "init-openrc" => "OpenRC",
         "runit" => "Runit",
         "init" => {
@@ -12,11 +14,14 @@ pub fn detect() -> String {
                 "Dinit"
             } else if Path::new("/usr/share/sysvinit/inittab").exists() {
                 "SysVinit"
+            } else if std::fs::read_link(proc_info.cmdline).unwrap().to_str() == Some("openrc-init")
+            {
+                "OpenRC"
             } else {
                 "Unknown"
             }
         }
-        "s6-svscan" => "s6",
+        "s6-svscan" => "S6",
         "upstart" => "Upstart",
         s => s,
     })

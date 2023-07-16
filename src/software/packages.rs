@@ -55,7 +55,9 @@ pub fn get_info() -> Vec<PackageManager> {
                 .count() as i32;
         }
 
-        result.push(manager_info);
+        if manager_info.count_of_packages > 0 {
+            result.push(manager_info);
+        }
     }
 
     result
