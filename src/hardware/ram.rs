@@ -30,21 +30,33 @@ pub fn get_info() -> RAMInfo {
         .expect("NO /proc/meminfo FILE")
         .split('\n')
     {
-        if line.contains("MemTotal") {
-            total = extract_i64(line);
-            used = total;
-        } else if line.contains("Shmem") {
-            used += extract_i64(line);
-        } else if line.contains("MemFree")
-            || line.contains("Buffers")
-            || line.contains("Cached")
-            || line.contains("SReclaimable")
-        {
-            used -= extract_i64(line);
-        } else if line.contains("SwapTotal") {
-            swap_total = extract_i64(line);
-        } else if line.contains("SwapFree") {
-            swap_free = extract_i64(line);
+        let mut line = line.split(":");
+        let line_var = line.next().unwrap().trim();
+        let line_val = line.next().unwrap_or("");
+        if line_val.is_empty() {
+            continue;
+        }
+
+        match line_var {
+            "MemTotal" => {
+                total = extract_i64(line_val);
+                used = total;
+            }
+            "Shmem" => {
+                used += extract_i64(line_val);
+            }
+            "MemFree" | "Buffers" | "Cached" | "SReclaimable" => {
+                used -= extract_i64(line_val);
+            }
+            "SwapTotal" => {
+                swap_total = extract_i64(line_val);
+            }
+            "SwapFree" => {
+                swap_free = extract_i64(line_val);
+            }
+            _ => {
+                continue;
+            }
         }
     }
 
