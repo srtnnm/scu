@@ -6,8 +6,8 @@ pub struct CPUInfo {
     pub model: String,
     pub vendor: String,
     pub max_freq: utils::converter::Frequency,
-    pub cores: i8,
-    pub threads: i8,
+    pub cores: u8,
+    pub threads: u8,
 }
 
 // additional info are in /sys/devices/system/cpu
@@ -45,32 +45,48 @@ fn extract_model_name(mut _str: String) -> String {
     _str.trim().to_string()
 }
 
+fn get_vendor(vendor_id: &str) -> String {
+    String::from(match vendor_id {
+        "GenuineIntel" => "Intel",
+        "AuthenticAMD" => "AMD",
+        _ => "",
+    })
+}
+
 pub fn get_info() -> CPUInfo {
     let mut model: String = String::from("");
     let mut vendor: String = String::from("");
     let mut max_freq = utils::converter::frequency_from_hz(0);
-    let mut cores: i8 = 0;
-    let mut threads: i8 = 0;
+    let mut cores: u8 = 0;
+    let mut threads: u8 = 0;
 
     // parse /proc/cpuinfo
     for line in fs::read_to_string("/proc/cpuinfo")
         .expect("NO /proc/cpuinfo FILE")
         .split('\n')
     {
-        if line.contains("model name\t:") && model.is_empty() {
-            model = String::from(line.split(": ").nth(1).unwrap());
-        } else if line.contains("vendor_id\t:") && vendor.is_empty() {
-            vendor = String::from(match line.split(": ").nth(1).unwrap() {
-                "GenuineIntel" => "Intel",
-                "AuthenticAMD" => "AMD",
-                _ => "Unknown",
-            });
-        } else if line.contains("cpu cores\t:") && cores == 0 {
-            cores = line.split(": ").nth(1).unwrap().parse::<i8>().unwrap();
-        } else if line.contains("processor\t:") {
-            threads = line.split(": ").nth(1).unwrap().parse::<i8>().unwrap() + 1_i8;
-        } else {
+        let mut line_content = line.split(":");
+        let variable = line_content.next().unwrap().trim();
+        let value = line_content.next().unwrap_or("").trim().to_string();
+        if value.is_empty() {
             continue;
+        }
+        match variable.trim() {
+            "model name" => {
+                model = extract_model_name(value);
+            }
+            "vendor_id" => {
+                vendor = get_vendor(value.as_str());
+            }
+            "cpu cores" => {
+                cores = value.trim().parse::<u8>().unwrap();
+            }
+            "processor" => {
+                threads = value.trim().parse::<u8>().unwrap() + 1_u8;
+            }
+            _ => {
+                continue;
+            }
         }
     }
 
@@ -81,8 +97,6 @@ pub fn get_info() -> CPUInfo {
             fs::read_to_string(max_freq_file_path).unwrap().as_str(),
         ));
     }
-
-    model = extract_model_name(model);
 
     CPUInfo {
         model,
