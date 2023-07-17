@@ -41,11 +41,15 @@ pub fn get_hostname() -> String {
 }
 
 pub fn get_shell() -> String {
-    String::from(
-        env::var("SHELL")
-            .unwrap_or(String::from("/"))
-            .split('/')
-            .next_back()
-            .unwrap(),
-    )
+    let mut result = String::from("");
+    let mut ppid = utils::process::get_ppid(utils::process::get_pid()).unwrap();
+    while ppid > 1 {
+        let command = utils::process::get_info(ppid).unwrap().command;
+        if ["bash", "fish", "tcsh", "zsh"].contains(&command.as_str()) {
+            result = command;
+            break;
+        }
+        ppid = utils::process::get_ppid(ppid).unwrap();
+    }
+    result
 }
