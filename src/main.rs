@@ -6,74 +6,93 @@ mod software;
 mod utils;
 
 use std::collections::BTreeMap;
+use std::fmt::Write;
 
 fn get_info() -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    let mut buf: Vec<String> = Vec::new();
+    let mut buf = String::new();
 
     let distro_name = software::os::get_name();
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
+    let username = whoami::username();
     let shell = software::os::get_shell();
     let kernel_info = software::kernel::get_info();
     let init_system = software::init_system::detect();
     let terminal = software::terminal::get_name();
 
-    buf.push(format!("Hostname:   {}", hostname));
-    buf.push(format!("Username:   {}", whoami::username()));
-    buf.push(format!("Distro:     {}", distro_name));
-    buf.push(format!("Kernel:     {}", kernel_info.full_version));
-    buf.push(format!("Kernel version: {}", kernel_info.version));
-    buf.push(format!("Init system: {}", init_system));
-    buf.push(format!("Terminal:   {}", terminal));
-    buf.push(format!("Shell:      {}", shell));
-    buf.push(format!(
-        "Uptime:     {}H {}M {}S",
-        uptime.hours, uptime.minutes, uptime.seconds
-    ));
+    write!(buf, "Hostname:   {hostname}\0");
+    write!(buf, "Username:   {username}\0");
+    write!(buf, "Distro:     {distro_name}\0");
+    buf.push_str(format!("Kernel:     {}\0", kernel_info.full_version).as_str());
+    buf.push_str(format!("Kernel version: {}\0", kernel_info.version).as_str());
+    write!(buf, "Init system: {init_system}\0");
+    write!(buf, "Terminal:   {terminal}\0");
+    write!(buf, "Shell:      {shell}\0");
+    buf.push_str(
+        format!(
+            "Uptime:     {}H {}M {}S\0",
+            uptime.hours, uptime.minutes, uptime.seconds
+        )
+        .as_str(),
+    );
 
-    result.insert("System".to_string(), buf.clone());
+    result.insert(
+        "System".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
     buf.clear();
 
     let pkg_info = software::packages::get_info();
     if !pkg_info.is_empty() {
         for manager in pkg_info {
-            buf.push(format!(
-                "({}): {}",
-                manager.manager, manager.count_of_packages
-            ));
+            buf.push_str(
+                format!("({}): {}\0", manager.manager, manager.count_of_packages).as_str(),
+            );
         }
     }
-    result.insert("Packages".to_string(), buf.clone());
+    result.insert(
+        "Packages".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
     buf.clear();
 
     let cpu_info = hardware::cpu::get_info();
-    buf.push(format!("Vendor:   {}", cpu_info.vendor));
-    buf.push(format!("Model:    {}", cpu_info.model));
-    buf.push(format!("Max freq: {}GHz", cpu_info.max_freq.ghz));
-    buf.push(format!("Cores:    {}", cpu_info.cores));
-    buf.push(format!("Threads:  {}", cpu_info.threads));
+    buf.push_str(format!("Vendor:   {}\0", cpu_info.vendor).as_str());
+    buf.push_str(format!("Model:    {}\0", cpu_info.model).as_str());
+    buf.push_str(format!("Max freq: {}GHz\0", cpu_info.max_freq.ghz).as_str());
+    buf.push_str(format!("Cores:    {}\0", cpu_info.cores).as_str());
+    buf.push_str(format!("Threads:  {}\0", cpu_info.threads).as_str());
 
-    result.insert("CPU".to_string(), buf.clone());
+    result.insert(
+        "CPU".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
     buf.clear();
 
     let mem_info = hardware::ram::get_info();
-    buf.push(format!("Total:      {}MiB", mem_info.total.mb));
-    buf.push(format!("Used:       {}MiB", mem_info.used.mb));
+    buf.push_str(format!("Total:      {}MiB\0", mem_info.total.mb).as_str());
+    buf.push_str(format!("Used:       {}MiB\0", mem_info.used.mb).as_str());
     if mem_info.swap_enabled {
-        buf.push(format!("Swap total: {}MiB", mem_info.swap_total.mb));
-        buf.push(format!("Swap used:  {}MiB", mem_info.swap_used.mb));
+        buf.push_str(format!("Swap total: {}MiB\0", mem_info.swap_total.mb).as_str());
+        buf.push_str(format!("Swap used:  {}MiB\0", mem_info.swap_used.mb).as_str());
     }
 
-    result.insert("Memory".to_string(), buf.clone());
+    result.insert(
+        "Memory".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
     buf.clear();
 
     let drives = hardware::drive::scan_drives();
     if !drives.is_empty() {
         for drive in drives {
-            buf.push(format!("{}: {}MiB", drive.model, drive.size.mb));
+            buf.push_str(format!("{}: {}MiB\0", drive.model, drive.size.mb).as_str());
         }
-        result.insert("Drives".to_string(), buf.clone());
+        result.insert(
+            "Drives".to_string(),
+            buf.split("\0").map(|s| s.to_string()).collect(),
+        );
         buf.clear()
     }
 
@@ -99,34 +118,37 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
 
 fn print_info() {
     let info = get_info();
-    let mut keys: Vec<String> = info.clone().keys().map(|s| s.to_string()).collect();
-    keys.reverse();
 
     let max_len = get_max_len(info.clone());
-    for category in &keys {
+    for category in info.keys().rev() {
         println!(
             "{}-[{}]{}-{}",
-            if Some(category) == keys.first() {
+            if Some(category) == info.keys().rev().next() {
                 "/"
             } else {
                 "|"
             },
             category,
             "-".repeat(max_len - category.len() - 2),
-            if Some(category) == keys.first() {
+            if Some(category) == info.keys().rev().next() {
                 "\\"
             } else {
                 "|"
             }
         );
-        for info_line in info.get(category.as_str()).unwrap() {
-            println!("| {}{} |", info_line, " ".repeat(max_len - info_line.len()));
-        }
-        if Some(category) != keys.last() {
-            println!("| {} |", " ".repeat(max_len));
+        info.get(category.as_str())
+            .unwrap()
+            .iter()
+            .for_each(|info_line| {
+                if !info_line.is_empty() {
+                    println!("| {}{} |", info_line, " ".repeat(max_len - info_line.len()));
+                }
+            });
+        if Some(category) != info.keys().rev().next_back() {
+            println!("| {} |", " ".repeat(max_len))
         }
     }
-    println!("\\_{}_/", "_".repeat(max_len))
+    println!("\\{}/", "_".repeat(max_len + 2))
 }
 
 fn main() {
