@@ -92,3 +92,17 @@ pub fn frequency_from_mhz(_mhz: i32) -> Frequency {
         ghz: _mhz as f32 / 1000_f32,
     }
 }
+
+pub struct Size2D {
+    pub width: u32,
+    pub height: u32,
+}
+
+impl Size2D {
+    pub fn new(w: u32, h: u32) -> Self {
+        Self {
+            width: w,
+            height: h,
+        }
+    }
+}
