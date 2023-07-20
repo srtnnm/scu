@@ -60,6 +60,9 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
                 .parse::<i64>()
                 .unwrap(),
         );
+        if size.mb == 0 {
+            continue;
+        }
 
         result.push(Drive {
             path: format!("/dev/{}", device),
