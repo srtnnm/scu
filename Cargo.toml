@@ -12,3 +12,4 @@ strip = true
 which = "4.4.0"
 regex = "1"
 whoami = "1.4.0"
+libc = "0.2.147"

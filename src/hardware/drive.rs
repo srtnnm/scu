@@ -43,6 +43,8 @@ pub fn scan_drives() -> Vec<Drive> {
             fs::read_to_string(format!("{}/model", device_data))
                 .unwrap()
                 .replace('\n', "")
+                .trim()
+                .to_string()
         } else {
             device.clone()
         };

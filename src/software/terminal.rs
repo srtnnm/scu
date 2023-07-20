@@ -1,6 +1,6 @@
 use crate::utils::converter::Size2D;
 use crate::utils::process;
-use std::process::Command;
+use libc::{c_ushort, ioctl, STDOUT_FILENO, TIOCGWINSZ};
 
 fn bin_to_name(bin_name: String) -> String {
     String::from(match bin_name.as_str() {
@@ -20,9 +20,7 @@ fn bin_to_name(bin_name: String) -> String {
 pub fn get_name() -> String {
     let mut result = String::from("Unknown");
 
-    // still have a problem with tmux-256color
-    // idk how to fix it
-    // result == "tmux-256color" doesn't work
+    // still doesn't work from tmux
     let mut ppid = process::get_ppid(process::get_pid()).unwrap();
     while ppid != 1 {
         let info = process::get_info(ppid).unwrap();
@@ -38,27 +36,29 @@ pub fn get_name() -> String {
     result
 }
 
-pub fn get_size() -> Size2D {
-    let lines = String::from_utf8(
-        Command::new("tput")
-            .args(["lines"])
-            .output()
-            .unwrap()
-            .stdout
-            .to_ascii_lowercase(),
-    )
-    .unwrap();
-    let lines = lines.trim().parse::<u32>().unwrap();
-    let columns = String::from_utf8(
-        Command::new("tput")
-            .args(["cols"])
-            .output()
-            .unwrap()
-            .stdout
-            .to_ascii_lowercase(),
-    )
-    .unwrap();
-    let columns = columns.trim().parse::<u32>().unwrap();
+#[repr(C)]
+#[derive(Debug)]
+pub struct UnixSize {
+    pub rows: c_ushort,
+    pub cols: c_ushort,
+    x: c_ushort,
+    y: c_ushort,
+}
 
-    Size2D::new(columns, lines)
+pub fn get_size() -> Option<Size2D> {
+    let nix_size = UnixSize {
+        rows: 0,
+        cols: 0,
+        x: 0,
+        y: 0,
+    };
+
+    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ.into(), &nix_size) } == 0 {
+        return Some(Size2D {
+            width: nix_size.cols as u32,
+            height: nix_size.rows as u32,
+        });
+    }
+
+    None
 }

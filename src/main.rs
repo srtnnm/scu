@@ -21,17 +21,17 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let init_system = software::init_system::detect();
     let terminal = software::terminal::get_name();
 
-    write!(buf, "Hostname:   {hostname}\0");
-    write!(buf, "Username:   {username}\0");
-    write!(buf, "Distro:     {distro_name}\0");
-    buf.push_str(format!("Kernel:     {}\0", kernel_info.full_version).as_str());
-    buf.push_str(format!("Kernel version: {}\0", kernel_info.version).as_str());
+    write!(buf, "Hostname: {hostname}\0");
+    write!(buf, "Username: {username}\0");
+    write!(buf, "Distro: {distro_name}\0");
+    buf.push_str(format!("Kernel: {}\0", kernel_info.full_version).as_str());
+    buf.push_str(format!("┗Version: {}\0", kernel_info.version).as_str());
     write!(buf, "Init system: {init_system}\0");
-    write!(buf, "Terminal:   {terminal}\0");
-    write!(buf, "Shell:      {shell}\0");
+    write!(buf, "Terminal: {terminal}\0");
+    write!(buf, "Shell: {shell}\0");
     buf.push_str(
         format!(
-            "Uptime:     {}H {}M {}S\0",
+            "Uptime: {}H {}M {}S\0",
             uptime.hours, uptime.minutes, uptime.seconds
         )
         .as_str(),
@@ -58,24 +58,24 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.clear();
 
     let cpu_info = hardware::cpu::get_info();
-    buf.push_str(format!("Vendor:   {}\0", cpu_info.vendor).as_str());
-    buf.push_str(format!("Model:    {}\0", cpu_info.model).as_str());
+    buf.push_str(format!("Vendor: {}\0", cpu_info.vendor).as_str());
+    buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
     buf.push_str(format!("Max freq: {}GHz\0", cpu_info.max_freq.ghz).as_str());
-    buf.push_str(format!("Cores:    {}\0", cpu_info.cores).as_str());
-    buf.push_str(format!("Threads:  {}\0", cpu_info.threads).as_str());
+    buf.push_str(format!("Cores: {}\0", cpu_info.cores).as_str());
+    buf.push_str(format!("Threads: {}\0", cpu_info.threads).as_str());
 
     result.insert(
-        "CPU".to_string(),
+        "Processor".to_string(),
         buf.split("\0").map(|s| s.to_string()).collect(),
     );
     buf.clear();
 
     let mem_info = hardware::ram::get_info();
-    buf.push_str(format!("Total:      {}MiB\0", mem_info.total.mb).as_str());
-    buf.push_str(format!("Used:       {}MiB\0", mem_info.used.mb).as_str());
+    buf.push_str(format!("Total: {}MiB\0", mem_info.total.mb).as_str());
+    buf.push_str(format!("Used: {}MiB\0", mem_info.used.mb).as_str());
     if mem_info.swap_enabled {
         buf.push_str(format!("Swap total: {}MiB\0", mem_info.swap_total.mb).as_str());
-        buf.push_str(format!("Swap used:  {}MiB\0", mem_info.swap_used.mb).as_str());
+        buf.push_str(format!("Swap used: {}MiB\0", mem_info.swap_used.mb).as_str());
     }
 
     result.insert(
@@ -116,24 +116,50 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
+fn clamp_string(_str: &str, max_len: usize) -> String {
+    let mut result = String::from(_str);
+    result.truncate(max_len);
+
+    result
+}
+
+fn clamp_line_size(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
+    let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
+    let terminal_width = software::terminal::get_size().unwrap().width;
+
+    for key in info.keys() {
+        let buf: Vec<String> = info
+            .get(key)
+            .unwrap()
+            .iter()
+            .map(|s| clamp_string(s, terminal_width as usize - 4))
+            .collect();
+        result.insert(key.to_string(), buf);
+    }
+
+    result
+}
+
 fn print_info() {
-    let info = get_info();
+    let info = clamp_line_size(get_info());
 
     let max_len = get_max_len(info.clone());
     for category in info.keys().rev() {
+        let _repeats = (max_len - category.len()) / 2;
         println!(
-            "{}-[{}]{}-{}",
+            "{}{}─{}─{}{}",
             if Some(category) == info.keys().rev().next() {
-                "/"
+                "┌"
             } else {
-                "|"
+                "├"
             },
+            "─".repeat(_repeats),
             category,
-            "-".repeat(max_len - category.len() - 2),
+            "─".repeat(_repeats + if category.len() % 2 == 0 { 1 } else { 0 }),
             if Some(category) == info.keys().rev().next() {
-                "\\"
+                "┐"
             } else {
-                "|"
+                "┤"
             }
         );
         info.get(category.as_str())
@@ -141,14 +167,21 @@ fn print_info() {
             .iter()
             .for_each(|info_line| {
                 if !info_line.is_empty() {
-                    println!("| {}{} |", info_line, " ".repeat(max_len - info_line.len()));
+                    let mut line = info_line.split(": ");
+                    let line_param = line.next().unwrap();
+                    let param_len = line_param.replace("┗", "\0").len();
+                    let line_val = line.next().unwrap().trim().to_string();
+                    let val_len = line_val.len();
+                    println!(
+                        "│ {}:{}{} │",
+                        line_param,
+                        " ".repeat(max_len - param_len - val_len - 1),
+                        line_val
+                    );
                 }
             });
-        if Some(category) != info.keys().rev().next_back() {
-            println!("| {} |", " ".repeat(max_len))
-        }
     }
-    println!("\\{}/", "_".repeat(max_len + 2))
+    println!("└{}┘", "─".repeat(max_len + 2))
 }
 
 fn main() {
