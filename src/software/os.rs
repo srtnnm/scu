@@ -45,7 +45,7 @@ pub fn get_shell() -> String {
     let mut ppid = utils::process::get_ppid(utils::process::get_pid()).unwrap();
     while ppid > 1 {
         let command = utils::process::get_info(ppid).unwrap().command;
-        if ["bash", "fish", "tcsh", "zsh"].contains(&command.as_str()) {
+        if ["bash", "fish", "tcsh", "zsh", "dash"].contains(&command.as_str()) {
             result = command;
             break;
         }
