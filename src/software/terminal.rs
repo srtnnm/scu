@@ -7,7 +7,7 @@ fn bin_to_name(bin_name: String) -> String {
         "alacritty" => "Alacritty",
         "deepin-terminal" => "Deepin Terminal",
         "foot" => "Foot",
-        "gnome-terminal" => "GNOME Terminal",
+        "gnome-terminal-" => "GNOME Terminal",
         "konsole" => "Konsole",
         "lxterminal" => "LXTerminal",
         "st" => "ST",
