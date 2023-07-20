@@ -108,12 +108,12 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let de = software::graphics::detect_de();
     if de.is_some() {
         let de = de.unwrap();
-        write!(buf, "DE: {de}\0");
+        write!(buf, "Environment: {de}\0");
     }
     let wm = software::graphics::detect_wm();
     if wm.is_some() {
         let wm = wm.unwrap();
-        write!(buf, "WM: {wm}\0");
+        write!(buf, "Window manager: {wm}\0");
     }
     result.insert(
         "Graphics".to_string(),
