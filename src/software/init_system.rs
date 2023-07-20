@@ -1,5 +1,5 @@
 use crate::utils::process;
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 pub fn detect() -> String {
     let proc_info = process::get_info(1).unwrap();
@@ -13,7 +13,10 @@ pub fn detect() -> String {
                 "Dinit"
             } else if Path::new("/usr/share/sysvinit/inittab").exists() {
                 "SysVinit"
-            } else if std::fs::read_link(proc_info.cmdline).unwrap().to_str() == Some("openrc-init")
+            } else if std::fs::read_link(proc_info.cmdline.split("\0").next().unwrap())
+                .unwrap_or(PathBuf::from("".to_string()))
+                .to_str()
+                == Some("openrc-init")
             {
                 "OpenRC"
             } else {

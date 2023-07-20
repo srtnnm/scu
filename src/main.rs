@@ -12,6 +12,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut buf = String::new();
 
+    // System
     let distro_name = software::os::get_name();
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
@@ -43,12 +44,11 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     );
     buf.clear();
 
+    // Packages
     let pkg_info = software::packages::get_info();
     if !pkg_info.is_empty() {
         for manager in pkg_info {
-            buf.push_str(
-                format!("({}): {}\0", manager.manager, manager.count_of_packages).as_str(),
-            );
+            buf.push_str(format!("{}: {}\0", manager.manager, manager.count_of_packages).as_str());
         }
     }
     result.insert(
@@ -57,6 +57,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     );
     buf.clear();
 
+    // Processor
     let cpu_info = hardware::cpu::get_info();
     buf.push_str(format!("Vendor: {}\0", cpu_info.vendor).as_str());
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
@@ -70,6 +71,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     );
     buf.clear();
 
+    // Memory
     let mem_info = hardware::ram::get_info();
     buf.push_str(format!("Total: {}MiB\0", mem_info.total.mb).as_str());
     buf.push_str(format!("Used: {}MiB\0", mem_info.used.mb).as_str());
@@ -84,6 +86,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     );
     buf.clear();
 
+    // Drives
     let drives = hardware::drive::scan_drives();
     if !drives.is_empty() {
         for drive in drives {
@@ -95,6 +98,28 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         );
         buf.clear()
     }
+
+    // Graphics
+    let session_type = software::graphics::get_session_type();
+    if session_type.is_some() {
+        let session_type = session_type.unwrap();
+        write!(buf, "Session type: {session_type}\0");
+    }
+    let de = software::graphics::detect_de();
+    if de.is_some() {
+        let de = de.unwrap();
+        write!(buf, "DE: {de}\0");
+    }
+    let wm = software::graphics::detect_wm();
+    if wm.is_some() {
+        let wm = wm.unwrap();
+        write!(buf, "WM: {wm}\0");
+    }
+    result.insert(
+        "Graphics".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
+    buf.clear();
 
     result
 }
