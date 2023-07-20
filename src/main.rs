@@ -107,28 +107,26 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Graphics
-    if !software::terminal::is_tty() {
-        let session_type = software::graphics::get_session_type();
-        if session_type.is_some() {
-            let session_type = session_type.unwrap();
-            write!(buf, "Session type: {session_type}\0");
-        }
-        let de = software::graphics::detect_de();
-        if de.is_some() {
-            let de = de.unwrap();
-            write!(buf, "Environment: {de}\0");
-        }
-        let wm = software::graphics::detect_wm();
-        if wm.is_some() {
-            let wm = wm.unwrap();
-            write!(buf, "Window manager: {wm}\0");
-        }
-        result.insert(
-            "Graphics".to_string(),
-            buf.split("\0").map(|s| s.to_string()).collect(),
-        );
-        buf.clear();
+    let session_type = software::graphics::get_session_type();
+    if session_type.is_some() {
+        let session_type = session_type.unwrap();
+        write!(buf, "Session type: {session_type}\0");
     }
+    let de = software::graphics::detect_de();
+    if de.is_some() {
+        let de = de.unwrap();
+        write!(buf, "Environment: {de}\0");
+    }
+    let wm = software::graphics::detect_wm();
+    if wm.is_some() {
+        let wm = wm.unwrap();
+        write!(buf, "Window manager: {wm}\0");
+    }
+    result.insert(
+        "Graphics".to_string(),
+        buf.split("\0").map(|s| s.to_string()).collect(),
+    );
+    buf.clear();
 
     result
 }
