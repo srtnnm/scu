@@ -11,7 +11,9 @@ pub fn detect() -> String {
         "init" => {
             if Path::new("/run/dinit").exists() {
                 "Dinit"
-            } else if Path::new("/usr/share/sysvinit/inittab").exists() {
+            } else if Path::new("/usr/share/sysvinit/inittab").exists()
+                || Path::new("/etc/inittab").exists()
+            {
                 "SysVinit"
             } else if std::fs::read_link(proc_info.cmdline.split("\0").next().unwrap())
                 .unwrap_or(PathBuf::from("".to_string()))
