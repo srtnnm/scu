@@ -10,7 +10,7 @@ pub fn get_name() -> String {
     }
 
     for line in fs::read_to_string("/etc/os-release").unwrap().split('\n') {
-        if line.contains("NAME") {
+        if line.starts_with("NAME=") {
             result = line.split("NAME=").nth(1).unwrap().replace('\"', "");
         }
     }

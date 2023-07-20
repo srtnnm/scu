@@ -27,7 +27,10 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     write!(buf, "Distro: {distro_name}\0");
     buf.push_str(format!("Kernel: {}\0", kernel_info.full_version).as_str());
     buf.push_str(format!("┗Version: {}\0", kernel_info.version).as_str());
-    write!(buf, "Init system: {init_system}\0");
+    if init_system.is_some() {
+        let init_system = init_system.unwrap();
+        write!(buf, "Init system: {init_system}\0");
+    }
     write!(buf, "Terminal: {terminal}\0");
     write!(buf, "Shell: {shell}\0");
     buf.push_str(
@@ -59,7 +62,6 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Processor
     let cpu_info = hardware::cpu::get_info();
-    buf.push_str(format!("Vendor: {}\0", cpu_info.vendor).as_str());
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
     buf.push_str(format!("Max freq: {}GHz\0", cpu_info.max_freq.ghz).as_str());
     buf.push_str(format!("Cores: {}\0", cpu_info.cores).as_str());
@@ -88,38 +90,43 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Drives
     let drives = hardware::drive::scan_drives();
-    if !drives.is_empty() {
-        for drive in drives {
-            buf.push_str(format!("{}: {}MiB\0", drive.model, drive.size.mb).as_str());
+    if drives.is_some() {
+        let drives = drives.unwrap();
+        if !drives.is_empty() {
+            for drive in drives {
+                buf.push_str(format!("{}: {}MiB\0", drive.model, drive.size.mb).as_str());
+            }
+            result.insert(
+                "Drives".to_string(),
+                buf.split("\0").map(|s| s.to_string()).collect(),
+            );
+            buf.clear();
         }
-        result.insert(
-            "Drives".to_string(),
-            buf.split("\0").map(|s| s.to_string()).collect(),
-        );
-        buf.clear()
     }
 
     // Graphics
-    let session_type = software::graphics::get_session_type();
-    if session_type.is_some() {
-        let session_type = session_type.unwrap();
-        write!(buf, "Session type: {session_type}\0");
+    if !software::terminal::is_tty() {
+        let session_type = software::graphics::get_session_type();
+        if session_type.is_some() {
+            let session_type = session_type.unwrap();
+            write!(buf, "Session type: {session_type}\0");
+        }
+        let de = software::graphics::detect_de();
+        if de.is_some() {
+            let de = de.unwrap();
+            write!(buf, "Environment: {de}\0");
+        }
+        let wm = software::graphics::detect_wm();
+        if wm.is_some() {
+            let wm = wm.unwrap();
+            write!(buf, "Window manager: {wm}\0");
+        }
+        result.insert(
+            "Graphics".to_string(),
+            buf.split("\0").map(|s| s.to_string()).collect(),
+        );
+        buf.clear();
     }
-    let de = software::graphics::detect_de();
-    if de.is_some() {
-        let de = de.unwrap();
-        write!(buf, "Environment: {de}\0");
-    }
-    let wm = software::graphics::detect_wm();
-    if wm.is_some() {
-        let wm = wm.unwrap();
-        write!(buf, "Window manager: {wm}\0");
-    }
-    result.insert(
-        "Graphics".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
-    );
-    buf.clear();
 
     result
 }
@@ -141,14 +148,14 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
-fn clamp_string(_str: &str, max_len: usize) -> String {
+fn cut_string(_str: &str, max_len: usize) -> String {
     let mut result = String::from(_str);
     result.truncate(max_len);
 
     result
 }
 
-fn clamp_line_size(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
+fn cut_info_lines(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let terminal_width = software::terminal::get_size().unwrap().width;
 
@@ -157,7 +164,7 @@ fn clamp_line_size(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<
             .get(key)
             .unwrap()
             .iter()
-            .map(|s| clamp_string(s, terminal_width as usize - 4))
+            .map(|s| cut_string(s, terminal_width as usize - 4))
             .collect();
         result.insert(key.to_string(), buf);
     }
@@ -166,13 +173,13 @@ fn clamp_line_size(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<
 }
 
 fn print_info() {
-    let info = clamp_line_size(get_info());
+    let info = cut_info_lines(get_info());
 
     let max_len = get_max_len(info.clone());
     for category in info.keys().rev() {
-        let _repeats = (max_len - category.len()) / 2;
+        let _repeats = ((max_len - category.len()) / 2) + 1;
         println!(
-            "{}{}─{}─{}{}",
+            "{}{}{}{}{}",
             if Some(category) == info.keys().rev().next() {
                 "┌"
             } else {

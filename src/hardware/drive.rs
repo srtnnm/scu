@@ -18,10 +18,14 @@ fn get_devtype(content: String) -> String {
     String::from("")
 }
 
-pub fn scan_drives() -> Vec<Drive> {
+pub fn scan_drives() -> Option<Vec<Drive>> {
     let mut result: Vec<Drive> = Vec::new();
 
-    let block_devices = fs::read_dir("/sys/block").expect("NO /sys/block DIRECTORY");
+    let block_devices = fs::read_dir("/sys/block");
+    if block_devices.is_err() {
+        return None;
+    }
+    let block_devices = block_devices.unwrap();
     for block_device in block_devices {
         let device = block_device.unwrap().file_name().into_string().unwrap();
 
@@ -64,5 +68,5 @@ pub fn scan_drives() -> Vec<Drive> {
         });
     }
 
-    result
+    Some(result)
 }

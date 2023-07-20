@@ -4,7 +4,6 @@ use std::fs;
 
 pub struct CPUInfo {
     pub model: String,
-    pub vendor: String,
     pub max_freq: utils::converter::Frequency,
     pub cores: u8,
     pub threads: u8,
@@ -84,6 +83,9 @@ pub fn get_info() -> CPUInfo {
             "processor" => {
                 threads = value.trim().parse::<u8>().unwrap() + 1_u8;
             }
+            "Hardware" => {
+                model = value.trim().to_string();
+            }
             _ => {
                 continue;
             }
@@ -98,9 +100,14 @@ pub fn get_info() -> CPUInfo {
         ));
     }
 
+    model = if !vendor.is_empty() {
+        vendor + " "
+    } else {
+        "".to_string()
+    } + model.as_str();
+
     CPUInfo {
         model,
-        vendor,
         max_freq,
         cores,
         threads,

@@ -1,6 +1,7 @@
 use crate::utils::converter::Size2D;
 use crate::utils::process;
-use libc::{c_ushort, ioctl, STDOUT_FILENO, TIOCGWINSZ};
+use libc::{c_ushort, ioctl, isatty, STDOUT_FILENO, TIOCGWINSZ};
+use std::os::unix::io::AsRawFd;
 
 fn bin_to_name(bin_name: String) -> String {
     String::from(match bin_name.as_str() {
@@ -18,18 +19,24 @@ fn bin_to_name(bin_name: String) -> String {
 }
 
 pub fn get_name() -> String {
-    let mut result = String::from("Unknown");
+    let mut result = String::from("Linux");
 
     // still doesn't work from tmux
-    let mut ppid = process::get_ppid(process::get_pid()).unwrap();
-    while ppid != 1 {
-        let info = process::get_info(ppid).unwrap();
-        let got_name = bin_to_name(info.command);
-        if !got_name.is_empty() {
-            result = got_name;
-            break;
-        } else {
-            ppid = process::get_ppid(ppid).unwrap();
+    if !is_tty() {
+        let mut ppid = process::get_ppid(process::get_pid()).unwrap();
+        while ppid != 1 {
+            let info = process::get_info(ppid);
+            if info.is_err() {
+                break;
+            }
+            let info = info.unwrap();
+            let got_name = bin_to_name(info.command);
+            if !got_name.is_empty() {
+                result = got_name;
+                break;
+            } else {
+                ppid = process::get_ppid(ppid).unwrap();
+            }
         }
     }
 
@@ -61,4 +68,8 @@ pub fn get_size() -> Option<Size2D> {
     }
 
     None
+}
+
+pub fn is_tty() -> bool {
+    unsafe { libc::isatty(std::io::stdout().as_raw_fd()) == 1 }
 }
