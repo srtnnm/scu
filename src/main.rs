@@ -53,12 +53,12 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         for manager in pkg_info {
             buf.push_str(format!("{}: {}\0", manager.manager, manager.count_of_packages).as_str());
         }
+        result.insert(
+            "Packages".to_string(),
+            buf.split("\0").map(|s| s.to_string()).collect(),
+        );
+        buf.clear();
     }
-    result.insert(
-        "Packages".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
-    );
-    buf.clear();
 
     // Processor
     let cpu_info = hardware::cpu::get_info();

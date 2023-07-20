@@ -21,10 +21,11 @@ pub fn detect_managers(managers: Vec<&'static str>) -> Vec<&'static str> {
 pub fn get_info() -> Vec<PackageManager> {
     let mut result: Vec<PackageManager> = Vec::new();
     let list_packages_command = BTreeMap::from([
-        ("pacman", Vec::from(["-Qq"])),
         ("apt", Vec::from(["list", "--installed"])),
-        ("rpm", Vec::from(["-qa"])),
         ("flatpak", Vec::from(["list"])),
+        ("pacman", Vec::from(["-Qq"])),
+        ("rpm", Vec::from(["-qa"])),
+        ("snap", Vec::from(["list"])),
     ]);
 
     let managers = detect_managers(list_packages_command.clone().into_keys().collect());
@@ -52,7 +53,8 @@ pub fn get_info() -> Vec<PackageManager> {
                 .stdout
                 .iter()
                 .filter(|b| **b == b'\n')
-                .count() as i32;
+                .count() as i32
+                - if manager == "snap" { 1 } else { 0 };
         }
 
         if manager_info.count_of_packages > 0 {
