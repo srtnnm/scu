@@ -1,5 +1,4 @@
 use crate::utils;
-use libc::{sysconf, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN};
 use regex::Regex;
 use std::fs;
 
