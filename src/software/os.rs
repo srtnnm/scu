@@ -18,16 +18,21 @@ pub fn get_name() -> String {
     result
 }
 
-pub fn get_uptime() -> utils::converter::Time {
-    let time: i32 = fs::read_to_string("/proc/uptime")
-        .unwrap()
-        .split('.')
-        .next()
-        .unwrap()
-        .parse::<i32>()
-        .unwrap();
+pub fn get_uptime() -> Option<utils::converter::Time> {
+    let time = fs::read_to_string("/proc/uptime");
+    if time.is_ok() {
+        let time = time
+            .unwrap()
+            .split('.')
+            .next()
+            .unwrap()
+            .parse::<i32>()
+            .unwrap();
 
-    utils::converter::time_from_seconds(time)
+        return Some(utils::converter::time_from_seconds(time));
+    }
+
+    None
 }
 
 pub fn get_hostname() -> String {

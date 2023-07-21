@@ -33,13 +33,16 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
     write!(buf, "Terminal: {terminal}\0");
     write!(buf, "Shell: {shell}\0");
-    buf.push_str(
-        format!(
-            "Uptime: {}H {}M {}S\0",
-            uptime.hours, uptime.minutes, uptime.seconds
-        )
-        .as_str(),
-    );
+    if uptime.is_some() {
+        let uptime = uptime.unwrap();
+        buf.push_str(
+            format!(
+                "Uptime: {}H {}M {}S\0",
+                uptime.hours, uptime.minutes, uptime.seconds
+            )
+            .as_str(),
+        );
+    }
 
     result.insert(
         "System".to_string(),
