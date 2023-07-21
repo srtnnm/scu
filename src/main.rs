@@ -125,10 +125,12 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         let wm = wm.unwrap();
         write!(buf, "Window manager: {wm}\0");
     }
-    result.insert(
-        "Graphics".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
-    );
+    if !buf.is_empty() {
+        result.insert(
+            "Graphics".to_string(),
+            buf.split("\0").map(|s| s.to_string()).collect(),
+        );
+    }
     buf.clear();
 
     result
