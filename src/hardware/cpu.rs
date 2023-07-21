@@ -9,9 +9,6 @@ pub struct CPUInfo {
     pub threads: u8,
 }
 
-// additional info are in /sys/devices/system/cpu
-// max frequency -> /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
-
 fn extract_i64(_str: &str) -> i64 {
     let re = Regex::new(r"\d+").unwrap();
     re.find(_str).unwrap().as_str().parse::<i64>().unwrap()
@@ -71,8 +68,8 @@ pub fn get_info() -> CPUInfo {
             continue;
         }
         match variable.trim() {
-            "model name" => {
-                model = extract_model_name(value);
+            "model name" | "Hardware" => {
+                model = extract_model_name(value.trim().to_string());
             }
             "vendor_id" => {
                 vendor = get_vendor(value.as_str());
@@ -82,9 +79,6 @@ pub fn get_info() -> CPUInfo {
             }
             "processor" => {
                 threads = value.trim().parse::<u8>().unwrap() + 1_u8;
-            }
-            "Hardware" => {
-                model = value.trim().to_string();
             }
             _ => {
                 continue;
