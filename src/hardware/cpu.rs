@@ -1,4 +1,5 @@
 use crate::utils;
+use libc::{sysconf, _SC_NPROCESSORS_CONF, _SC_NPROCESSORS_ONLN};
 use regex::Regex;
 use std::fs;
 
@@ -10,8 +11,13 @@ pub struct CPUInfo {
 }
 
 fn extract_i64(_str: &str) -> i64 {
-    let re = Regex::new(r"\d+").unwrap();
-    re.find(_str).unwrap().as_str().parse::<i64>().unwrap()
+    Regex::new(r"\d+")
+        .unwrap()
+        .find(_str)
+        .unwrap()
+        .as_str()
+        .parse::<i64>()
+        .unwrap()
 }
 
 fn extract_model_name(mut _str: String) -> String {
@@ -50,13 +56,15 @@ fn get_vendor(vendor_id: &str) -> String {
 }
 
 pub fn get_info() -> CPUInfo {
-    let mut model: String = String::from("");
-    let mut vendor: String = String::from("");
-    let mut max_freq = utils::converter::frequency_from_hz(0);
-    let mut cores: u8 = 0;
-    let mut threads: u8 = 0;
+    let mut result = CPUInfo {
+        model: String::from(""),
+        max_freq: utils::converter::frequency_from_hz(0),
+        cores: 0,
+        threads: 0,
+    };
 
     // parse /proc/cpuinfo
+    let mut vendor = String::new();
     for line in fs::read_to_string("/proc/cpuinfo")
         .expect("NO /proc/cpuinfo FILE")
         .split('\n')
@@ -69,41 +77,33 @@ pub fn get_info() -> CPUInfo {
         }
         match variable.trim() {
             "model name" | "Hardware" => {
-                model = extract_model_name(value.trim().to_string());
+                result.model = extract_model_name(value.trim().to_string());
             }
             "vendor_id" => {
                 vendor = get_vendor(value.as_str());
             }
             "cpu cores" => {
-                cores = value.trim().parse::<u8>().unwrap();
+                result.cores = value.trim().parse::<u8>().unwrap();
             }
             "processor" => {
-                threads = value.trim().parse::<u8>().unwrap() + 1_u8;
+                result.threads = value.trim().parse::<u8>().unwrap() + 1_u8;
             }
             _ => {
                 continue;
             }
         }
     }
+    if !vendor.is_empty() {
+        result.model = format!("{} {}", vendor, result.model);
+    }
 
     // get max_freq
     let max_freq_file_path = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
     if fs::metadata(max_freq_file_path).is_ok() {
-        max_freq = utils::converter::frequency_from_hz(extract_i64(
+        result.max_freq = utils::converter::frequency_from_hz(extract_i64(
             fs::read_to_string(max_freq_file_path).unwrap().as_str(),
         ));
     }
 
-    model = if !vendor.is_empty() {
-        vendor + " "
-    } else {
-        "".to_string()
-    } + model.as_str();
-
-    CPUInfo {
-        model,
-        max_freq,
-        cores,
-        threads,
-    }
+    result
 }

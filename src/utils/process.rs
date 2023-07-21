@@ -59,8 +59,7 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
         }
     }
 
-    result.cmdline = std::fs::read_to_string(format!("/proc/{}/cmdline", pid))
-        .unwrap();
+    result.cmdline = std::fs::read_to_string(format!("/proc/{}/cmdline", pid)).unwrap();
     if result.cmdline.is_empty() {
         return Err(ProcessError::CmdlineIsEmpty);
     };
