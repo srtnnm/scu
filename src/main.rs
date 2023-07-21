@@ -148,32 +148,8 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
-fn cut_string(_str: &str, max_len: usize) -> String {
-    let mut result = String::from(_str);
-    result.truncate(max_len);
-
-    result
-}
-
-fn cut_info_lines(info: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
-    let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
-    let terminal_width = software::terminal::get_size().unwrap().width;
-
-    for key in info.keys() {
-        let buf: Vec<String> = info
-            .get(key)
-            .unwrap()
-            .iter()
-            .map(|s| cut_string(s, terminal_width as usize - 4))
-            .collect();
-        result.insert(key.to_string(), buf);
-    }
-
-    result
-}
-
 fn print_info() {
-    let info = cut_info_lines(get_info());
+    let info = get_info();
 
     let max_len = get_max_len(info.clone());
     for category in info.keys().rev() {
