@@ -37,8 +37,8 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         let uptime = uptime.unwrap();
         buf.push_str(
             format!(
-                "Uptime: {}H {}M {}S\0",
-                uptime.hours, uptime.minutes, uptime.seconds
+                "Uptime: {}d {}:{}:{}\0",
+                uptime.hours / 24, uptime.hours % 24, uptime.minutes, uptime.seconds
             )
             .as_str(),
         );
