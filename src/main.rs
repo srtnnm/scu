@@ -38,7 +38,10 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         buf.push_str(
             format!(
                 "Uptime: {}d {}:{}:{}\0",
-                uptime.hours / 24, uptime.hours % 24, uptime.minutes, uptime.seconds
+                uptime.hours / 24,
+                uptime.hours % 24,
+                uptime.minutes,
+                uptime.seconds
             )
             .as_str(),
         );
@@ -110,6 +113,11 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Graphics
+    let gpu = hardware::gpu::get_info();
+    if gpu.is_some() {
+        let gpu = gpu.unwrap();
+        write!(buf, "GPU: {gpu}\0");
+    }
     let session_type = software::graphics::get_session_type();
     if session_type.is_some() {
         let session_type = session_type.unwrap();
@@ -144,8 +152,9 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
 
     for key in map.keys() {
         for line in map.get(key).unwrap() {
-            if line.len() > result {
-                result = line.len();
+            let _len = line.replace("┗", "\0").replace("│", "\0").len();
+            if _len > result {
+                result = _len;
             }
         }
     }
@@ -153,8 +162,40 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
+fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
+    let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
+
+    let max_len = get_max_len(map.clone());
+    for category in map.keys() {
+        let mut buf: Vec<String> = Vec::new();
+        map.get(category.as_str())
+            .unwrap()
+            .iter()
+            .for_each(|info_line| {
+                if !info_line.is_empty() {
+                    let mut line = info_line.split(": ");
+                    let line_param = line.next().unwrap();
+                    let param_len = line_param.replace("┗", "\0").len();
+                    let line_val = line.next().unwrap().trim().to_string();
+                    let val_len = line_val.len();
+                    buf.push(format!(
+                        "{}:{}{}",
+                        line_param,
+                        " ".repeat(max_len - param_len - val_len - 1),
+                        line_val
+                    ));
+                }
+            });
+        if !buf.is_empty() {
+            result.insert(category.to_string(), buf);
+        }
+    }
+
+    result
+}
+
 fn print_info() {
-    let info = get_info();
+    let info = format_info(get_info());
 
     let max_len = get_max_len(info.clone());
     for category in info.keys().rev() {
@@ -178,21 +219,7 @@ fn print_info() {
         info.get(category.as_str())
             .unwrap()
             .iter()
-            .for_each(|info_line| {
-                if !info_line.is_empty() {
-                    let mut line = info_line.split(": ");
-                    let line_param = line.next().unwrap();
-                    let param_len = line_param.replace("┗", "\0").len();
-                    let line_val = line.next().unwrap().trim().to_string();
-                    let val_len = line_val.len();
-                    println!(
-                        "│ {}:{}{} │",
-                        line_param,
-                        " ".repeat(max_len - param_len - val_len - 1),
-                        line_val
-                    );
-                }
-            });
+            .for_each(|line| println!("│ {} │", line))
     }
     println!("└{}┘", "─".repeat(max_len + 2))
 }
