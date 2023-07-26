@@ -89,7 +89,7 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                 }
 
                 result.insert(
-                    0,
+                    result.len() as u8 + 1,
                     if !vendor.is_empty() {
                         format!("{} ", vendor)
                     } else {
