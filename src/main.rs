@@ -113,10 +113,26 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Graphics
-    let gpu = hardware::gpu::get_info();
-    if gpu.is_some() {
-        let gpu = gpu.unwrap();
-        write!(buf, "GPU: {gpu}\0");
+    let gpus = hardware::gpu::get_info();
+    if gpus.is_some() {
+        let gpus = gpus.unwrap();
+        let count_gpus = gpus.len();
+        for entry in gpus {
+            let gpu_id = entry.0;
+            let gpu_name = entry.1;
+            buf.push_str(
+                format!(
+                    "GPU{}: {}\0",
+                    if count_gpus > 1 {
+                        format!(" #{}", gpu_id)
+                    } else {
+                        String::from("")
+                    },
+                    gpu_name
+                )
+                .as_str(),
+            );
+        }
     }
     let session_type = software::graphics::get_session_type();
     if session_type.is_some() {
