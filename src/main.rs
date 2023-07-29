@@ -29,7 +29,13 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.push_str(format!("┗Version: {}\0", kernel_info.version).as_str());
     if init_system.is_some() {
         let init_system = init_system.unwrap();
-        write!(buf, "Init system: {init_system}\0");
+        buf.push_str(
+            format!(
+                "Init system: {}\0┗Services: {}\0",
+                init_system.name, init_system.count_services
+            )
+            .as_str(),
+        );
     }
     write!(buf, "Terminal: {terminal}\0");
     write!(buf, "Shell: {shell}\0");
