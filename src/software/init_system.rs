@@ -18,8 +18,8 @@ fn is_executable(file: PathBuf) -> bool {
 }
 
 fn is_service(file: PathBuf) -> bool {
-    if (is_executable(file.to_path_buf())
-        || (file.is_file() && ["rc"].contains(&file.extension().unwrap().to_str().unwrap())))
+    if (is_executable(file.clone())
+        || (file.is_file() && file.to_string_lossy().contains(".rc")/* android */))
         && !file.is_symlink()
     {
         return true;
