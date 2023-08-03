@@ -1,7 +1,6 @@
 use crate::utils::converter::Size2D;
 use crate::utils::process;
-use libc::{c_ushort, ioctl, isatty, STDOUT_FILENO, TIOCGWINSZ};
-use std::os::unix::io::AsRawFd;
+use libc::{c_ushort, ioctl, STDOUT_FILENO, TIOCGWINSZ};
 
 fn bin_to_name(bin_name: String) -> String {
     String::from(match bin_name.as_str() {

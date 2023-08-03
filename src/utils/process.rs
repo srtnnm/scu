@@ -1,4 +1,3 @@
-use regex::Regex;
 use std::fs;
 use std::path::Path;
 use std::process;
@@ -37,12 +36,12 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
         command: String::from(""),
     };
 
-    if !fs::metadata(format!("/proc/{}", pid)).is_ok() {
+    if !Path::new("/proc").exists() || !Path::new(format!("/proc/{}", pid).as_str()).exists() {
         return Err(ProcessError::ProcessNotFound);
     }
 
     // parent process id
-    let content = match std::fs::read_to_string(format!("/proc/{}/status", pid)) {
+    let content = match fs::read_to_string(format!("/proc/{}/status", pid)) {
         Ok(content) => content,
         Err(_) => {
             return Err(ProcessError::StatusNotFound);
@@ -50,12 +49,25 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
     };
     let status_content = content.split('\n');
     for line in status_content {
-        if line.contains("PPid") {
-            let _regex = Regex::new(r"\d+").unwrap();
-            result.ppid = match _regex.find(line).unwrap().as_str().parse::<i32>() {
-                Ok(integer) => integer as u32,
-                Err(_) => 0,
-            };
+        if line.contains(":") {
+            let value = line.split(':').nth(1).unwrap().trim().to_string();
+            match line
+                .split(':')
+                .next()
+                .unwrap()
+                .to_ascii_lowercase()
+                .as_str()
+            {
+                "name" => {
+                    result.command = value;
+                }
+                "ppid" => {
+                    result.ppid = value.parse::<u32>().unwrap();
+                }
+                _ => {
+                    continue;
+                }
+            }
         }
     }
 
@@ -63,10 +75,6 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
     if result.cmdline.is_empty() {
         return Err(ProcessError::CmdlineIsEmpty);
     };
-
-    result.command = std::fs::read_to_string(format!("/proc/{}/comm", pid))
-        .unwrap()
-        .replace('\n', "");
 
     Ok(result)
 }

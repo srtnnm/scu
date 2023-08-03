@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_imports, unused_must_use)]
+#![allow(dead_code, unused_must_use)]
 
 mod hardware;
 mod software;
@@ -41,13 +41,20 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     write!(buf, "Shell: {shell}\0");
     if uptime.is_some() {
         let uptime = uptime.unwrap();
+        buf.push_str("Uptime: ");
+        if uptime.hours > 24 {
+            buf.push_str(format!("{}d", uptime.hours / 24).as_str());
+        }
         buf.push_str(
             format!(
-                "Uptime: {}d {}:{}:{}\0",
-                uptime.hours / 24,
+                " {}:{}:{}\0",
                 uptime.hours % 24,
                 uptime.minutes,
-                uptime.seconds
+                format!(
+                    "{}{}",
+                    if uptime.seconds < 10 { "0" } else { "" },
+                    uptime.seconds
+                )
             )
             .as_str(),
         );
@@ -166,7 +173,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     result
 }
 
-fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
+fn get_map_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     let mut result: usize = 0;
     if map.is_empty() {
         return result;
@@ -187,7 +194,7 @@ fn get_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
 fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
-    let max_len = get_max_len(map.clone());
+    let max_len = get_map_max_len(map.clone());
     for category in map.keys() {
         let mut buf: Vec<String> = Vec::new();
         map.get(category.as_str())
@@ -219,7 +226,7 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
 fn print_info() {
     let info = format_info(get_info());
 
-    let max_len = get_max_len(info.clone());
+    let max_len = get_map_max_len(info.clone());
     for category in info.keys().rev() {
         let _repeats = ((max_len - category.len()) / 2) + 1;
         println!(

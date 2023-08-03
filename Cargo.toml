@@ -1,14 +1,18 @@
 [package]
 name = "scu"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 
 [profile.release]
 strip = true
 lto = true
+debug = false
+panic = "abort"
+codegen-units = 1
+opt-level = "z"
 
 [dependencies]
 which = "4.4.0"
-regex = "1"
+regex = { version = "1", default-features = false, features = ["unicode-perl", "std"] }
 whoami = "1.4.0"
 libc = "0.2.147"

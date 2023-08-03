@@ -1,5 +1,4 @@
 use crate::utils;
-use std::env;
 use std::fs;
 
 pub fn get_name() -> String {
