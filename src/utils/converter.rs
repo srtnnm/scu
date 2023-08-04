@@ -10,7 +10,7 @@ pub fn memory_size_from_blocks(_blocks: i64) -> MemorySize {
         blocks: _blocks,
         kb: _blocks / 2,
         mb: _blocks / 2048,
-        gb: 2097152,
+        gb: _blocks / 2097152,
     }
 }
 

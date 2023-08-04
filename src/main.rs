@@ -8,6 +8,37 @@ mod utils;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
+fn get_closest_tb(gb: i64) -> i64 {
+    let mut result: i64 = 0;
+    let mut delta: i64 = gb;
+
+    for size in [1, 2, 4, 8, 16, 32] {
+        let _delta = (gb - (size * 1024)).abs();
+        if delta > _delta {
+            delta = _delta;
+            result = size;
+        }
+    }
+
+    result
+}
+
+fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
+    let mut _size: i64 = 0;
+    let mut suffix = "";
+    if size.gb == 0 {
+        suffix = "MiB";
+    } else if size.gb < 1024 {
+        _size = size.gb;
+        suffix = "GiB";
+    } else if size.gb > 1024 {
+        _size = get_closest_tb(size.gb);
+        suffix = "TiB";
+    }
+
+    format!("{}{}", _size, suffix)
+}
+
 fn get_info() -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
     let mut buf = String::new();
@@ -40,16 +71,25 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     write!(buf, "Terminal: {terminal}\0");
     write!(buf, "Shell: {shell}\0");
     if uptime.is_some() {
-        let uptime = uptime.unwrap();
+        let mut uptime = uptime.unwrap();
         buf.push_str("Uptime: ");
         if uptime.hours > 24 {
             buf.push_str(format!("{}d", uptime.hours / 24).as_str());
         }
+        uptime.hours = uptime.hours % 24;
         buf.push_str(
             format!(
                 " {}:{}:{}\0",
-                uptime.hours % 24,
-                uptime.minutes,
+                format!(
+                    "{}{}",
+                    if uptime.hours < 10 { "0" } else { "" },
+                    uptime.hours
+                ),
+                format!(
+                    "{}{}",
+                    if uptime.minutes < 10 { "0" } else { "" },
+                    uptime.minutes
+                ),
                 format!(
                     "{}{}",
                     if uptime.seconds < 10 { "0" } else { "" },
@@ -115,7 +155,10 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         let drives = drives.unwrap();
         if !drives.is_empty() {
             for drive in drives {
-                buf.push_str(format!("{}: {}MiB\0", drive.model, drive.size.mb).as_str());
+                // buf.push_str(format!("{}: {}GiB\0", drive.model, drive.size.gb).as_str());
+                buf.push_str(
+                    format!("{}: {}", drive.model, drive_size_to_string(drive.size)).as_str(),
+                );
             }
             result.insert(
                 "Drives".to_string(),
@@ -228,17 +271,15 @@ fn print_info() {
 
     let max_len = get_map_max_len(info.clone());
     for category in info.keys().rev() {
-        let _repeats = ((max_len - category.len()) / 2) + 1;
         println!(
-            "{}{}{}{}{}",
+            "{}─┤ {} ├{}{}",
             if Some(category) == info.keys().rev().next() {
                 "┌"
             } else {
                 "├"
             },
-            "─".repeat(_repeats),
             category,
-            "─".repeat(_repeats + if category.len() % 2 == 0 { 1 } else { 0 }),
+            "─".repeat(max_len - category.len() - 3),
             if Some(category) == info.keys().rev().next() {
                 "┐"
             } else {
