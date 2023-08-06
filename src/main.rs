@@ -8,6 +8,12 @@ mod utils;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
+fn get_len(str: &String) -> usize {
+    let mut result: usize = 0;
+    str.chars().for_each(|_| result += 1);
+    result
+}
+
 fn get_closest_tb(gb: i64) -> i64 {
     let mut result: i64 = 0;
     let mut delta: i64 = gb;
@@ -224,7 +230,7 @@ fn get_map_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
 
     for key in map.keys() {
         for line in map.get(key).unwrap() {
-            let _len = line.replace("┗", "\0").replace("│", "\0").len();
+            let _len = get_len(line);
             if _len > result {
                 result = _len;
             }
@@ -247,9 +253,9 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                 if !info_line.is_empty() {
                     let mut line = info_line.split(": ");
                     let line_param = line.next().unwrap();
-                    let param_len = line_param.replace("┗", "\0").len();
+                    let param_len = get_len(&line_param.to_string());
                     let line_val = line.next().unwrap().trim().to_string();
-                    let val_len = line_val.len();
+                    let val_len = get_len(&line_val);
                     buf.push(format!(
                         "{}:{}{}",
                         line_param,
@@ -279,7 +285,7 @@ fn print_info() {
                 "├"
             },
             category,
-            "─".repeat(max_len - category.len() - 3),
+            "─".repeat(max_len - get_len(category) - 3),
             if Some(category) == info.keys().rev().next() {
                 "┐"
             } else {
