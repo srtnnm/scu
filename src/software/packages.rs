@@ -47,6 +47,7 @@ pub fn get_info() -> Vec<PackageManager> {
                     .unwrap()
                     .for_each(|_| manager_info.count_of_packages += 1);
             });
+            result.push(manager_info);
             continue;
         }
 
