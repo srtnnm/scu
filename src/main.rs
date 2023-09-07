@@ -55,15 +55,15 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let hostname = software::os::get_hostname();
     let username = whoami::username();
     let shell = software::os::get_shell();
-    let kernel_info = software::kernel::get_info();
+    let kernel_version = software::kernel::get_version();
     let init_system = software::init_system::detect();
     let terminal = software::terminal::get_name();
 
     write!(buf, "Hostname: {hostname}\0");
     write!(buf, "Username: {username}\0");
     write!(buf, "Distro: {distro_name}\0");
-    buf.push_str(format!("Kernel: {}\0", kernel_info.full_version).as_str());
-    buf.push_str(format!("┗Version: {}\0", kernel_info.version).as_str());
+    buf.push_str(format!("Kernel: {}\0", kernel_version).as_str());
+
     if init_system.is_some() {
         let init_system = init_system.unwrap();
         buf.push_str(

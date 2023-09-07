@@ -1,22 +1,15 @@
-use regex::Regex;
-use std::fs;
+extern crate libc;
+use std::ffi::CStr;
 
-pub struct Kernel {
-    pub full_version: String,
-    pub version: String,
-}
+pub fn get_version() -> String {
+    unsafe {
+        let mut uts: libc::utsname = std::mem::zeroed();
+        libc::uname(&mut uts);
 
-pub fn get_info() -> Kernel {
-    let version_re = Regex::new(r"(\d\.?)+").unwrap();
-    if fs::metadata("/proc/version").is_err() {
-        return Kernel {
-            full_version: String::from("Unknown"),
-            version: String::from("Unknown"),
-        };
-    }
-    let content = String::from(fs::read_to_string("/proc/version").unwrap().as_str());
-    Kernel {
-        full_version: content.split(' ').nth(2).unwrap().to_string(),
-        version: String::from(version_re.find(content.as_str()).unwrap().as_str()),
+        return CStr::from_ptr(uts.release.as_ptr())
+            .to_bytes()
+            .iter()
+            .map(|&c| c as char)
+            .collect::<String>();
     }
 }

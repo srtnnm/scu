@@ -1,17 +1,28 @@
 use crate::utils;
+use std::env;
 use std::fs;
+use std::process::Command;
 
 pub fn get_name() -> String {
     let mut result: String = String::from("Unknown");
 
-    if fs::metadata("/etc/os-release").is_err() {
-        return result;
-    }
-
-    for line in fs::read_to_string("/etc/os-release").unwrap().split('\n') {
-        if line.starts_with("NAME=") {
-            result = line.split("NAME=").nth(1).unwrap().replace('\"', "");
+    if fs::metadata("/etc/os-release").is_ok() {
+        for line in fs::read_to_string("/etc/os-release").unwrap().split('\n') {
+            if line.starts_with("NAME=") {
+                result = line.split("NAME=").nth(1).unwrap().replace('\"', "");
+            }
         }
+    } else if fs::metadata("/system/app").is_ok() && fs::metadata("/system/priv-app").is_ok() {
+        result = String::from("Android");
+        let version = String::from_utf8(
+            Command::new("getprop")
+                .args(["ro.build.version.release"])
+                .output()
+                .unwrap()
+                .stdout,
+        )
+        .unwrap();
+        result += (String::from(" ") + &version).as_str();
     }
 
     result
@@ -39,6 +50,11 @@ pub fn get_hostname() -> String {
         return fs::read_to_string("/etc/hostname")
             .unwrap()
             .replace('\n', "");
+    } else {
+        let hostname = env::var("HOSTNAME");
+        if hostname.is_ok() {
+            return hostname.unwrap();
+        }
     }
 
     String::from("Unknown")

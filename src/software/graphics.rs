@@ -18,6 +18,7 @@ pub fn detect_de() -> Option<String> {
             "gnome-shell" => "GNOME",
             "plasmashell" => "KDE Plasma",
             "xfce4-session" => "XFCE4",
+            "cinnamon-sessio" => "Cinnamon",
             _ => "",
         };
 
@@ -32,7 +33,7 @@ pub fn detect_de() -> Option<String> {
 pub fn detect_wm() -> Option<String> {
     for proc in process::list_process() {
         let wm = match proc.command.as_str() {
-            "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16
+            "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16 (irl 15)
             "kwin_x11" | "kwin_wayland" => "KWin",
             "xfwm4" => "XFWM4",
             "openbox" => "Openbox",

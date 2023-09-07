@@ -1,5 +1,7 @@
 use crate::utils;
 use std::collections::BTreeMap;
+use std::fs;
+use std::path::Path;
 use std::process::Command;
 
 pub struct PackageManager {
@@ -22,6 +24,7 @@ pub fn get_info() -> Vec<PackageManager> {
     let mut result: Vec<PackageManager> = Vec::new();
     let list_packages_command = BTreeMap::from([
         ("apt", Vec::from(["list", "--installed"])),
+        ("emerge", Vec::from([])),
         ("flatpak", Vec::from(["list"])),
         ("pacman", Vec::from(["-Qq"])),
         ("rpm", Vec::from(["-qa"])),
@@ -38,6 +41,15 @@ pub fn get_info() -> Vec<PackageManager> {
             count_of_packages: 0,
         };
 
+        if manager == "emerge" && Path::new("/var/db/pkg").exists() {
+            fs::read_dir("/var/db/pkg").unwrap().for_each(|pkg_dir| {
+                fs::read_dir(pkg_dir.unwrap().path().as_path())
+                    .unwrap()
+                    .for_each(|_| manager_info.count_of_packages += 1);
+            });
+            continue;
+        }
+
         if list_packages_command.contains_key(manager) {
             let args: Vec<String> = list_packages_command
                 .get(manager)
@@ -45,6 +57,10 @@ pub fn get_info() -> Vec<PackageManager> {
                 .iter()
                 .map(|s| s.to_string())
                 .collect();
+
+            if args.is_empty() {
+                continue;
+            }
 
             manager_info.count_of_packages = Command::new(manager)
                 .args(args)

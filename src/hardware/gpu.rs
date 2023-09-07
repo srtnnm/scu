@@ -10,7 +10,9 @@ fn find_pci_ids() -> Option<String> {
         let path = path.to_str().unwrap();
         if fs::metadata(path.clone()).unwrap().is_dir() {
             fs::read_dir(path).unwrap().into_iter().for_each(|e| {
-                if e.as_ref().unwrap().file_name() == "pci.ids" {
+                if e.as_ref().unwrap().file_name() == "pci.ids"
+                    && e.as_ref().unwrap().metadata().unwrap().is_file()
+                {
                     result = e.unwrap().path().to_str().unwrap().to_string();
                 }
             })
@@ -30,7 +32,12 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
         return None;
     }
 
-    for entry in fs::read_dir("/sys/class/drm").unwrap() {
+    let drm_content = fs::read_dir("/sys/class/drm");
+    if !drm_content.is_ok() {
+        return None;
+    }
+
+    for entry in drm_content.unwrap() {
         let entry = entry.unwrap().path();
         let entry = entry.to_str().unwrap();
         if !Regex::new(r"card\d")

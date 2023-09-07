@@ -96,6 +96,11 @@ pub fn get_info() -> CPUInfo {
         result.model = format!("{} {}", vendor, result.model);
     }
 
+    // cores not presented in /proc/cpuinfo
+    if result.cores == 0 && result.threads != 0 {
+        result.cores = result.threads;
+    }
+
     // get max_freq
     let max_freq_file_path = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
     if fs::metadata(max_freq_file_path).is_ok() {
