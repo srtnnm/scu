@@ -12,7 +12,7 @@ pub struct PackageManager {
 pub fn detect_managers(managers: Vec<&'static str>) -> Vec<&'static str> {
     let mut result: Vec<&'static str> = Vec::new();
     for mgr in managers {
-        if !utils::fs::_which(mgr).is_empty() {
+        if utils::fs::which(mgr).is_some() {
             result.push(mgr);
         }
     }
