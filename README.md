@@ -16,6 +16,3 @@
   ```
   ./scu
   ```
-
-### How it looks like
-![SCU Screenshot](scu.png)

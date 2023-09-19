@@ -1,6 +1,7 @@
 use crate::utils::converter::Size2D;
 use crate::utils::process;
 use libc::{c_ushort, ioctl, STDOUT_FILENO, TIOCGWINSZ};
+use std::path::Path;
 
 fn bin_to_name(bin_name: String) -> String {
     String::from(match bin_name.as_str() {
@@ -30,11 +31,14 @@ pub fn get_name() -> String {
         let info = info.unwrap();
         let got_name = bin_to_name(info.command);
         if !got_name.is_empty() {
-            result = got_name;
-            break;
+            return got_name;
         } else {
             ppid = process::get_ppid(ppid).unwrap();
         }
+    }
+
+    if Path::new("/data/data/com.termux/files/home/.termux").exists() {
+        result = String::from("Termux");
     }
 
     result
