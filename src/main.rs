@@ -1,5 +1,5 @@
 #![allow(dead_code, unused_must_use)]
-
+pub mod pci_ids;
 mod hardware;
 mod software;
 
