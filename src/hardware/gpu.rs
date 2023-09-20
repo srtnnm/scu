@@ -54,6 +54,9 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                 if ids.contains_key(model.as_str()) {
                     let name = ids.get(model.as_str());
                     if name.is_some() { model = name.unwrap().to_string(); }
+                } else if model.contains(' ') && ids.contains_key(model.split(' ').next().unwrap()) {
+                    let name = ids.get(model.split(' ').next().unwrap());
+                    if name.is_some() { model = name.unwrap().to_string(); }
                 }
                 result.insert(
                     result.len() as u8 + 1,
