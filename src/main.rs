@@ -163,7 +163,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
             for drive in drives {
                 // buf.push_str(format!("{}: {}GiB\0", drive.model, drive.size.gb).as_str());
                 buf.push_str(
-                    format!("{}: {}", drive.model, drive_size_to_string(drive.size)).as_str(),
+                    format!("{}: {}\0", drive.model, drive_size_to_string(drive.size)).as_str(),
                 );
             }
             result.insert(
