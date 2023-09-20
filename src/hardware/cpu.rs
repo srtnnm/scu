@@ -22,7 +22,6 @@ fn extract_i64(_str: &str) -> i64 {
 fn extract_model_name(mut _str: String) -> String {
     for trash in [
         "Intel",
-        "Core",
         "AMD",
         "\\((TM|tm)\\)",
         "\\((R|r)\\)",
@@ -30,6 +29,7 @@ fn extract_model_name(mut _str: String) -> String {
         "Processor",
         "[Dual,Quad,Six,Eight]-Core",
         "[[:digit:]]+-Core", // regular expression for "2-Core", "4-Core", etc.
+        "Core",
         "Technologies, Inc",
         "\\,",
         "[[:digit:]]? COMPUTE CORES",

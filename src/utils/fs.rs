@@ -16,7 +16,7 @@ pub fn which(name: &str) -> Option<String> {
                 Ok(readdir) => {
                     readdir.for_each(|file| {
                         let file = file.unwrap();
-                        if file.metadata().unwrap().is_file() && file.file_name() == name {
+                        if !file.metadata().unwrap().is_dir() && file.file_name() == name {
                             result = String::from(file.path().as_path().to_str().unwrap());
                         }
                     });
