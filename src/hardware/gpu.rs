@@ -5,6 +5,9 @@ use std::path::Path;
 
 fn find_pci_ids() -> Option<String> {
     let mut result = String::new();
+    if !Path::new("/usr/share").exists() {
+        return None;
+    }
     for entry in fs::read_dir("/usr/share").unwrap() {
         let path = entry.unwrap().path();
         let path = path.to_str().unwrap();
