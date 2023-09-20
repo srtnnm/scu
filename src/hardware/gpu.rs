@@ -4,6 +4,12 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
+fn lower(_str: &str) -> String {
+  let mut result = String::from(_str);
+  result.make_ascii_lowercase();
+  result
+}
+
 pub fn get_info() -> Option<BTreeMap<u8, String>> {
     let mut result: BTreeMap<u8, String> = BTreeMap::new();
 
@@ -51,11 +57,11 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                 }
             }
             if !model.is_empty() {
-                if ids.contains_key(model.as_str()) {
-                    let name = ids.get(model.as_str());
+                if ids.contains_key(lower(model.as_str()).as_str()) {
+                    let name = ids.get(lower(model.as_str()).as_str());
                     if name.is_some() { model = name.unwrap().to_string(); }
-                } else if model.contains(' ') && ids.contains_key(model.split(' ').next().unwrap()) {
-                    let name = ids.get(model.split(' ').next().unwrap());
+                } else if model.contains(' ') && ids.contains_key(lower(model.split(' ').next().unwrap()).as_str()) {
+                    let name = ids.get(lower(model.split(' ').next().unwrap()).as_str());
                     if name.is_some() { model = name.unwrap().to_string(); }
                 }
                 result.insert(
