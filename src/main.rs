@@ -133,7 +133,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     // Processor
     let cpu_info = hardware::cpu::get_info();
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
-    buf.push_str(format!("Max freq: {:.2}GHz\0", cpu_info.max_freq.ghz).as_str());
+    buf.push_str(format!("Frequency: {:.2}GHz\0", cpu_info.freq.ghz).as_str());
     if cpu_info.cores > 0 {
         buf.push_str(format!("Cores: {}\0", cpu_info.cores).as_str());
     }

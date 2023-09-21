@@ -4,7 +4,7 @@ use std::fs;
 
 pub struct CPUInfo {
     pub model: String,
-    pub max_freq: utils::converter::Frequency,
+    pub freq: utils::converter::Frequency,
     pub cores: u8,
     pub threads: u8,
 }
@@ -61,7 +61,7 @@ fn get_vendor(vendor_id: &str) -> String {
 pub fn get_info() -> CPUInfo {
     let mut result = CPUInfo {
         model: String::from(""),
-        max_freq: utils::converter::frequency_from_hz(0),
+        freq: utils::converter::frequency_from_hz(0),
         cores: 0,
         threads: 0,
     };
@@ -106,11 +106,13 @@ pub fn get_info() -> CPUInfo {
     }
 
     // get max_freq
-    let max_freq_file_path = "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq";
-    if fs::metadata(max_freq_file_path).is_ok() {
-        result.max_freq = utils::converter::frequency_from_hz(extract_i64(
-            fs::read_to_string(max_freq_file_path).unwrap().as_str(),
-        ));
+    let cpu_freq_files_path = "/sys/devices/system/cpu/cpu0/cpufreq/";
+    for file in ["bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
+        let file_path = format!("{}{}", cpu_freq_files_path, file);
+        if fs::metadata(file_path.clone()).is_ok() {
+            result.freq = utils::converter::frequency_from_hz(extract_i64(fs::read_to_string(file_path.clone()).unwrap().as_str()));
+            break;
+        }
     }
 
     result

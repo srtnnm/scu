@@ -76,6 +76,9 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                         model = name.unwrap().to_string();
                     }
                 }
+                if model.contains('[') && model.contains(']') {
+                   model = model.split('[').nth(1).unwrap().split(']').next().unwrap().to_string(); 
+                }
                 result.insert(
                     result.len() as u8 + 1,
                     if !vendor.is_empty() {
