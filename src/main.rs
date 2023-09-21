@@ -238,8 +238,28 @@ fn get_map_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
+fn get_param_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
+    let mut result: usize = 0;
+    if map.is_empty() {
+        return result;
+    }
+
+    for key in map.keys() {
+        for line in map.get(key).unwrap() {
+            let _len = get_len(&String::from(line.split(": ").next().unwrap()));
+            if _len > result {
+                result = _len;
+            }
+        }
+    }
+
+    result
+}
+
 fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
+
+    let max_param_len = get_param_max_len(map.clone());
 
     for category in map.keys() {
         let mut buf: Vec<String> = Vec::new();
@@ -255,7 +275,7 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                     buf.push(format!(
                         "{}:{}{}",
                         line_param,
-                        " ".repeat(12 - param_len),
+                        " ".repeat(max_param_len + 2 - param_len),
                         line_val
                     ));
                 }
