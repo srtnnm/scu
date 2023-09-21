@@ -34,15 +34,15 @@ pub fn get_device_model() -> Option<String> {
     } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
         && Path::new("/sys/devices/virtual/dmi/id/board_name").exists()
     {
-        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap();
-        model = fs::read_to_string("/sys/devices/virtual/dmi/id/board_name").unwrap();
+        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap().trim().to_string();
+        model = fs::read_to_string("/sys/devices/virtual/dmi/id/board_name").unwrap().trim().to_string();
 
         return Some(format!("{brand} {model}"));
     } else if Path::new("/sys/devices/virtual/dmi/id/product_name").exists()
         && Path::new("/sys/devices/virtual/dmi/id/product_version").exists()
     {
-        let name = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name").unwrap();
-        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap();
+        let name = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name").unwrap().trim().to_string();
+        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap().trim().to_string();
 
         return Some(format!("{name} {version}"));
     } else {
