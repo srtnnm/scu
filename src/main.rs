@@ -311,7 +311,7 @@ fn print_info() {
         info.get(category.as_str())
             .unwrap()
             .iter()
-            .for_each(|line| println!("│ {}{}│", line, " ".repeat(max_len - line.len() + 1)))
+            .for_each(|line| println!("│ {}{}│", line, " ".repeat(max_len - get_len(line) + 1)))
     }
     println!("└{}┘", "─".repeat(max_len + 2))
 }
