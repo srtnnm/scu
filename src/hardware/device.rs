@@ -3,6 +3,7 @@ use std::path::Path;
 use std::process::Command;
 
 pub fn get_device_model() -> Option<String> {
+    let mut result: String = String::new();
     let mut brand: String;
     let model: String;
     if Path::new("/system/app").exists() && Path::new("/system/priv-app").exists() {
@@ -13,9 +14,7 @@ pub fn get_device_model() -> Option<String> {
                 .unwrap()
                 .stdout,
         )
-        .unwrap()
-        .trim()
-        .to_string();
+        .unwrap();
         if brand == "google" {
             brand = "Google".to_string();
         }
@@ -26,26 +25,28 @@ pub fn get_device_model() -> Option<String> {
                 .unwrap()
                 .stdout,
         )
-        .unwrap()
-        .trim()
-        .to_string();
+        .unwrap();
 
-        return Some(format!("{brand} {model}"));
+        result = format!("{brand} {model}");
     } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
         && Path::new("/sys/devices/virtual/dmi/id/board_name").exists()
     {
-        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap().trim().to_string();
-        model = fs::read_to_string("/sys/devices/virtual/dmi/id/board_name").unwrap().trim().to_string();
+        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap();
+        model = fs::read_to_string("/sys/devices/virtual/dmi/id/board_name").unwrap();
 
-        return Some(format!("{brand} {model}"));
+        result = format!("{brand} {model}");
     } else if Path::new("/sys/devices/virtual/dmi/id/product_name").exists()
         && Path::new("/sys/devices/virtual/dmi/id/product_version").exists()
     {
-        let name = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name").unwrap().trim().to_string();
-        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap().trim().to_string();
+        let name = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name").unwrap();
+        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap();
 
-        return Some(format!("{name} {version}"));
-    } else {
+        result = format!("{name} {version}");
+    }
+
+    if result.is_empty() {
         return None;
     }
+
+    Some(result.replace("\0", "").replace("\n","").to_string())
 }
