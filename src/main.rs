@@ -1,6 +1,6 @@
 #![allow(dead_code, unused_must_use)]
-pub mod pci_ids;
 mod hardware;
+pub mod pci_ids;
 mod software;
 
 mod utils;
@@ -50,6 +50,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let mut buf = String::new();
 
     // System
+    let device_name = hardware::device::get_device_model();
     let distro_name = software::os::get_name();
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
@@ -62,6 +63,10 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     write!(buf, "Hostname: {hostname}\0");
     write!(buf, "Username: {username}\0");
     write!(buf, "Distro: {distro_name}\0");
+    if device_name.is_some() {
+        let device_name = device_name.unwrap();
+        write!(buf, "Device: {device_name}\0");
+    }
     buf.push_str(format!("Kernel: {}\0", kernel_version).as_str());
 
     if init_system.is_some() {
@@ -144,7 +149,13 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let mem_info = hardware::ram::get_info();
     buf.push_str(format!("RAM: {}MiB / {}MiB\0", mem_info.used.mb, mem_info.total.mb).as_str());
     if mem_info.swap_enabled {
-        buf.push_str(format!("Swap: {}MiB / {}MiB\0", mem_info.swap_used.mb, mem_info.swap_total.mb).as_str());
+        buf.push_str(
+            format!(
+                "Swap: {}MiB / {}MiB\0",
+                mem_info.swap_used.mb, mem_info.swap_total.mb
+            )
+            .as_str(),
+        );
     }
 
     result.insert(
@@ -272,12 +283,14 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                     let line_param = line.next().unwrap();
                     let param_len = get_len(&line_param.to_string());
                     let line_val = line.next().unwrap().trim().to_string();
-                    buf.push(format!(
-                        "{}:{}{}",
-                        line_param,
-                        " ".repeat(max_param_len + 2 - param_len),
-                        line_val
-                    ));
+                    if line_val != "Unknown" {
+                        buf.push(format!(
+                            "{}:{}{}",
+                            line_param,
+                            " ".repeat(max_param_len + 2 - param_len),
+                            line_val
+                        ));
+                    }
                 }
             });
         if !buf.is_empty() {

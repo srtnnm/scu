@@ -5,9 +5,9 @@ use std::fs;
 use std::path::Path;
 
 fn lower(_str: &str) -> String {
-  let mut result = String::from(_str);
-  result.make_ascii_lowercase();
-  result
+    let mut result = String::from(_str);
+    result.make_ascii_lowercase();
+    result
 }
 
 pub fn get_info() -> Option<BTreeMap<u8, String>> {
@@ -53,16 +53,28 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                     if !line.is_empty() {
                         model.push_str(" ");
                     }
-                    model.push_str(line.split("PCI_SUBSYS_ID=").nth(1).unwrap().to_string().as_str());
+                    model.push_str(
+                        line.split("PCI_SUBSYS_ID=")
+                            .nth(1)
+                            .unwrap()
+                            .to_string()
+                            .as_str(),
+                    );
                 }
             }
             if !model.is_empty() {
                 if ids.contains_key(lower(model.as_str()).as_str()) {
                     let name = ids.get(lower(model.as_str()).as_str());
-                    if name.is_some() { model = name.unwrap().to_string(); }
-                } else if model.contains(' ') && ids.contains_key(lower(model.split(' ').next().unwrap()).as_str()) {
+                    if name.is_some() {
+                        model = name.unwrap().to_string();
+                    }
+                } else if model.contains(' ')
+                    && ids.contains_key(lower(model.split(' ').next().unwrap()).as_str())
+                {
                     let name = ids.get(lower(model.split(' ').next().unwrap()).as_str());
-                    if name.is_some() { model = name.unwrap().to_string(); }
+                    if name.is_some() {
+                        model = name.unwrap().to_string();
+                    }
                 }
                 result.insert(
                     result.len() as u8 + 1,

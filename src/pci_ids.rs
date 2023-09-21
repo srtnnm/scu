@@ -1,7 +1,6 @@
 use std::collections::BTreeMap;
 
 const IDS: [(&str, &str); 36139] = [
-	("",""),
 	("0001","SafeNet (wrong ID)"),
 	("0010","Allied Telesis, Inc (Wrong ID)"),
 	("0010:8139","AT-2500TX V3 Ethernet"),
@@ -36142,5 +36141,5 @@ const IDS: [(&str, &str); 36139] = [
 	("C:21","802.1b controller"),
 ];
 pub fn pci_identifiers() -> BTreeMap<&'static str, &'static str> {
-	BTreeMap::from(IDS)
+    BTreeMap::from(IDS)
 }
