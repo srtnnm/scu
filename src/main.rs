@@ -142,11 +142,9 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Memory
     let mem_info = hardware::ram::get_info();
-    buf.push_str(format!("Total: {}MiB\0", mem_info.total.mb).as_str());
-    buf.push_str(format!("Used: {}MiB\0", mem_info.used.mb).as_str());
+    buf.push_str(format!("RAM: {}MiB / {}MiB\0", mem_info.used.mb, mem_info.total.mb).as_str());
     if mem_info.swap_enabled {
-        buf.push_str(format!("Swap total: {}MiB\0", mem_info.swap_total.mb).as_str());
-        buf.push_str(format!("Swap used: {}MiB\0", mem_info.swap_used.mb).as_str());
+        buf.push_str(format!("Swap: {}MiB / {}MiB\0", mem_info.swap_used.mb, mem_info.swap_total.mb).as_str());
     }
 
     result.insert(
@@ -243,7 +241,6 @@ fn get_map_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
 fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
-    let max_len = get_map_max_len(map.clone());
     for category in map.keys() {
         let mut buf: Vec<String> = Vec::new();
         map.get(category.as_str())
@@ -255,11 +252,10 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                     let line_param = line.next().unwrap();
                     let param_len = get_len(&line_param.to_string());
                     let line_val = line.next().unwrap().trim().to_string();
-                    let val_len = get_len(&line_val);
                     buf.push(format!(
                         "{}:{}{}",
                         line_param,
-                        " ".repeat(max_len - param_len - val_len - 1),
+                        " ".repeat(12 - param_len),
                         line_val
                     ));
                 }
@@ -295,7 +291,7 @@ fn print_info() {
         info.get(category.as_str())
             .unwrap()
             .iter()
-            .for_each(|line| println!("│ {} │", line))
+            .for_each(|line| println!("│ {}{}│", line, " ".repeat(max_len - line.len() + 1)))
     }
     println!("└{}┘", "─".repeat(max_len + 2))
 }
