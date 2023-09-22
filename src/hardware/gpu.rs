@@ -3,14 +3,19 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
+pub struct GPUInfo {
+    pub model: String,
+    pub driver: String,
+} 
+
 fn lower(_str: &str) -> String {
     let mut result = String::from(_str);
     result.make_ascii_lowercase();
     result
 }
 
-pub fn get_info() -> Option<BTreeMap<u8, String>> {
-    let mut result: BTreeMap<u8, String> = BTreeMap::new();
+pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
+    let mut result: BTreeMap<u8, GPUInfo> = BTreeMap::new();
 
     if !Path::new("/sys/bus/pci/devices").exists() {
         return None;
@@ -32,12 +37,15 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
         if Path::new(uevent_path.as_str()).exists() {
             let mut vendor = String::new();
             let mut model = String::new();
+            let mut driver = String::from("Unknown");
             for line in fs::read_to_string(uevent_path)
                 .unwrap()
                 .split("\n")
                 .into_iter()
             {
-                if line.starts_with("PCI_ID") {
+                if line.starts_with("DRIVER") {
+                    driver = line.split("DRIVER=").nth(1).unwrap().to_string();
+                } else if line.starts_with("PCI_ID") {
                     let pci_id = line.split("PCI_ID=").nth(1).unwrap().to_string();
                     vendor = String::from(match pci_id.split(':').next().unwrap() {
                         "10DE" => "NVIDIA",
@@ -89,11 +97,14 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                 }
                 result.insert(
                     result.len() as u8 + 1,
-                    if !vendor.is_empty() {
-                        format!("{} ", vendor)
-                    } else {
-                        "".to_string()
-                    } + model.as_str(),
+                    GPUInfo {
+                        model: if !vendor.is_empty() {
+                            format!("{} ", vendor)
+                        } else {
+                            "".to_string()
+                        } + model.as_str(),
+                        driver: driver
+                    }
                 );
             }
         }

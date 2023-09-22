@@ -190,16 +190,17 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         let count_gpus = gpus.len();
         for entry in gpus {
             let gpu_id = entry.0;
-            let gpu_name = entry.1;
+            let gpu_info = entry.1;
             buf.push_str(
                 format!(
-                    "GPU{}: {}\0",
+                    "GPU{}: {}\0┗Driver: {}\0",
                     if count_gpus > 1 {
                         format!(" #{}", gpu_id)
                     } else {
                         String::from("")
                     },
-                    gpu_name
+                    gpu_info.model,
+                    gpu_info.driver
                 )
                 .as_str(),
             );
