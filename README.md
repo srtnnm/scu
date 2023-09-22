@@ -12,7 +12,3 @@
   ```
   target/release/./scu
   ```
-- Or just run the 'scu' binary if you downloaded it from the release
-  ```
-  ./scu
-  ```
