@@ -1,5 +1,4 @@
 use crate::pci_ids::PciIdentifiers;
-use regex::Regex;
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -13,11 +12,11 @@ fn lower(_str: &str) -> String {
 pub fn get_info() -> Option<BTreeMap<u8, String>> {
     let mut result: BTreeMap<u8, String> = BTreeMap::new();
 
-    if !Path::new("/sys/class/drm").exists() {
+    if !Path::new("/sys/bus/pci/devices").exists() {
         return None;
     }
 
-    let drm_content = fs::read_dir("/sys/class/drm");
+    let drm_content = fs::read_dir("/sys/bus/pci/devices");
     if !drm_content.is_ok() {
         return None;
     }
@@ -25,13 +24,11 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
     for entry in drm_content.unwrap() {
         let entry = entry.unwrap().path();
         let entry = entry.to_str().unwrap();
-        if !Regex::new(r"card\d")
-            .unwrap()
-            .is_match(entry.split('/').next_back().unwrap())
+        if !fs::metadata(format!("{}/class", entry)).is_ok() || !fs::read_to_string(format!("{}/class", entry)).unwrap().starts_with("0x03")
         {
             continue;
         }
-        let uevent_path = format!("{}/device/uevent", entry);
+        let uevent_path = format!("{}/uevent", entry);
         if Path::new(uevent_path.as_str()).exists() {
             let mut vendor = String::new();
             let mut model = String::new();
