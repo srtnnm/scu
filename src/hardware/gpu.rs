@@ -1,4 +1,4 @@
-use crate::pci_ids;
+use crate::pci_ids::PciIdentifiers;
 use regex::Regex;
 use std::collections::BTreeMap;
 use std::fs;
@@ -21,7 +21,6 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
     if !drm_content.is_ok() {
         return None;
     }
-    let ids = pci_ids::pci_identifiers();
 
     for entry in drm_content.unwrap() {
         let entry = entry.unwrap().path();
@@ -63,21 +62,32 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                 }
             }
             if !model.is_empty() {
-                if ids.contains_key(lower(model.as_str()).as_str()) {
-                    let name = ids.get(lower(model.as_str()).as_str());
+                if PciIdentifiers::contains_key(lower(model.as_str()).as_str()) {
+                    let id = lower(model.as_str());
+                    let name = PciIdentifiers::get(id.as_str());
                     if name.is_some() {
                         model = name.unwrap().to_string();
                     }
                 } else if model.contains(' ')
-                    && ids.contains_key(lower(model.split(' ').next().unwrap()).as_str())
+                    && PciIdentifiers::contains_key(
+                        lower(model.split(' ').next().unwrap()).as_str(),
+                    )
                 {
-                    let name = ids.get(lower(model.split(' ').next().unwrap()).as_str());
+                    let id = lower(model.split(' ').next().unwrap());
+                    let name = PciIdentifiers::get(id.as_str());
                     if name.is_some() {
                         model = name.unwrap().to_string();
                     }
                 }
                 if model.contains('[') && model.contains(']') {
-                   model = model.split('[').nth(1).unwrap().split(']').next().unwrap().to_string(); 
+                    model = model
+                        .split('[')
+                        .nth(1)
+                        .unwrap()
+                        .split(']')
+                        .next()
+                        .unwrap()
+                        .to_string();
                 }
                 result.insert(
                     result.len() as u8 + 1,

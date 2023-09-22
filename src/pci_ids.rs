@@ -36140,6 +36140,18 @@ const IDS: [(&str, &str); 36138] = [
 	("C:12","Broadband"),
 	("C:21","802.1b controller"),
 ];
+
+pub struct PciIdentifiers;
+
+impl PciIdentifiers {
+    pub fn contains_key(key: &str) -> bool {
+        IDS.iter().any(|&(k, _)| key == k)
+    }
+
+    pub fn get(key: &str) -> Option<&str> {
+        IDS.iter().find(|(k, _)| &key == k).map(|&(_, v)| v)
+    }
+}
 pub fn pci_identifiers() -> BTreeMap<&'static str, &'static str> {
     BTreeMap::from(IDS)
 }
