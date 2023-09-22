@@ -45,6 +45,7 @@ pub fn get_info() -> Option<BTreeMap<u8, String>> {
                     vendor = String::from(match pci_id.split(':').next().unwrap() {
                         "10DE" => "NVIDIA",
                         "1002" => "AMD",
+                        "8086" => "Intel",
                         _ => "Unknown",
                     });
                     model = pci_id.to_string().to_ascii_lowercase();
