@@ -63,8 +63,8 @@ pub fn get_size() -> Option<Size2D> {
 
     if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ.into(), &nix_size) } == 0 {
         return Some(Size2D {
-            width: nix_size.cols as u32,
-            height: nix_size.rows as u32,
+            width: nix_size.cols as usize,
+            height: nix_size.rows as usize,
         });
     }
 

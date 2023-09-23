@@ -94,12 +94,12 @@ pub fn frequency_from_mhz(_mhz: i32) -> Frequency {
 }
 
 pub struct Size2D {
-    pub width: u32,
-    pub height: u32,
+    pub width: usize,
+    pub height: usize,
 }
 
 impl Size2D {
-    pub fn new(w: u32, h: u32) -> Self {
+    pub fn new(w: usize, h: usize) -> Self {
         Self {
             width: w,
             height: h,
