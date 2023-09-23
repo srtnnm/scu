@@ -35,8 +35,7 @@ pub fn detect() -> Option<InitSystem> {
     };
     let proc_info = process::get_info(1);
 
-    if proc_info.is_ok() {
-        let proc_info = proc_info.unwrap();
+    if let Ok(proc_info) = proc_info {
         result.name = String::from(match proc_info.command.trim() {
             "systemd" => "SystemD",
             "openrc-init" | "init-openrc" => "OpenRC",

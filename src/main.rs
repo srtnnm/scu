@@ -69,8 +69,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
     buf.push_str(format!("Kernel: {}\0", kernel_version).as_str());
 
-    if init_system.is_some() {
-        let init_system = init_system.unwrap();
+    if let Some(init_system) = init_system {
         buf.push_str(
             format!(
                 "Init system: {}\0┗Services: {}\0",
@@ -81,8 +80,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
     write!(buf, "Terminal: {terminal}\0");
     write!(buf, "Shell: {shell}\0");
-    if uptime.is_some() {
-        let mut uptime = uptime.unwrap();
+    if let Some(mut uptime) = uptime {
         buf.push_str("Uptime: ");
         if uptime.hours > 24 {
             buf.push_str(format!("{}d", uptime.hours / 24).as_str());
@@ -166,8 +164,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Drives
     let drives = hardware::drive::scan_drives();
-    if drives.is_some() {
-        let drives = drives.unwrap();
+    if let Some(drives) = drives {
         if !drives.is_empty() {
             for drive in drives {
                 // buf.push_str(format!("{}: {}GiB\0", drive.model, drive.size.gb).as_str());
@@ -185,8 +182,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Graphics
     let gpus = hardware::gpu::get_info();
-    if gpus.is_some() {
-        let gpus = gpus.unwrap();
+    if let Some(gpus) = gpus {
         let count_gpus = gpus.len();
         for entry in gpus {
             let gpu_id = entry.0;
@@ -207,18 +203,15 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         }
     }
     let session_type = software::graphics::get_session_type();
-    if session_type.is_some() {
-        let session_type = session_type.unwrap();
+    if let Some(session_type) = session_type {
         write!(buf, "Session type: {session_type}\0");
     }
     let de = software::graphics::detect_de();
-    if de.is_some() {
-        let de = de.unwrap();
+    if let Some(de) = de {
         write!(buf, "Environment: {de}\0");
     }
     let wm = software::graphics::detect_wm();
-    if wm.is_some() {
-        let wm = wm.unwrap();
+    if let Some(wm) = wm{
         write!(buf, "Window manager: {wm}\0");
     }
     if !buf.is_empty() {
@@ -284,7 +277,7 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                     let line_param = line.next().unwrap();
                     let param_len = get_len(&line_param.to_string());
                     let line_val = line.next().unwrap().trim().to_string();
-                    if line_val != "Unknown" {
+                    if line_val != "Unknown" || line_val != "0" {
                         buf.push(format!(
                             "{}:{}{}",
                             line_param,

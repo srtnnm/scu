@@ -5,7 +5,7 @@ pub fn which(name: &str) -> Option<String> {
     let mut result: String = String::new();
 
     let env_path = env::var("PATH");
-    if !env_path.is_ok() {
+    if env_path.is_err() {
         return None;
     }
     let env_path = env_path.unwrap();

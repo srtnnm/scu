@@ -30,9 +30,8 @@ pub fn get_name() -> String {
 
 pub fn get_uptime() -> Option<utils::converter::Time> {
     let time = fs::read_to_string("/proc/uptime");
-    if time.is_ok() {
+    if let Ok(time) = time {
         let time = time
-            .unwrap()
             .split('.')
             .next()
             .unwrap()
