@@ -20,6 +20,7 @@ fn get_closest_tb(gb: i64) -> i64 {
 
     for size in 1..32 {
         let _delta = (gb - (size * 1024)).abs();
+        if size > gb/1024 { break; }
         if delta > _delta {
             delta = _delta;
             result = size;
