@@ -14,32 +14,16 @@ fn get_len(str: &String) -> usize {
     result
 }
 
-fn get_closest_tb(gb: i64) -> i64 {
-    let mut result: i64 = 0;
-    let mut delta: i64 = gb;
-
-    for size in 1..32 {
-        let _delta = (gb - (size * 1024)).abs();
-        if size > gb/1024 { break; }
-        if delta > _delta {
-            delta = _delta;
-            result = size;
-        }
-    }
-
-    result
-}
-
 fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
-    let mut _size: i64 = 0;
+    let mut _size: f64 = 0_f64;
     let mut suffix = "";
     if size.gb == 0 {
         suffix = "MiB";
     } else if size.gb < 1024 {
-        _size = size.gb;
+        _size = size.gb as f64;
         suffix = "GiB";
     } else if size.gb > 1024 {
-        _size = get_closest_tb(size.gb);
+        _size = size.gb as f64 / 1024_f64;
         suffix = "TiB";
     }
 
