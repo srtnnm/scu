@@ -27,7 +27,7 @@ fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
         suffix = "TiB";
     }
 
-    format!("{}{}", _size, suffix)
+    format!("{:.1}{}", _size, suffix)
 }
 
 fn get_info() -> BTreeMap<String, Vec<String>> {
