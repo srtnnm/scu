@@ -18,7 +18,7 @@ fn get_closest_tb(gb: i64) -> i64 {
     let mut result: i64 = 0;
     let mut delta: i64 = gb;
 
-    for size in [1, 2, 4, 8, 16, 32] {
+    for size in 1..32 {
         let _delta = (gb - (size * 1024)).abs();
         if delta > _delta {
             delta = _delta;
