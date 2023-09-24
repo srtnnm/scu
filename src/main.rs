@@ -162,6 +162,19 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     );
     buf.clear();
 
+    // Battery
+    let battery = hardware::battery::get_battery_info();
+    if let Some(battery) = battery {
+        buf.push_str(
+            format!("Model: {}\0Technology: {}\0Capacity: {}%\0", battery.model, battery.technology, battery.capacity).as_str()
+        );
+        result.insert(
+            "Battery".to_string(),
+            buf.split("\0").map(|s| s.to_string()).collect(),
+        );
+        buf.clear();
+    }
+
     // Drives
     let drives = hardware::drive::scan_drives();
     if let Some(drives) = drives {
