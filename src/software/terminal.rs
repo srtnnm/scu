@@ -1,6 +1,6 @@
 use crate::utils::converter::Size2D;
 use crate::utils::process;
-use libc::{c_ushort, ioctl, STDOUT_FILENO, TIOCGWINSZ};
+use crate::utils::libc::{ioctl, winsize, STDOUT_FILENO, TIOCGWINSZ};
 use std::path::Path;
 
 fn bin_to_name(bin_name: String) -> String {
@@ -44,27 +44,18 @@ pub fn get_name() -> String {
     result
 }
 
-#[repr(C)]
-#[derive(Debug)]
-pub struct UnixSize {
-    pub rows: c_ushort,
-    pub cols: c_ushort,
-    x: c_ushort,
-    y: c_ushort,
-}
-
 pub fn get_size() -> Option<Size2D> {
-    let nix_size = UnixSize {
-        rows: 0,
-        cols: 0,
-        x: 0,
-        y: 0,
+    let mut nix_size = winsize {
+        ws_row: 0,
+        ws_col: 0,
+        ws_xpixel: 0,
+        ws_ypixel: 0,
     };
 
-    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ.into(), &nix_size) } == 0 {
+    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ.into(), &mut nix_size) } == 0 {
         return Some(Size2D {
-            width: nix_size.cols as usize,
-            height: nix_size.rows as usize,
+            width: nix_size.ws_col as usize,
+            height: nix_size.ws_row as usize,
         });
     }
 
