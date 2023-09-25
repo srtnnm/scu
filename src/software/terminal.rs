@@ -52,7 +52,7 @@ pub fn get_size() -> Option<Size2D> {
         ws_ypixel: 0,
     };
 
-    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ.into(), &mut nix_size) } == 0 {
+    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut nix_size) } == 0 {
         return Some(Size2D {
             width: nix_size.ws_col as usize,
             height: nix_size.ws_row as usize,

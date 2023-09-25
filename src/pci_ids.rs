@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-const IDS: [(&str, &str); 36138] = [
+static IDS: [(&str, &str); 36138] = [
 	("0001","SafeNet (wrong ID)"),
 	("0010","Allied Telesis, Inc (Wrong ID)"),
 	("0010:8139","AT-2500TX V3 Ethernet"),

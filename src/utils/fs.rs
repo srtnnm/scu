@@ -10,9 +10,9 @@ pub fn which(name: &str) -> Option<String> {
     }
     let env_path = env_path.unwrap();
 
-    for path in String::from(env_path).split(':') {
+    for path in env_path.split(':') {
         if !path.is_empty() {
-            match fs::read_dir(&path) {
+            match fs::read_dir(path) {
                 Ok(readdir) => {
                     readdir.for_each(|file| {
                         let file = file.unwrap();

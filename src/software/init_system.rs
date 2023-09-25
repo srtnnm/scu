@@ -47,7 +47,7 @@ pub fn detect() -> Option<InitSystem> {
                     || Path::new("/etc/inittab").exists()
                 {
                     "SysVinit"
-                } else if std::fs::read_link(proc_info.cmdline.split("\0").next().unwrap())
+                } else if std::fs::read_link(proc_info.cmdline.split('\0').next().unwrap())
                     .unwrap_or(PathBuf::from("".to_string()))
                     .to_str()
                     == Some("openrc-init")
@@ -76,12 +76,12 @@ pub fn detect() -> Option<InitSystem> {
             }
         }
 
-        return if result.name != "Unknown" {
+        if result.name != "Unknown" {
             Some(result)
         } else {
             None
-        };
+        }
     } else {
-        return None;
+        None
     }
 }

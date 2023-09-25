@@ -30,7 +30,7 @@ pub fn get_info() -> RAMInfo {
         .expect("NO /proc/meminfo FILE")
         .split('\n')
     {
-        let mut line = line.split(":");
+        let mut line = line.split(':');
         let line_var = line.next().unwrap().trim();
         let line_val = line.next().unwrap_or("");
         if line_val.is_empty() {

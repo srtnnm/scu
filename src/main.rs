@@ -70,7 +70,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         if uptime.hours > 24 {
             buf.push_str(format!("{}d", uptime.hours / 24).as_str());
         }
-        uptime.hours = uptime.hours % 24;
+        uptime.hours %= 24;
         buf.push_str(
             format!(
                 " {}:{}:{}\0",
@@ -96,7 +96,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     result.insert(
         "System".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
+        buf.split('\0').map(|s| s.to_string()).collect(),
     );
     buf.clear();
 
@@ -108,7 +108,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         }
         result.insert(
             "Packages".to_string(),
-            buf.split("\0").map(|s| s.to_string()).collect(),
+            buf.split('\0').map(|s| s.to_string()).collect(),
         );
         buf.clear();
     }
@@ -124,7 +124,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     result.insert(
         "Processor".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
+        buf.split('\0').map(|s| s.to_string()).collect(),
     );
     buf.clear();
 
@@ -143,7 +143,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     result.insert(
         "Memory".to_string(),
-        buf.split("\0").map(|s| s.to_string()).collect(),
+        buf.split('\0').map(|s| s.to_string()).collect(),
     );
     buf.clear();
 
@@ -155,7 +155,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         );
         result.insert(
             "Battery".to_string(),
-            buf.split("\0").map(|s| s.to_string()).collect(),
+            buf.split('\0').map(|s| s.to_string()).collect(),
         );
         buf.clear();
     }
@@ -172,7 +172,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
             }
             result.insert(
                 "Drives".to_string(),
-                buf.split("\0").map(|s| s.to_string()).collect(),
+                buf.split('\0').map(|s| s.to_string()).collect(),
             );
             buf.clear();
         }
@@ -215,7 +215,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     if !buf.is_empty() {
         result.insert(
             "Graphics".to_string(),
-            buf.split("\0").map(|s| s.to_string()).collect(),
+            buf.split('\0').map(|s| s.to_string()).collect(),
         );
     }
     buf.clear();
@@ -300,14 +300,14 @@ fn print_info() {
     for category in info.keys().rev() {
         println!(
             "{}─┤ {} ├{}{}",
-            if Some(category) == info.keys().rev().next() {
+            if Some(category) == info.keys().next_back() {
                 "┌"
             } else {
                 "├"
             },
             category,
             "─".repeat(max_len - get_len(category) - 3),
-            if Some(category) == info.keys().rev().next() {
+            if Some(category) == info.keys().next_back() {
                 "┐"
             } else {
                 "┤"

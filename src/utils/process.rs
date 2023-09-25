@@ -30,7 +30,7 @@ pub fn get_ppid(pid: u32) -> Option<u32> {
 
 pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
     let mut result = Process {
-        pid: pid,
+        pid,
         ppid: 0,
         cmdline: String::from(""),
         command: String::from(""),
@@ -49,7 +49,7 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
     };
     let status_content = content.split('\n');
     for line in status_content {
-        if line.contains(":") {
+        if line.contains(':') {
             let value = line.split(':').nth(1).unwrap().trim().to_string();
             match line
                 .split(':')

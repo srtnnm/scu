@@ -22,14 +22,14 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
     }
 
     let drm_content = fs::read_dir("/sys/bus/pci/devices");
-    if !drm_content.is_ok() {
+    if drm_content.is_err() {
         return None;
     }
 
     for entry in drm_content.unwrap() {
         let entry = entry.unwrap().path();
         let entry = entry.to_str().unwrap();
-        if !fs::metadata(format!("{}/class", entry)).is_ok() || !fs::read_to_string(format!("{}/class", entry)).unwrap().starts_with("0x03")
+        if fs::metadata(format!("{}/class", entry)).is_err() || !fs::read_to_string(format!("{}/class", entry)).unwrap().starts_with("0x03")
         {
             continue;
         }
@@ -40,8 +40,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
             let mut driver = String::from("Unknown");
             for line in fs::read_to_string(uevent_path)
                 .unwrap()
-                .split("\n")
-                .into_iter()
+                .split('\n')
             {
                 if line.starts_with("DRIVER") {
                     driver = line.split("DRIVER=").nth(1).unwrap().to_string();
@@ -56,7 +55,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                     model = pci_id.to_string().to_ascii_lowercase();
                 } else if line.starts_with("PCI_SUBSYS_ID") {
                     if !line.is_empty() {
-                        model.push_str(" ");
+                        model.push(' ');
                     }
                     model.push_str(
                         line.split("PCI_SUBSYS_ID=")
@@ -103,7 +102,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                         } else {
                             "".to_string()
                         } + model.as_str(),
-                        driver: driver
+                        driver
                     }
                 );
             }

@@ -48,5 +48,5 @@ pub fn get_device_model() -> Option<String> {
         return None;
     }
 
-    Some(result.replace("\0", "").replace("\n","").to_string())
+    Some(result.replace(['\0', '\n'], "").to_string())
 }

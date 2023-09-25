@@ -72,7 +72,7 @@ pub fn get_info() -> CPUInfo {
         .expect("NO /proc/cpuinfo FILE")
         .split('\n')
     {
-        let mut line_content = line.split(":");
+        let mut line_content = line.split(':');
         let variable = line_content.next().unwrap().trim();
         let value = line_content.next().unwrap_or("").trim().to_string();
         if value.is_empty() {

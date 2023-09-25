@@ -45,10 +45,7 @@ pub fn get_battery_info() -> Option<BatteryInfo> {
             Err(_) => "Unknown".to_string(),
         };
         result.capacity = match fs::read_to_string(format!("{}/capacity", battery_dir)) {
-            Ok(content) => match content.trim().to_string().parse::<u16>() {
-                Ok(integer) => integer,
-                Err(_) => 0_u16,
-            },
+            Ok(content) => content.trim().to_string().parse::<u16>().unwrap_or(0_u16),
             Err(_) => 0_u16,
         };
     }
