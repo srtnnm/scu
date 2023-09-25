@@ -3,6 +3,7 @@ pub const STDOUT_FILENO: i32 = 0;
 extern "C" {
     pub fn ioctl(fs: i32, requets: u64, argp: *mut winsize) -> i32;
     pub fn uname(uts: *mut utsname) -> i32;
+    pub fn getlogin() -> *mut i8;
 }
 #[repr(C)]
 pub struct winsize {

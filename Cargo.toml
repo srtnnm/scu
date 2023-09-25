@@ -13,4 +13,3 @@ opt-level = "z"
 
 [dependencies]
 regex = { version = "1", default-features = false, features = ["unicode-perl", "std"] }
-whoami = "1.4.0"
