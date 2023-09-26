@@ -1,10 +1,17 @@
-use crate::utils::libc::getlogin;
+use crate::utils::libc::{getpwuid,getuid,passwd};
 use std::ffi::CStr;
 
-pub fn username() -> String {
+pub fn username() -> Option<String> {
     unsafe {
-        let login_ptr = getlogin();
-        let login = CStr::from_ptr(login_ptr);
-        return String::from(login.to_str().unwrap());
+        let uid = getuid();
+        let passwd_ptr = getpwuid(uid);
+
+        if passwd_ptr.is_null() {
+            return None;
+        }
+
+        let username = CStr::from_ptr((*passwd_ptr).pw_name).to_string_lossy().into_owned();
+
+        Some(username)
     }
 }

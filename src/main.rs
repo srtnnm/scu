@@ -39,7 +39,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let distro_name = software::os::get_name();
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
-    let username = utils::whoami::username();
+    let username = utils::whoami::username().unwrap();
     let shell = software::os::get_shell();
     let kernel_version = software::kernel::get_version();
     let init_system = software::init_system::detect();

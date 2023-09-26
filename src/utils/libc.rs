@@ -3,7 +3,8 @@ pub const STDOUT_FILENO: i32 = 0;
 extern "C" {
     pub fn ioctl(fs: i32, requets: u64, argp: *mut winsize) -> i32;
     pub fn uname(uts: *mut utsname) -> i32;
-    pub fn getlogin() -> *mut i8;
+    pub fn getpwuid(uid: u32) -> *mut passwd;
+    pub fn getuid() -> u32;
 }
 #[repr(C)]
 pub struct winsize {
@@ -20,4 +21,8 @@ pub struct utsname {
     pub version: [u8; 65],
     pub machine: [u8; 65],
     pub domainname: [u8; 65],
+}
+#[repr(C)]
+pub struct passwd {
+    pub pw_name: *const i8,
 }
