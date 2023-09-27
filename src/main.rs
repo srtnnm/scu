@@ -18,6 +18,7 @@ fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
     let mut _size: f64 = 0_f64;
     let mut suffix = "";
     if size.gb == 0 {
+        _size = size.mb as f64;
         suffix = "MiB";
     } else if size.gb < 1024 {
         _size = size.gb as f64;
