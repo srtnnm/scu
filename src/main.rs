@@ -181,7 +181,6 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     if let Some(drives) = drives {
         if !drives.is_empty() {
             for drive in drives {
-                // buf.push_str(format!("{}: {}GiB\0", drive.model, drive.size.gb).as_str());
                 buf.push_str(
                     format!("{}: {}\0", drive.model, drive_size_to_string(drive.size)).as_str(),
                 );
@@ -351,48 +350,47 @@ fn print_info() {
     to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
 
     let mut distro_name = software::os::get_name();
-    if distro_name == "Unknown" { distro_name = "Linux".to_string(); }
-        if distro_name.contains(" ") {
-            distro_name = distro_name.split(" ").next().unwrap().to_string();
-        }
-        let logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
-        let logo_max_len = get_max_len(logo_lines.clone());
-        if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
-            && to_display.len() >= logo_lines.len() + 3
-        {
-            let _logo_box_height = logo_lines.len() + 2;
-            for line in 0..to_display.len() {
-                if line == 0 || line == _logo_box_height - 1 {
-                    let info_box_frame_element = to_display[line].pop().unwrap();
-                    to_display[line].push_str(match info_box_frame_element {
-                        '┐' => "┬",
-                        '│' => "├",
-                        '┤' => "┼",
-                        '┘' => "┴",
-                        _ => "",
-                    });
-                    to_display[line].push_str(&format!(
-                        "{}{}",
-                        "─".repeat(logo_max_len + 2),
-                        match line {
-                            0 => "┐",
-                            _logo_box_height => "┘",
-                        }
-                    ));
-                }
-                if line > 0 && line - 1 < logo_lines.len() {
-                    let color = utils::distro_colors::get_color(&distro_name);
-                    let colorized_line = match color {
-                        Some(color) => colorize(&logo_lines[line-1], color),
-                        _ => logo_lines[line-1].to_string(),
-                    };
-                    to_display[line].push_str(&format!(
-                        " {}{} │",
-                        colorized_line,
-                        " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
-                    ));
-                }
+    if distro_name == "Unknown" {
+        distro_name = "Linux".to_string();
+    }
+    let logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+    let logo_max_len = get_max_len(logo_lines.clone());
+    if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
+        && to_display.len() >= logo_lines.len() + 3
+    {
+        let _logo_box_height = logo_lines.len() + 2;
+        for line in 0..to_display.len() {
+            if line == 0 || line == _logo_box_height - 1 {
+                let info_box_frame_element = to_display[line].pop().unwrap();
+                to_display[line].push_str(match info_box_frame_element {
+                    '┐' => "┬",
+                    '│' => "├",
+                    '┤' => "┼",
+                    '┘' => "┴",
+                    _ => "",
+                });
+                to_display[line].push_str(&format!(
+                    "{}{}",
+                    "─".repeat(logo_max_len + 2),
+                    match line {
+                        0 => "┐",
+                        _logo_box_height => "┘",
+                    }
+                ));
             }
+            if line > 0 && line - 1 < logo_lines.len() {
+                let color = utils::distro_colors::get_color(&distro_name);
+                let colorized_line = match color {
+                    Some(color) => colorize(&logo_lines[line - 1], color),
+                    _ => logo_lines[line - 1].to_string(),
+                };
+                to_display[line].push_str(&format!(
+                    " {}{} │",
+                    colorized_line,
+                    " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
+                ));
+            }
+        }
     }
 
     // Display info
