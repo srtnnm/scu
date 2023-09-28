@@ -291,7 +291,7 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                     let line_param = line.next().unwrap();
                     let param_len = get_len(&line_param.to_string());
                     let line_val = line.next().unwrap().trim().to_string();
-                    if line_val != "Unknown" || line_val != "0" {
+                    if &line_val != "Unknown" && &line_val != "0" {
                         buf.push(format!(
                             "{}:{}{}",
                             line_param,
