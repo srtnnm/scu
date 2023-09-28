@@ -309,6 +309,13 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
     result
 }
 
+fn colorize(str: &str, color: utils::distro_colors::Color) -> String {
+    let r = color.r;
+    let g = color.g;
+    let b = color.b;
+    format!("\x1b[38;2;{r};{g};{b}m{str}\x1B[0m")
+}
+
 fn print_info() {
     let info = format_info(get_info());
 
@@ -344,7 +351,7 @@ fn print_info() {
     to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
 
     let mut distro_name = software::os::get_name();
-    if distro_name != "Unknown" {
+    if distro_name == "Unknown" { distro_name = "Linux".to_string(); }
         if distro_name.contains(" ") {
             distro_name = distro_name.split(" ").next().unwrap().to_string();
         }
@@ -374,14 +381,18 @@ fn print_info() {
                     ));
                 }
                 if line > 0 && line - 1 < logo_lines.len() {
+                    let color = utils::distro_colors::get_color(&distro_name);
+                    let colorized_line = match color {
+                        Some(color) => colorize(&logo_lines[line-1], color),
+                        _ => logo_lines[line-1].to_string(),
+                    };
                     to_display[line].push_str(&format!(
                         " {}{} │",
-                        logo_lines[line - 1],
+                        colorized_line,
                         " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
                     ));
                 }
             }
-        }
     }
 
     // Display info
