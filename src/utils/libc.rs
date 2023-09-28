@@ -11,7 +11,7 @@ pub struct winsize {
     pub ws_row: u16,
     pub ws_col: u16,
     pub ws_xpixel: u16,
-    pub ws_ypixel: u16
+    pub ws_ypixel: u16,
 }
 #[repr(C)]
 pub struct utsname {

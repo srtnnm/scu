@@ -1,4 +1,4 @@
-use crate::utils::libc::{utsname, uname};
+use crate::utils::libc::{uname, utsname};
 
 pub fn get_version() -> String {
     unsafe {

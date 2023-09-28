@@ -1,6 +1,6 @@
 use crate::utils::converter::Size2D;
-use crate::utils::process;
 use crate::utils::libc::{ioctl, winsize, STDOUT_FILENO, TIOCGWINSZ};
+use crate::utils::process;
 use std::path::Path;
 
 fn bin_to_name(bin_name: String) -> String {

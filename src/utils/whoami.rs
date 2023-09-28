@@ -1,4 +1,4 @@
-use crate::utils::libc::{getpwuid,getuid,passwd};
+use crate::utils::libc::{getpwuid, getuid};
 use std::ffi::CStr;
 
 pub fn username() -> Option<String> {
@@ -10,7 +10,9 @@ pub fn username() -> Option<String> {
             return None;
         }
 
-        let username = CStr::from_ptr((*passwd_ptr).pw_name).to_string_lossy().into_owned();
+        let username = CStr::from_ptr((*passwd_ptr).pw_name)
+            .to_string_lossy()
+            .into_owned();
 
         Some(username)
     }

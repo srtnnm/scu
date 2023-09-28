@@ -14,6 +14,17 @@ fn get_len(str: &String) -> usize {
     result
 }
 
+fn get_max_len(arr: Vec<String>) -> usize {
+    let mut result: usize = 0;
+    arr.iter().for_each(|elem| {
+        let _len = get_len(elem);
+        if _len > result {
+            result = _len;
+        }
+    });
+    result
+}
+
 fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
     let mut _size: f64 = 0_f64;
     let mut suffix = "";
@@ -152,7 +163,11 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let battery = hardware::battery::get_battery_info();
     if let Some(battery) = battery {
         buf.push_str(
-            format!("Model: {}\0Technology: {}\0Capacity: {}%\0", battery.model, battery.technology, battery.capacity).as_str()
+            format!(
+                "Model: {}\0Technology: {}\0Capacity: {}%\0",
+                battery.model, battery.technology, battery.capacity
+            )
+            .as_str(),
         );
         result.insert(
             "Battery".to_string(),
@@ -210,7 +225,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         write!(buf, "Environment: {de}\0");
     }
     let wm = software::graphics::detect_wm();
-    if let Some(wm) = wm{
+    if let Some(wm) = wm {
         write!(buf, "Window manager: {wm}\0");
     }
     if !buf.is_empty() {
@@ -298,8 +313,9 @@ fn print_info() {
     let info = format_info(get_info());
 
     let max_len = get_map_max_len(info.clone());
+    let mut to_display: Vec<String> = Vec::new();
     for category in info.keys().rev() {
-        println!(
+        to_display.push(format!(
             "{}─┤ {} ├{}{}",
             if Some(category) == info.keys().next_back() {
                 "┌"
@@ -313,13 +329,65 @@ fn print_info() {
             } else {
                 "┤"
             }
-        );
+        ));
         info.get(category.as_str())
             .unwrap()
             .iter()
-            .for_each(|line| println!("│ {}{}│", line, " ".repeat(max_len - get_len(line) + 1)))
+            .for_each(|line| {
+                to_display.push(format!(
+                    "│ {}{}│",
+                    line,
+                    " ".repeat(max_len - get_len(line) + 1)
+                ))
+            });
     }
-    println!("└{}┘", "─".repeat(max_len + 2))
+    to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
+
+    let mut distro_name = software::os::get_name();
+    if distro_name != "Unknown" {
+        if distro_name.contains(" ") {
+            distro_name = distro_name.split(" ").next().unwrap().to_string();
+        }
+        let logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+        let logo_max_len = get_max_len(logo_lines.clone());
+        if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
+            && to_display.len() >= logo_lines.len() + 3
+        {
+            let _logo_box_height = logo_lines.len() + 2;
+            for line in 0..to_display.len() {
+                if line == 0 || line == _logo_box_height - 1 {
+                    let info_box_frame_element = to_display[line].pop().unwrap();
+                    to_display[line].push_str(match info_box_frame_element {
+                        '┐' => "┬",
+                        '│' => "├",
+                        '┤' => "┼",
+                        '┘' => "┴",
+                        _ => "",
+                    });
+                    to_display[line].push_str(&format!(
+                        "{}{}",
+                        "─".repeat(logo_max_len + 2),
+                        match line {
+                            0 => "┐",
+                            _logo_box_height => "┘",
+                        }
+                    ));
+                }
+                if line > 0 && line - 1 < logo_lines.len() {
+                    to_display[line].push_str(&format!(
+                        " {}{} │",
+                        logo_lines[line - 1],
+                        " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
+                    ));
+                }
+            }
+        }
+    }
+
+    // Display info
+    to_display.iter().for_each(|info_line| {
+        println!("{}", info_line);
+    });
 }
 
 fn main() {

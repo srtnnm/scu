@@ -6,7 +6,7 @@ use std::path::Path;
 pub struct GPUInfo {
     pub model: String,
     pub driver: String,
-} 
+}
 
 fn lower(_str: &str) -> String {
     let mut result = String::from(_str);
@@ -29,7 +29,10 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
     for entry in drm_content.unwrap() {
         let entry = entry.unwrap().path();
         let entry = entry.to_str().unwrap();
-        if fs::metadata(format!("{}/class", entry)).is_err() || !fs::read_to_string(format!("{}/class", entry)).unwrap().starts_with("0x03")
+        if fs::metadata(format!("{}/class", entry)).is_err()
+            || !fs::read_to_string(format!("{}/class", entry))
+                .unwrap()
+                .starts_with("0x03")
         {
             continue;
         }
@@ -38,10 +41,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
             let mut vendor = String::new();
             let mut model = String::new();
             let mut driver = String::from("Unknown");
-            for line in fs::read_to_string(uevent_path)
-                .unwrap()
-                .split('\n')
-            {
+            for line in fs::read_to_string(uevent_path).unwrap().split('\n') {
                 if line.starts_with("DRIVER") {
                     driver = line.split("DRIVER=").nth(1).unwrap().to_string();
                 } else if line.starts_with("PCI_ID") {
@@ -102,8 +102,8 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                         } else {
                             "".to_string()
                         } + model.as_str(),
-                        driver
-                    }
+                        driver,
+                    },
                 );
             }
         }

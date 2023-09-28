@@ -110,7 +110,9 @@ pub fn get_info() -> CPUInfo {
     for file in ["bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
         let file_path = format!("{}{}", cpu_freq_files_path, file);
         if fs::metadata(file_path.clone()).is_ok() {
-            result.freq = utils::converter::frequency_from_hz(extract_i64(fs::read_to_string(file_path.clone()).unwrap().as_str()));
+            result.freq = utils::converter::frequency_from_hz(extract_i64(
+                fs::read_to_string(file_path.clone()).unwrap().as_str(),
+            ));
             break;
         }
     }

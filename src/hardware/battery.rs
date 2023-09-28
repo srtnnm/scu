@@ -3,13 +3,13 @@ use std::path::Path;
 
 pub enum BatteryStatus {
     Charging,
-    Discharging
+    Discharging,
 }
 
 pub struct BatteryInfo {
     pub model: String,
     pub technology: String,
-    pub capacity: u16
+    pub capacity: u16,
 }
 
 pub fn get_battery_info() -> Option<BatteryInfo> {
@@ -33,7 +33,9 @@ pub fn get_battery_info() -> Option<BatteryInfo> {
             }
         }
     }
-    if battery_dir.is_empty() { return None; }
+    if battery_dir.is_empty() {
+        return None;
+    }
 
     if Path::new(&battery_dir).exists() {
         result.model = match fs::read_to_string(format!("{}/model_name", battery_dir)) {
