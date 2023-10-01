@@ -50,6 +50,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                         "10DE" => "NVIDIA",
                         "1002" => "AMD",
                         "8086" => "Intel",
+                        "1a03" => "ASPEED",
                         _ => "Unknown",
                     });
                     model = pci_id.to_string().to_ascii_lowercase();
@@ -94,6 +95,9 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                         .unwrap()
                         .to_string();
                 }
+                if model.contains(&vendor) {
+                    model = model.replace(&vendor, "");
+                }
                 result.insert(
                     result.len() as u8 + 1,
                     GPUInfo {
@@ -101,7 +105,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                             format!("{} ", vendor)
                         } else {
                             "".to_string()
-                        } + model.as_str(),
+                        } + model.trim(),
                         driver,
                     },
                 );

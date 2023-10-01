@@ -24,5 +24,5 @@ pub struct utsname {
 }
 #[repr(C)]
 pub struct passwd {
-    pub pw_name: *const i8,
+    pub pw_name: *const std::os::raw::c_char,
 }

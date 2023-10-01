@@ -10,7 +10,7 @@ impl Color {
     }
 }
 
-pub static COLORS: [(&str, (u16, u16, u16)); 9] = [
+pub static COLORS: [(&str, (u16, u16, u16)); 10] = [
     ("Android", (61, 220, 132)),
     ("Arch", (23, 147, 209)),
     ("Artix", (23, 147, 209)),

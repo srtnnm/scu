@@ -60,7 +60,7 @@ fn get_vendor(vendor_id: &str) -> String {
 
 pub fn get_info() -> CPUInfo {
     let mut result = CPUInfo {
-        model: String::from(""),
+        model: String::from("Unknown"),
         freq: utils::converter::frequency_from_hz(0),
         cores: 0,
         threads: 0,
@@ -88,6 +88,12 @@ pub fn get_info() -> CPUInfo {
             "cpu cores" => {
                 result.cores = value.trim().parse::<u8>().unwrap();
             }
+            "cpu" => {
+                if value.contains("POWER9") {
+                    result.model = "POWER9".to_string();
+                    vendor = "IBM".to_string();
+                }
+            }
             "processor" => {
                 result.threads = value.trim().parse::<u8>().unwrap() + 1_u8;
             }
@@ -97,7 +103,7 @@ pub fn get_info() -> CPUInfo {
         }
     }
     if !vendor.is_empty() {
-        result.model = format!("{} {}", vendor, result.model);
+        result.model = format!("{} {}", vendor, result.model).trim().to_string();
     }
 
     // cores not presented in /proc/cpuinfo
