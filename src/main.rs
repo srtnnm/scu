@@ -308,11 +308,14 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
     result
 }
 
-fn colorize(str: &str, color: utils::distro_colors::Color) -> String {
-    let r = color.r;
-    let g = color.g;
-    let b = color.b;
+fn colorize(str: &str, r:u16, g:u16, b:u16) -> String {
     format!("\x1b[38;2;{r};{g};{b}m{str}\x1B[0m")
+}
+
+fn colorize_background(str: &str, r:u16, g:u16, b:u16) -> String {
+    let mut result = format!("\x1b[48;2;{r};{g};{b}m{str}\x1B[0m");
+    if (r+g+b)/3>123{result=colorize(&result, 0,0,0);}
+    result
 }
 
 fn print_info() {
@@ -381,7 +384,7 @@ fn print_info() {
             if line > 0 && line - 1 < logo_lines.len() {
                 let color = utils::distro_colors::get_color(&distro_name);
                 let colorized_line = match color {
-                    Some(color) => colorize(&logo_lines[line - 1], color),
+                    Some(color) => colorize_background(&logo_lines[line - 1], color.r, color.g, color.b),
                     _ => logo_lines[line - 1].to_string(),
                 };
                 to_display[line].push_str(&format!(
