@@ -10,6 +10,7 @@ pub struct BatteryInfo {
     pub model: String,
     pub technology: String,
     pub capacity: u16,
+    pub status: String,
 }
 
 pub fn get_battery_info() -> Option<BatteryInfo> {
@@ -17,6 +18,7 @@ pub fn get_battery_info() -> Option<BatteryInfo> {
         model: String::from("Unknown"),
         technology: String::from("Unknown"),
         capacity: 0_u16,
+        status: String::from("Unknown"),
     };
 
     let mut battery_dir = String::from("");
@@ -50,6 +52,10 @@ pub fn get_battery_info() -> Option<BatteryInfo> {
             Ok(content) => content.trim().to_string().parse::<u16>().unwrap_or(0_u16),
             Err(_) => 0_u16,
         };
+        result.status = match fs::read_to_string(format!("{}/status", battery_dir)) {
+            Ok(content) => content.trim().to_string(),
+            Err(_) => "Unknown".to_string(),
+        }
     }
 
     if result.model == "Unknown" && result.technology == "Unknown" && result.capacity == 0_u16 {

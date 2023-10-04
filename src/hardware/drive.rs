@@ -36,6 +36,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             || device.starts_with("loop")
             || device.starts_with("sr")
             || device.starts_with("zram")
+            || device.contains("boot")
             || get_devtype(
                 fs::read_to_string(device_uevent.clone())
                     .unwrap_or_else(|_| panic!("NO {} FILE", device_uevent)),

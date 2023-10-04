@@ -133,6 +133,9 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         buf.push_str(format!("Cores: {}\0", cpu_info.cores).as_str());
     }
     buf.push_str(format!("Threads: {}\0", cpu_info.threads).as_str());
+    if cpu_info.temperature > 0.0 {
+        buf.push_str(format!("Temperature: {}°C\0", cpu_info.temperature).as_str());
+    }
 
     result.insert(
         "Processor".to_string(),
@@ -164,8 +167,8 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     if let Some(battery) = battery {
         buf.push_str(
             format!(
-                "Model: {}\0Technology: {}\0Capacity: {}%\0",
-                battery.model, battery.technology, battery.capacity
+                "Model: {}\0Technology: {}\0Capacity: {}%\0Status: {}\0",
+                battery.model, battery.technology, battery.capacity, battery.status
             )
             .as_str(),
         );
@@ -200,19 +203,41 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         for entry in gpus {
             let gpu_id = entry.0;
             let gpu_info = entry.1;
+            let mut sub_info: Vec<String> = Vec::new();
+            if gpu_info.driver != "Unknown" {
+                sub_info.push(format!("Driver: {}", gpu_info.driver));
+            }
+            if gpu_info.temperature > 0.0 {
+                sub_info.push(format!("Temperature: {}°C", gpu_info.temperature));
+            }
             buf.push_str(
                 format!(
-                    "GPU{}: {}\0┗Driver: {}\0",
+                    "GPU{}: {}\0",
                     if count_gpus > 1 {
                         format!(" #{}", gpu_id)
                     } else {
                         String::from("")
                     },
                     gpu_info.model,
-                    gpu_info.driver
                 )
                 .as_str(),
             );
+            if !sub_info.is_empty() {
+                sub_info.iter().for_each(|line| {
+                    buf.push_str(
+                        format!(
+                            "{}{}\0",
+                            if line == sub_info.iter().next_back().unwrap() {
+                                "┗"
+                            } else {
+                                "┣"
+                            },
+                            line
+                        )
+                        .as_str(),
+                    );
+                })
+            }
         }
     }
     let session_type = software::graphics::get_session_type();
@@ -308,13 +333,15 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
     result
 }
 
-fn colorize(str: &str, r:u16, g:u16, b:u16) -> String {
+fn colorize(str: &str, r: u16, g: u16, b: u16) -> String {
     format!("\x1b[38;2;{r};{g};{b}m{str}\x1B[0m")
 }
 
-fn colorize_background(str: &str, r:u16, g:u16, b:u16) -> String {
+fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
     let mut result = format!("\x1b[48;2;{r};{g};{b}m{str}\x1B[0m");
-    if (r+g+b)/3>123{result=colorize(&result, 0,0,0);}
+    if (r + g + b) / 3 > 123 {
+        result = colorize(&result, 0, 0, 0);
+    }
     result
 }
 
@@ -384,7 +411,9 @@ fn print_info() {
             if line > 0 && line - 1 < logo_lines.len() {
                 let color = utils::distro_colors::get_color(&distro_name);
                 let colorized_line = match color {
-                    Some(color) => colorize_background(&logo_lines[line - 1], color.r, color.g, color.b),
+                    Some(color) => {
+                        colorize_background(&logo_lines[line - 1], color.r, color.g, color.b)
+                    }
                     _ => logo_lines[line - 1].to_string(),
                 };
                 to_display[line].push_str(&format!(

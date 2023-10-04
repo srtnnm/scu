@@ -6,6 +6,7 @@ use std::path::Path;
 pub struct GPUInfo {
     pub model: String,
     pub driver: String,
+    pub temperature: f32,
 }
 
 fn lower(_str: &str) -> String {
@@ -36,11 +37,20 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
         {
             continue;
         }
+        println!("{}", entry);
         let uevent_path = format!("{}/uevent", entry);
+        let temperature_path = format!("{}/hwmon/hwmon3/temp1_input", entry);
         if Path::new(uevent_path.as_str()).exists() {
             let mut vendor = String::new();
             let mut model = String::new();
             let mut driver = String::from("Unknown");
+            let mut temperature: f32 = 0.0;
+            if Path::new(&temperature_path).exists() {
+                temperature = match fs::read_to_string(temperature_path) {
+                    Ok(content) => content.trim().parse::<u32>().unwrap() as f32 / 1000.0,
+                    Err(_) => 0.0,
+                };
+            }
             for line in fs::read_to_string(uevent_path).unwrap().split('\n') {
                 if line.starts_with("DRIVER") {
                     driver = line.split("DRIVER=").nth(1).unwrap().to_string();
@@ -107,6 +117,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                             "".to_string()
                         } + model.trim(),
                         driver,
+                        temperature,
                     },
                 );
             }

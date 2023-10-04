@@ -7,6 +7,7 @@ pub struct CPUInfo {
     pub freq: utils::converter::Frequency,
     pub cores: u8,
     pub threads: u8,
+    pub temperature: f32,
 }
 
 fn extract_i64(_str: &str) -> i64 {
@@ -64,6 +65,7 @@ pub fn get_info() -> CPUInfo {
         freq: utils::converter::frequency_from_hz(0),
         cores: 0,
         threads: 0,
+        temperature: 0.0,
     };
 
     // parse /proc/cpuinfo
@@ -121,6 +123,16 @@ pub fn get_info() -> CPUInfo {
             ));
             break;
         }
+    }
+
+    // get temperature
+    if fs::metadata("/sys/class/thermal/thermal_zone0/temp").is_ok() {
+        result.temperature = extract_i64(
+            fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
+                .unwrap()
+                .as_str(),
+        ) as f32
+            / 1000.0;
     }
 
     result

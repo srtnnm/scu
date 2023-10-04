@@ -25,6 +25,10 @@ pub fn get_name() -> String {
         result += (String::from(" ") + &version).as_str();
     }
 
+    if result.contains("openSUSE") {
+        result = "openSUSE".to_string();
+    }
+
     result
 }
 
