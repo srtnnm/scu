@@ -9,9 +9,7 @@ use std::collections::BTreeMap;
 use std::fmt::Write;
 
 fn get_len(str: &String) -> usize {
-    let mut result: usize = 0;
-    str.chars().for_each(|_| result += 1);
-    result
+    str.chars().count()
 }
 
 fn get_max_len(arr: Vec<String>) -> usize {
