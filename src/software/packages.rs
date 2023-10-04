@@ -23,7 +23,7 @@ pub fn detect_managers(managers: Vec<&'static str>) -> Vec<&'static str> {
 pub fn get_info() -> Vec<PackageManager> {
     let mut result: Vec<PackageManager> = Vec::new();
     let list_packages_command = BTreeMap::from([
-        ("apt", Vec::from(["list", "--installed"])),
+        ("dpkg", Vec::from(["--get-selections"])),
         ("emerge", Vec::from([])),
         ("flatpak", Vec::from(["list"])),
         ("pacman", Vec::from(["-Qq"])),
