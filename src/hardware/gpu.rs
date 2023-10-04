@@ -37,9 +37,23 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
         {
             continue;
         }
-        println!("{}", entry);
         let uevent_path = format!("{}/uevent", entry);
-        let temperature_path = format!("{}/hwmon/hwmon3/temp1_input", entry);
+        let mut hwmon_path = format!("{}/hwmon", entry);
+        if fs::metadata(hwmon_path.clone()).is_ok() {
+            fs::read_dir(hwmon_path.clone())
+                .unwrap()
+                .for_each(|hwentry| {
+                    let hwentry = hwentry.unwrap().file_name();
+                    let hwentry = hwentry.to_str().unwrap();
+                    if regex::Regex::new("hwmon[[:digit:]]")
+                        .unwrap()
+                        .is_match(hwentry)
+                    {
+                        hwmon_path = format!("{}/hwmon/{}", entry, hwentry);
+                    }
+                });
+        }
+        let temperature_path = format!("{}/temp1_input", hwmon_path);
         if Path::new(uevent_path.as_str()).exists() {
             let mut vendor = String::new();
             let mut model = String::new();
