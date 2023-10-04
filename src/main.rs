@@ -130,9 +130,14 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
     buf.push_str(format!("Frequency: {:.2}GHz\0", cpu_info.freq.ghz).as_str());
     if cpu_info.cores > 0 {
-        buf.push_str(format!("Cores: {}\0", cpu_info.cores).as_str());
+        buf.push_str(
+            format!(
+                "Computing units: {} Cores / {} Threads\0",
+                cpu_info.cores, cpu_info.threads
+            )
+            .as_str(),
+        );
     }
-    buf.push_str(format!("Threads: {}\0", cpu_info.threads).as_str());
     if cpu_info.temperature > 0.0 {
         buf.push_str(format!("Temperature: {}°C\0", cpu_info.temperature).as_str());
     }
