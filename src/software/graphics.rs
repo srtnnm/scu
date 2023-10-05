@@ -40,6 +40,7 @@ pub fn detect_wm() -> Option<String> {
             "sway" => "Sway",
             "i3" => "i3",
             "dwm" => "DWM",
+            "Hyprland" => "Hyprland",
             _ => "",
         };
 

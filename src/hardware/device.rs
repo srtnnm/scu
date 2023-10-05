@@ -14,7 +14,9 @@ pub fn get_device_model() -> Option<String> {
                 .unwrap()
                 .stdout,
         )
-        .unwrap();
+        .unwrap()
+        .trim()
+        .to_string();
         if brand == "google" {
             brand = "Google".to_string();
         }
@@ -25,7 +27,10 @@ pub fn get_device_model() -> Option<String> {
                 .unwrap()
                 .stdout,
         )
-        .unwrap();
+        .unwrap()
+        .replace(&brand, "")
+        .trim()
+        .to_string();
 
         result = format!("{brand} {model}");
     } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
