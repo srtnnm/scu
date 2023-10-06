@@ -62,5 +62,7 @@ pub fn get_device_model() -> Option<String> {
         return None;
     }
 
-    Some(result.replace(['\0', '\n'], "").to_string())
+    result = result.replace("To Be Filled By O.E.M.", "");
+
+    Some(result.replace(['\0', '\n'], "").trim().to_string())
 }
