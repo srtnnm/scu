@@ -12,3 +12,6 @@
   ```
   target/release/./scu
   ```
+
+#### Donate
+Monero ```48yd2LY19xAap9sj4aCQNxHN3Z2XFRw1mRurmSNCR3jiLDKsNtRhDKC6rtwcj3Ji5FjgFUuvZy3jPjghg9gzFiJDErXdZfE```
