@@ -1091,7 +1091,7 @@ static IDS: [(&str, &str); 36138] = [
 	("1002:15d8 ea50:cc10","RXi2-BP"),
 	("1002:15dd","Raven Ridge [Radeon Vega Series / Radeon Vega Mobile Series]"),
 	("1002:15dd 103c:83c6","Radeon Vega 8 Mobile"),
-	("1002:15dd 1043:876b","PRIME Motherboard"),
+	// ("1002:15dd 1043:876b","PRIME Motherboard"),
 	("1002:15dd 1458:d000","Radeon RX Vega 11"),
 	("1002:15dd ea50:cc10","RXi2-BP"),
 	("1002:15de","Raven/Raven2/Fenghuang HDMI/DP Audio Controller"),
