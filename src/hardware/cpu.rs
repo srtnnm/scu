@@ -36,6 +36,11 @@ fn extract_model_name(mut _str: String) -> String {
         "[[:digit:]]? COMPUTE CORES",
         "RADEON R[[:digit:]]",
         "[[:digit:]]\\w\\+[[:digit:]]\\w",
+        "with",
+        "Radeon",
+        "Vega",
+        "Mobile",
+        "Series",
     ] {
         let re = Regex::new(trash).unwrap();
         _str = match re.find(&_str) {
