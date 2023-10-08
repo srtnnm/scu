@@ -41,6 +41,7 @@ fn extract_model_name(mut _str: String) -> String {
         "Vega",
         "Mobile",
         "Series",
+        "Graphics",
     ] {
         let re = Regex::new(trash).unwrap();
         _str = match re.find(&_str) {

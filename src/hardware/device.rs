@@ -71,5 +71,8 @@ pub fn get_device_model() -> Option<String> {
         result = result.replace(trash, "");
     }
 
+    // make asus brandname shorter
+    result = result.replace("ASUSTeK COMPUTER INC.", "ASUS");
+
     Some(result.replace(['\0', '\n'], "").trim().to_string())
 }
