@@ -96,9 +96,9 @@ pub fn get_info() -> CPUInfo {
                     vendor = "IBM".to_string();
                 }
             }
-            "processor" => {
+            /*"processor" => {
                 result.threads = value.trim().parse::<u8>().unwrap() + 1_u8;
-            }
+            } maybe no more needed*/
             _ => {
                 continue;
             }
@@ -106,6 +106,11 @@ pub fn get_info() -> CPUInfo {
     }
     if !vendor.is_empty() {
         result.model = format!("{} {}", vendor, result.model).trim().to_string();
+    }
+
+    // get threads (all units)
+    if fs::metadata("/sys/bus/cpu/devices").is_ok() {
+        result.threads = fs::read_dir("/sys/bus/cpu/devices").unwrap().count() as u8;
     }
 
     // cores not presented in /proc/cpuinfo
