@@ -137,7 +137,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
         );
     }
     if cpu_info.temperature > 0.0 {
-        buf.push_str(format!("Temperature: {}°C\0", cpu_info.temperature).as_str());
+        buf.push_str(format!("Temperature: {:.1}°C\0", cpu_info.temperature).as_str());
     }
 
     result.insert(
