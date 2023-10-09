@@ -137,13 +137,34 @@ pub fn get_info() -> CPUInfo {
     }
 
     // get temperature
-    if fs::metadata("/sys/class/thermal/thermal_zone0/temp").is_ok() {
-        result.temperature = extract_i64(
-            fs::read_to_string("/sys/class/thermal/thermal_zone0/temp")
-                .unwrap()
-                .as_str(),
-        ) as f32
-            / 1000.0;
+    // sensor drivers
+    // k10temp  - AMD
+    // coretemp - Intel
+    if fs::metadata("/sys/class/hwmon").is_ok() {
+        for hwmon in fs::read_dir("/sys/class/hwmon").unwrap() {
+            let hwmon = format!(
+                "/sys/class/hwmon/{}",
+                hwmon.unwrap().file_name().to_str().unwrap()
+            );
+            if fs::metadata(format!("{}/name", hwmon)).is_err()
+                || fs::metadata(format!("{}/temp1_input", hwmon)).is_err()
+            {
+                continue;
+            }
+            if ["k10temp", "coretemp"].contains(
+                &fs::read_to_string(format!("{}/name", hwmon))
+                    .unwrap()
+                    .as_str()
+                    .trim(),
+            ) {
+                result.temperature = fs::read_to_string(format!("{}/temp1_input", hwmon))
+                    .unwrap()
+                    .parse::<f32>()
+                    .unwrap()
+                    / 1000.0;
+                break;
+            }
+        }
     }
 
     result
