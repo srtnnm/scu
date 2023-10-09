@@ -159,8 +159,8 @@ pub fn get_info() -> CPUInfo {
             ) {
                 result.temperature = fs::read_to_string(format!("{}/temp1_input", hwmon))
                     .unwrap()
-                    .parse::<f32>()
-                    .unwrap()
+                    .parse::<u32>()
+                    .unwrap() as f32
                     / 1000.0;
                 break;
             }
