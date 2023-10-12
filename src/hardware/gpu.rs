@@ -76,6 +76,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                         "8086" => "Intel",
                         "1a03" => "ASPEED",
                         "15ab" => "VMWare",
+                        "1af4" => "RedHat",
                         _ => "Unknown",
                     });
                     model = pci_id.to_string().to_ascii_lowercase();
