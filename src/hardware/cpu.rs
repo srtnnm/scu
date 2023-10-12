@@ -102,9 +102,6 @@ pub fn get_info() -> CPUInfo {
                     vendor = "IBM".to_string();
                 }
             }
-            /*"processor" => {
-                result.threads = value.trim().parse::<u8>().unwrap() + 1_u8;
-            } maybe no more needed*/
             _ => {
                 continue;
             }
@@ -116,12 +113,19 @@ pub fn get_info() -> CPUInfo {
 
     // get threads (all units)
     if fs::metadata("/sys/bus/cpu/devices").is_ok() {
-        result.threads = fs::read_dir("/sys/bus/cpu/devices").unwrap().count() as u8;
+        result.threads = match fs::read_dir("/sys/bus/cpu/devices") {
+            Ok(content) => { content.count() as u8 }
+            Err(_) => { result.threads }
+        };
     }
 
     // cores not presented in /proc/cpuinfo
     if result.cores == 0 && result.threads != 0 {
         result.cores = result.threads;
+    }
+    // count of threads not found
+    if result.cores != 0 && result.threads == 0 {
+        result.threads = result.cores;
     }
 
     // get max_freq
@@ -141,7 +145,9 @@ pub fn get_info() -> CPUInfo {
     // k10temp  - AMD
     // coretemp - Intel
     if fs::metadata("/sys/class/hwmon").is_ok() {
-        for hwmon in fs::read_dir("/sys/class/hwmon").unwrap() {
+        let read_dir = fs::read_dir("/sys/class/hwmon");
+        if let Ok(read_dir) = read_dir {
+        for hwmon in read_dir {
             let hwmon = format!(
                 "/sys/class/hwmon/{}",
                 hwmon.unwrap().file_name().to_str().unwrap()
@@ -165,6 +171,7 @@ pub fn get_info() -> CPUInfo {
                     / 1000.0;
                 break;
             }
+        }
         }
     }
 

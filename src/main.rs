@@ -302,7 +302,7 @@ fn get_param_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
-fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<String>> {
+fn format_info(map: BTreeMap<String, Vec<String>>, is_in_pipe: bool) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     let max_param_len = get_param_max_len(map.clone());
@@ -322,7 +322,7 @@ fn format_info(map: BTreeMap<String, Vec<String>>) -> BTreeMap<String, Vec<Strin
                         buf.push(format!(
                             "{}:{}{}",
                             line_param,
-                            " ".repeat(max_param_len + 2 - param_len),
+                            " ".repeat(if !is_in_pipe { max_param_len + 2 - param_len } else { 1 }),
                             line_val
                         ));
                     }
@@ -349,8 +349,10 @@ fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
 }
 
 fn print_info() {
-    let info = format_info(get_info());
+    let is_in_pipe: bool = unsafe { utils::libc::isatty(utils::libc::STDOUT_FILENO) == 0 };
+    let info = format_info(get_info(), is_in_pipe);
 
+    if !is_in_pipe {
     let max_len = get_map_max_len(info.clone());
     let mut to_display: Vec<String> = Vec::new();
     for category in info.keys().rev() {
@@ -432,6 +434,9 @@ fn print_info() {
     to_display.iter().for_each(|info_line| {
         println!("{}", info_line);
     });
+    } else {
+        info.keys().rev().for_each(|key| { println!("- {}", key); info.get(key.as_str()).unwrap().iter().for_each(|line| { println!("{}", line); }); });
+    }
 }
 
 fn main() {

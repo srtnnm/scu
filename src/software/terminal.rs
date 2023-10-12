@@ -1,5 +1,5 @@
 use crate::utils::converter::Size2D;
-use crate::utils::libc::{ioctl, winsize, STDOUT_FILENO, TIOCGWINSZ};
+use crate::utils::libc::{ioctl, winsize, STDIN_FILENO, TIOCGWINSZ};
 use crate::utils::process;
 use std::path::Path;
 
@@ -52,7 +52,7 @@ pub fn get_size() -> Option<Size2D> {
         ws_ypixel: 0,
     };
 
-    if unsafe { ioctl(STDOUT_FILENO, TIOCGWINSZ, &mut nix_size) } == 0 {
+    if unsafe { ioctl(STDIN_FILENO, TIOCGWINSZ, &mut nix_size) } == 0 {
         return Some(Size2D {
             width: nix_size.ws_col as usize,
             height: nix_size.ws_row as usize,
