@@ -350,7 +350,7 @@ fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
     result
 }
 
-fn print_info() {
+fn print_info(whale: bool) {
     let is_in_pipe: bool = unsafe { utils::libc::isatty(utils::libc::STDOUT_FILENO) == 0 };
     let info = format_info(get_info(), is_in_pipe);
 
@@ -394,7 +394,11 @@ fn print_info() {
             distro_name = distro_name.replace(trash, "");
         }
     }
-    let logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+    let mut logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+    if whale {
+        logo_lines = utils::ascii_art::WHALE.split("\0").map(|l| l.to_string()).collect();
+        distro_name = "Whale".to_string();
+    }
     let logo_max_len = get_max_len(logo_lines.clone());
     if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
         && to_display.len() >= logo_lines.len() + 3
@@ -446,5 +450,7 @@ fn print_info() {
 }
 
 fn main() {
-    print_info();
+    //parse command line
+    let args: Vec<String> = std::env::args().collect();
+    print_info(args.contains(&"--whale".to_string()));
 }

@@ -58,6 +58,8 @@ pub static LETTERS: [(&str, &str); 52] = [
     ("z", "    \0 ___\0|_ /\0/__|\0"),
 ];
 
+pub static WHALE: &str = "        .                  \0       \":\"                 \0     ___:____     |\"\\/\"|   \0   ,'        `.    \\  /    \0   |  O        \\___/  |    \0 ~^~^~^~^~^~^~^~^~^~^~^~^~ ";
+
 pub fn generate(_str: &str) -> Vec<String> {
     let btm = BTreeMap::from(LETTERS);
     let mut result: Vec<String> = Vec::new();
