@@ -3,17 +3,27 @@ use std::env;
 use std::fs;
 use std::process::Command;
 
-pub fn get_name() -> String {
-    let mut result: String = String::from("Unknown");
+pub struct OSRelease {
+    pub pretty_name: String,
+    pub name: String,
+}
+
+pub fn get_name() -> OSRelease {
+    let mut result = OSRelease {
+        pretty_name: String::new(),
+        name: String::new()
+    };
 
     if fs::metadata("/etc/os-release").is_ok() {
         for line in fs::read_to_string("/etc/os-release").unwrap().split('\n') {
-            if line.starts_with("NAME=") {
-                result = line.split("NAME=").nth(1).unwrap().replace('\"', "");
+            if line.starts_with("PRETTY_NAME=") {
+                result.pretty_name = line.split("NAME=").nth(1).unwrap().replace('\"', "");
+            } else if line.starts_with("NAME=") {
+                result.name = line.split("NAME=").nth(1).unwrap().replace('\"',"");
             }
         }
     } else if fs::metadata("/system/app").is_ok() && fs::metadata("/system/priv-app").is_ok() {
-        result = String::from("Android");
+        result.name = String::from("Android");
         let version = String::from_utf8(
             Command::new("getprop")
                 .args(["ro.build.version.release"])
@@ -22,11 +32,11 @@ pub fn get_name() -> String {
                 .stdout,
         )
         .unwrap();
-        result += (String::from(" ") + &version).as_str();
+        result.pretty_name = result.name.clone() + " " + &version;
     }
 
-    if result.contains("openSUSE") {
-        result = "openSUSE".to_string();
+    if result.pretty_name.is_empty() {
+        result.pretty_name = result.name.clone();
     }
 
     result

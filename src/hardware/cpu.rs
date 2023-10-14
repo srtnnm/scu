@@ -4,7 +4,7 @@ use std::fs;
 
 pub struct CPUInfo {
     pub model: String,
-    pub freq: utils::converter::Frequency,
+    pub frequency: utils::converter::Frequency,
     pub cores: u8,
     pub threads: u8,
     pub temperature: f32,
@@ -68,7 +68,7 @@ fn get_vendor(vendor_id: &str) -> String {
 pub fn get_info() -> CPUInfo {
     let mut result = CPUInfo {
         model: String::from("Unknown"),
-        freq: utils::converter::frequency_from_hz(0),
+        frequency: utils::converter::frequency_from_hz(0),
         cores: 0,
         threads: 0,
         temperature: 0.0,
@@ -76,6 +76,7 @@ pub fn get_info() -> CPUInfo {
 
     // parse /proc/cpuinfo
     let mut vendor = String::new();
+    let mut max_freq_mhz: i32 = 0;
     for line in fs::read_to_string("/proc/cpuinfo")
         .expect("NO /proc/cpuinfo FILE")
         .split('\n')
@@ -96,6 +97,12 @@ pub fn get_info() -> CPUInfo {
             "cpu cores" => {
                 result.cores = value.trim().parse::<u8>().unwrap();
             }
+            "cpu MHz" => {
+                let freq = extract_i64(value.split(".").next().unwrap()) as i32;
+                if freq > max_freq_mhz {
+                    max_freq_mhz = freq;
+                }
+            }
             "cpu" => {
                 if value.contains("POWER9") {
                     result.model = "POWER9".to_string();
@@ -107,6 +114,9 @@ pub fn get_info() -> CPUInfo {
             }
         }
     }
+
+    result.frequency = utils::converter::frequency_from_mhz(max_freq_mhz);
+
     if !vendor.is_empty() {
         result.model = format!("{} {}", vendor, result.model).trim().to_string();
     }
@@ -133,7 +143,7 @@ pub fn get_info() -> CPUInfo {
     for file in ["bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
         let file_path = format!("{}{}", cpu_freq_files_path, file);
         if fs::metadata(file_path.clone()).is_ok() {
-            result.freq = utils::converter::frequency_from_hz(extract_i64(
+            result.frequency = utils::converter::frequency_from_hz(extract_i64(
                 fs::read_to_string(file_path.clone()).unwrap().as_str(),
             ));
             break;

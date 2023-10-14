@@ -70,8 +70,8 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                     driver = line.split("DRIVER=").nth(1).unwrap().to_string();
                 } else if line.starts_with("PCI_ID") {
                     let pci_id = line.split("PCI_ID=").nth(1).unwrap().to_string();
-                    vendor = String::from(match pci_id.split(':').next().unwrap() {
-                        "10DE" => "NVIDIA",
+                    vendor = String::from(match pci_id.split(':').next().unwrap().to_ascii_lowercase().as_str() {
+                        "10de" => "NVIDIA",
                         "1002" => "AMD",
                         "8086" => "Intel",
                         "1a03" => "ASPEED",

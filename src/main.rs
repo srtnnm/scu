@@ -46,7 +46,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // System
     let device_name = hardware::device::get_device_model();
-    let distro_name = software::os::get_name();
+    let distro_name = software::os::get_name().pretty_name;
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
     let username = utils::whoami::username().unwrap();
@@ -126,7 +126,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     // Processor
     let cpu_info = hardware::cpu::get_info();
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
-    buf.push_str(format!("Frequency: {:.2}GHz\0", cpu_info.freq.ghz).as_str());
+    buf.push_str(format!("Frequency: {:.2}GHz\0", cpu_info.frequency.ghz).as_str());
     if cpu_info.cores > 0 {
         buf.push_str(
             format!(
@@ -344,6 +344,8 @@ fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
     let mut result = format!("\x1b[48;2;{r};{g};{b}m{str}\x1B[0m");
     if (r + g + b) / 3 > 123 {
         result = colorize(&result, 0, 0, 0);
+    } else { // avoid terminal's text color
+        result = colorize(&result, 255, 255, 255);
     }
     result
 }
@@ -384,9 +386,13 @@ fn print_info() {
     }
     to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
 
-    let mut distro_name = software::os::get_name();
+    let mut distro_name = software::os::get_name().name;
     if distro_name == "Unknown" {
         distro_name = "Linux".to_string();
+    } else {
+        for trash in ["/", "GNU", "Linux"] {
+            distro_name = distro_name.replace(trash, "");
+        }
     }
     let logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
     let logo_max_len = get_max_len(logo_lines.clone());
