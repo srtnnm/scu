@@ -70,15 +70,23 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                     driver = line.split("DRIVER=").nth(1).unwrap().to_string();
                 } else if line.starts_with("PCI_ID") {
                     let pci_id = line.split("PCI_ID=").nth(1).unwrap().to_string();
-                    vendor = String::from(match pci_id.split(':').next().unwrap().to_ascii_lowercase().as_str() {
-                        "10de" => "NVIDIA",
-                        "1002" => "AMD",
-                        "8086" => "Intel",
-                        "1a03" => "ASPEED",
-                        "15ab" => "VMWare",
-                        "1af4" => "RedHat",
-                        _ => "Unknown",
-                    });
+                    vendor = String::from(
+                        match pci_id
+                            .split(':')
+                            .next()
+                            .unwrap()
+                            .to_ascii_lowercase()
+                            .as_str()
+                        {
+                            "10de" => "NVIDIA",
+                            "1002" => "AMD",
+                            "8086" => "Intel",
+                            "1a03" => "ASPEED",
+                            "15ab" => "VMWare",
+                            "1af4" => "RedHat",
+                            _ => "Unknown",
+                        },
+                    );
                     model = pci_id.to_string().to_ascii_lowercase();
                 } else if line.starts_with("PCI_SUBSYS_ID") {
                     if !line.is_empty() {

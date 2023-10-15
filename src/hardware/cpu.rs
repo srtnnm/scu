@@ -124,8 +124,8 @@ pub fn get_info() -> CPUInfo {
     // get threads (all units)
     if fs::metadata("/sys/bus/cpu/devices").is_ok() {
         result.threads = match fs::read_dir("/sys/bus/cpu/devices") {
-            Ok(content) => { content.count() as u8 }
-            Err(_) => { result.threads }
+            Ok(content) => content.count() as u8,
+            Err(_) => result.threads,
         };
     }
 
@@ -157,31 +157,31 @@ pub fn get_info() -> CPUInfo {
     if fs::metadata("/sys/class/hwmon").is_ok() {
         let read_dir = fs::read_dir("/sys/class/hwmon");
         if let Ok(read_dir) = read_dir {
-        for hwmon in read_dir {
-            let hwmon = format!(
-                "/sys/class/hwmon/{}",
-                hwmon.unwrap().file_name().to_str().unwrap()
-            );
-            if fs::metadata(format!("{}/name", hwmon)).is_err()
-                || fs::metadata(format!("{}/temp1_input", hwmon)).is_err()
-            {
-                continue;
+            for hwmon in read_dir {
+                let hwmon = format!(
+                    "/sys/class/hwmon/{}",
+                    hwmon.unwrap().file_name().to_str().unwrap()
+                );
+                if fs::metadata(format!("{}/name", hwmon)).is_err()
+                    || fs::metadata(format!("{}/temp1_input", hwmon)).is_err()
+                {
+                    continue;
+                }
+                if ["k10temp", "coretemp"].contains(
+                    &fs::read_to_string(format!("{}/name", hwmon))
+                        .unwrap()
+                        .as_str()
+                        .trim(),
+                ) {
+                    result.temperature = fs::read_to_string(format!("{}/temp1_input", hwmon))
+                        .unwrap()
+                        .trim()
+                        .parse::<u32>()
+                        .unwrap() as f32
+                        / 1000.0;
+                    break;
+                }
             }
-            if ["k10temp", "coretemp"].contains(
-                &fs::read_to_string(format!("{}/name", hwmon))
-                    .unwrap()
-                    .as_str()
-                    .trim(),
-            ) {
-                result.temperature = fs::read_to_string(format!("{}/temp1_input", hwmon))
-                    .unwrap()
-                    .trim()
-                    .parse::<u32>()
-                    .unwrap() as f32
-                    / 1000.0;
-                break;
-            }
-        }
         }
     }
 

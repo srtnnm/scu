@@ -8,6 +8,8 @@ mod utils;
 use std::collections::BTreeMap;
 use std::fmt::Write;
 
+use std::env;
+
 fn get_len(str: &String) -> usize {
     str.chars().count()
 }
@@ -302,7 +304,10 @@ fn get_param_max_len(map: BTreeMap<String, Vec<String>>) -> usize {
     result
 }
 
-fn format_info(map: BTreeMap<String, Vec<String>>, is_in_pipe: bool) -> BTreeMap<String, Vec<String>> {
+fn format_info(
+    map: BTreeMap<String, Vec<String>>,
+    is_in_pipe: bool,
+) -> BTreeMap<String, Vec<String>> {
     let mut result: BTreeMap<String, Vec<String>> = BTreeMap::new();
 
     let max_param_len = get_param_max_len(map.clone());
@@ -322,7 +327,11 @@ fn format_info(map: BTreeMap<String, Vec<String>>, is_in_pipe: bool) -> BTreeMap
                         buf.push(format!(
                             "{}:{}{}",
                             line_param,
-                            " ".repeat(if !is_in_pipe { max_param_len + 2 - param_len } else { 1 }),
+                            " ".repeat(if !is_in_pipe {
+                                max_param_len + 2 - param_len
+                            } else {
+                                1
+                            }),
                             line_val
                         ));
                     }
@@ -344,113 +353,126 @@ fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
     let mut result = format!("\x1b[48;2;{r};{g};{b}m{str}\x1B[0m");
     if (r + g + b) / 3 > 123 {
         result = colorize(&result, 0, 0, 0);
-    } else { // avoid terminal's text color
+    } else {
+        // avoid terminal's text color
         result = colorize(&result, 255, 255, 255);
     }
     result
 }
 
-fn print_info(whale: bool) {
+fn print_info(whale: bool, stdout: bool) {
     let is_in_pipe: bool = unsafe { utils::libc::isatty(utils::libc::STDOUT_FILENO) == 0 };
     let info = format_info(get_info(), is_in_pipe);
 
-    if !is_in_pipe {
-    let max_len = get_map_max_len(info.clone());
-    let mut to_display: Vec<String> = Vec::new();
-    for category in info.keys().rev() {
-        to_display.push(format!(
-            "{}─┤ {} ├{}{}",
-            if Some(category) == info.keys().next_back() {
-                "┌"
-            } else {
-                "├"
-            },
-            category,
-            "─".repeat(max_len - get_len(category) - 3),
-            if Some(category) == info.keys().next_back() {
-                "┐"
-            } else {
-                "┤"
-            }
-        ));
-        info.get(category.as_str())
-            .unwrap()
-            .iter()
-            .for_each(|line| {
-                to_display.push(format!(
-                    "│ {}{}│",
-                    line,
-                    " ".repeat(max_len - get_len(line) + 1)
-                ))
-            });
-    }
-    to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
-
-    let mut distro_name = software::os::get_name().name;
-    if distro_name == "Unknown" {
-        distro_name = "Linux".to_string();
-    } else {
-        for trash in ["/", "GNU", "Linux"] {
-            distro_name = distro_name.replace(trash, "");
-        }
-    }
-    let mut logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
-    if whale {
-        logo_lines = utils::ascii_art::WHALE.split("\0").map(|l| l.to_string()).collect();
-        distro_name = "Whale".to_string();
-    }
-    let logo_max_len = get_max_len(logo_lines.clone());
-    if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
-        && to_display.len() >= logo_lines.len() + 3
-    {
-        let _logo_box_height = logo_lines.len() + 2;
-        for line in 0..to_display.len() {
-            if line == 0 || line == _logo_box_height - 1 {
-                let info_box_frame_element = to_display[line].pop().unwrap();
-                to_display[line].push_str(match info_box_frame_element {
-                    '┐' => "┬",
-                    '│' => "├",
-                    '┤' => "┼",
-                    '┘' => "┴",
-                    _ => "",
+    if !is_in_pipe && !stdout {
+        let max_len = get_map_max_len(info.clone());
+        let mut to_display: Vec<String> = Vec::new();
+        for category in info.keys().rev() {
+            to_display.push(format!(
+                "{}─┤ {} ├{}{}",
+                if Some(category) == info.keys().next_back() {
+                    "┌"
+                } else {
+                    "├"
+                },
+                category,
+                "─".repeat(max_len - get_len(category) - 3),
+                if Some(category) == info.keys().next_back() {
+                    "┐"
+                } else {
+                    "┤"
+                }
+            ));
+            info.get(category.as_str())
+                .unwrap()
+                .iter()
+                .for_each(|line| {
+                    to_display.push(format!(
+                        "│ {}{}│",
+                        line,
+                        " ".repeat(max_len - get_len(line) + 1)
+                    ))
                 });
-                to_display[line].push_str(&format!(
-                    "{}{}",
-                    "─".repeat(logo_max_len + 2),
-                    match line {
-                        0 => "┐",
-                        _logo_box_height => "┘",
-                    }
-                ));
-            }
-            if line > 0 && line - 1 < logo_lines.len() {
-                let color = utils::distro_colors::get_color(&distro_name);
-                let colorized_line = match color {
-                    Some(color) => {
-                        colorize_background(&logo_lines[line - 1], color.r, color.g, color.b)
-                    }
-                    _ => logo_lines[line - 1].to_string(),
-                };
-                to_display[line].push_str(&format!(
-                    " {}{} │",
-                    colorized_line,
-                    " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
-                ));
+        }
+        to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
+
+        let mut distro_name = software::os::get_name().name;
+        if distro_name == "Unknown" {
+            distro_name = "Linux".to_string();
+        } else {
+            for trash in ["/", "GNU", "Linux"] {
+                distro_name = distro_name.replace(trash, "");
             }
         }
-    }
+        let mut logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+        if whale {
+            logo_lines = utils::ascii_art::WHALE
+                .split("\0")
+                .map(|l| l.to_string())
+                .collect();
+            distro_name = "Whale".to_string();
+        }
+        let logo_max_len = get_max_len(logo_lines.clone());
+        if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
+            && to_display.len() >= logo_lines.len() + 3
+        {
+            let _logo_box_height = logo_lines.len() + 2;
+            for line in 0..to_display.len() {
+                if line == 0 || line == _logo_box_height - 1 {
+                    let info_box_frame_element = to_display[line].pop().unwrap();
+                    to_display[line].push_str(match info_box_frame_element {
+                        '┐' => "┬",
+                        '│' => "├",
+                        '┤' => "┼",
+                        '┘' => "┴",
+                        _ => "",
+                    });
+                    to_display[line].push_str(&format!(
+                        "{}{}",
+                        "─".repeat(logo_max_len + 2),
+                        match line {
+                            0 => "┐",
+                            _logo_box_height => "┘",
+                        }
+                    ));
+                }
+                if line > 0 && line - 1 < logo_lines.len() {
+                    let color = utils::distro_colors::get_color(&distro_name);
+                    let colorized_line = match color {
+                        Some(color) => {
+                            colorize_background(&logo_lines[line - 1], color.r, color.g, color.b)
+                        }
+                        _ => logo_lines[line - 1].to_string(),
+                    };
+                    to_display[line].push_str(&format!(
+                        " {}{} │",
+                        colorized_line,
+                        " ".repeat(logo_max_len - get_len(&logo_lines[line - 1].to_string()))
+                    ));
+                }
+            }
+        }
 
-    // Display info
-    to_display.iter().for_each(|info_line| {
-        println!("{}", info_line);
-    });
+        // Display info
+        to_display.iter().for_each(|info_line| {
+            println!("{}", info_line);
+        });
     } else {
-        info.keys().rev().for_each(|key| { println!("- {}", key); info.get(key.as_str()).unwrap().iter().for_each(|line| { println!("{}", line); }); });
+        info.keys().rev().for_each(|key| {
+            println!("- {}", key);
+            info.get(key.as_str()).unwrap().iter().for_each(|line| {
+                println!("{}", line);
+            });
+        });
     }
 }
 
 fn main() {
     //parse command line
-    let args: Vec<String> = std::env::args().collect();
-    print_info(args.contains(&"--whale".to_string()));
+    let args: Vec<String> = env::args().collect();
+
+    print_info(
+        args.contains(&"--whale".to_string()),
+        args.contains(&"--stdout".to_string()),
+    );
 }

@@ -11,7 +11,7 @@ pub struct OSRelease {
 pub fn get_name() -> OSRelease {
     let mut result = OSRelease {
         pretty_name: String::new(),
-        name: String::new()
+        name: String::new(),
     };
 
     if fs::metadata("/etc/os-release").is_ok() {
@@ -19,7 +19,7 @@ pub fn get_name() -> OSRelease {
             if line.starts_with("PRETTY_NAME=") {
                 result.pretty_name = line.split("NAME=").nth(1).unwrap().replace('\"', "");
             } else if line.starts_with("NAME=") {
-                result.name = line.split("NAME=").nth(1).unwrap().replace('\"',"");
+                result.name = line.split("NAME=").nth(1).unwrap().replace('\"', "");
             }
         }
     } else if fs::metadata("/system/app").is_ok() && fs::metadata("/system/priv-app").is_ok() {
