@@ -67,6 +67,7 @@ pub fn get_device_model() -> Option<String> {
         "System Product Name",
         "System Version",
         "To Be Filled By O.E.M.",
+        "Default string",
     ] {
         result = result.replace(trash, "");
     }
