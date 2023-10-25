@@ -115,6 +115,8 @@ pub fn get_info() -> CPUInfo {
         }
     }
 
+    result.model = utils::string::remove_multiple_spaces(result.model);
+
     result.frequency = utils::converter::frequency_from_mhz(max_freq_mhz);
 
     if !vendor.is_empty() {
