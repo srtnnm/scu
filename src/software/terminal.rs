@@ -14,6 +14,7 @@ fn bin_to_name(bin_name: String) -> String {
         "st" => "ST",
         "xfce4-terminal" => "XFCE4 Terminal",
         "kitty" => "Kitty",
+        "crosh" => "ChromeOS developer shell",
         _ => "",
     })
 }
@@ -29,6 +30,10 @@ pub fn get_name() -> String {
             break;
         }
         let info = info.unwrap();
+        if info.command == "ld-linux-x86-64" && info.cmdline.contains("cros-containers") {
+            result = "Crostini LXC container".to_string();
+            break;
+        }
         let got_name = bin_to_name(info.command);
         if !got_name.is_empty() {
             return got_name;
