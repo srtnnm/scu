@@ -28,7 +28,6 @@ pub fn get_info() -> Vec<PackageManager> {
         ("flatpak", Vec::from(["list"])),
         ("pacman", Vec::from(["-Qq"])),
         ("rpm", Vec::from(["-qa"])),
-        ("snap", Vec::from(["list"])),
     ]);
 
     let managers = detect_managers(list_packages_command.clone().into_keys().collect());
