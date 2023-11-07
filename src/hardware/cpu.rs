@@ -28,7 +28,7 @@ fn extract_model_name(mut _str: String) -> String {
         "\\((R|r)\\)",
         "CPU",
         "Processor",
-        "[Dual,Quad,Six,Eight]-Core",
+        "(Dual|Quad|Six|Eight)-Core",
         "[[:digit:]]+-Core", // regular expression for "2-Core", "4-Core", etc.
         "Core",
         "Technologies, Inc",
