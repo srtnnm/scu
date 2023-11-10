@@ -1,4 +1,4 @@
-#![allow(unused_must_use)]
+#![allow(dead_code, unused_must_use)]
 mod hardware;
 pub mod pci_ids;
 mod software;
