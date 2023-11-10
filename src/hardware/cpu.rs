@@ -89,7 +89,9 @@ pub fn get_info() -> CPUInfo {
         }
         match variable.trim() {
             "model name" | "Hardware" => {
-                result.model = extract_model_name(value.trim().to_string());
+                result.model = utils::string::remove_multiple_spaces(extract_model_name(
+                    value.trim().to_string(),
+                ));
             }
             "vendor_id" => {
                 vendor = get_vendor(value.as_str());

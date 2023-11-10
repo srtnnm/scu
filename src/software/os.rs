@@ -69,12 +69,18 @@ pub fn get_hostname() -> String {
 }
 
 pub fn get_shell() -> String {
-    let mut result = String::from("");
+    let mut result: String = String::new();
     let mut ppid = utils::process::get_ppid(utils::process::get_pid()).unwrap();
     while ppid > 1 {
         let command = utils::process::get_info(ppid).unwrap().command;
-        if ["bash", "fish", "tcsh", "zsh", "dash"].contains(&command.as_str()) {
-            result = command;
+        if ["bash", "fish", "tcsh", "ksh", "zsh", "dash"].contains(&command.as_str()) {
+            result = command.clone();
+            if command != "dash" {
+                match utils::get_version(command.as_str()) {
+                    Some(v) => result.push_str(&format!(" v{v}")),
+                    None => {}
+                }
+            }
             break;
         }
         ppid = utils::process::get_ppid(ppid).unwrap();

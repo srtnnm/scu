@@ -1,11 +1,6 @@
 use std::fs;
 use std::path::Path;
 
-pub enum BatteryStatus {
-    Charging,
-    Discharging,
-}
-
 pub struct BatteryInfo {
     pub model: String,
     pub technology: String,

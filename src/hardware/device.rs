@@ -1,3 +1,4 @@
+use crate::utils;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
@@ -75,5 +76,7 @@ pub fn get_device_model() -> Option<String> {
     // make asus brandname shorter
     result = result.replace("ASUSTeK COMPUTER INC.", "ASUS");
 
-    Some(result.replace(['\0', '\n'], "").trim().to_string())
+    Some(utils::string::remove_multiple_spaces(
+        result.replace(['\0', '\n'], "").to_string(),
+    ))
 }

@@ -1,7 +1,7 @@
 pub fn remove_multiple_spaces(_str: String) -> String {
-    _str.trim()
-        .split(' ')
+    _str.split(' ')
         .filter(|s| !s.is_empty())
-        .collect::<Vec<_>>()
-        .join(" ")
+        .fold(String::new(), |a, b| a + b + " ")
+        .trim()
+        .to_string()
 }

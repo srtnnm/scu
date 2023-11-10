@@ -1,5 +1,4 @@
-use crate::utils::process;
-use std::fs;
+use crate::utils;
 use std::path::{Path, PathBuf};
 
 pub struct InitSystem {
@@ -18,11 +17,14 @@ fn is_executable(file: PathBuf) -> bool {
 }
 
 fn is_service(file: PathBuf) -> bool {
-    if (is_executable(file.clone())
-        || (file.is_file() && file.to_string_lossy().contains(".rc")/* android */))
-        && !file.is_symlink()
-    {
-        return true;
+    let extension = file.extension();
+    if let Some(extension) = extension {
+        if (is_executable(file.clone())
+            || (file.is_file() && ["service", "rc"].contains(&extension.to_str().unwrap())))
+            && !file.is_symlink()
+        {
+            return true;
+        }
     }
 
     false
@@ -33,7 +35,7 @@ pub fn detect() -> Option<InitSystem> {
         name: "".to_string(),
         count_services: 0,
     };
-    let proc_info = process::get_info(1);
+    let proc_info = utils::process::get_info(1);
 
     if let Ok(proc_info) = proc_info {
         result.name = String::from(match proc_info.command.trim() {
@@ -62,17 +64,25 @@ pub fn detect() -> Option<InitSystem> {
             _ => "Unknown",
         });
 
-        for services_dir in ["/etc/init.d", "/etc/init"] {
-            if Path::new(services_dir).exists() {
-                for file in fs::read_dir(services_dir).unwrap() {
-                    let file = file.unwrap().path();
-                    if is_service(Path::new(file.as_path()).to_path_buf()) {
-                        result.count_services += 1;
-                    }
+        if result.name == "SystemD" {
+            result.count_services =
+                utils::fs::scan_dir(std::path::PathBuf::from("/lib/systemd/system"))
+                    .iter()
+                    .map(|path| path.clone())
+                    .filter(|s| is_service(s.clone()))
+                    .count() as u16
+        } else {
+            for services_dir in ["/etc/init.d", "/etc/init"] {
+                if Path::new(services_dir).exists() {
+                    result.count_services = utils::fs::scan_dir(PathBuf::from(services_dir))
+                        .iter()
+                        .map(|p| p.clone())
+                        .filter(|p| is_service(p.clone()))
+                        .count() as u16;
                 }
-            }
-            if result.count_services != 0 {
-                break;
+                if result.count_services > 0 {
+                    break;
+                }
             }
         }
 

@@ -36,3 +36,21 @@ pub fn which(name: &str) -> Option<String> {
     }
     None
 }
+
+pub fn scan_dir(path: std::path::PathBuf) -> Vec<std::path::PathBuf> {
+    let mut result: Vec<std::path::PathBuf> = Vec::new();
+    if let Ok(readdir) = fs::read_dir(path) {
+        for entry in readdir {
+            if let Ok(entry) = entry {
+                if entry.metadata().unwrap().is_dir() {
+                    scan_dir(entry.path())
+                        .iter()
+                        .for_each(|e| result.push(e.clone()));
+                } else {
+                    result.push(entry.path());
+                }
+            }
+        }
+    }
+    result
+}

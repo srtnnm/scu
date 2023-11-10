@@ -1,4 +1,4 @@
-#![allow(dead_code, unused_must_use)]
+#![allow(unused_must_use)]
 mod hardware;
 pub mod pci_ids;
 mod software;
@@ -150,12 +150,22 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
 
     // Memory
     let mem_info = hardware::ram::get_info();
-    buf.push_str(format!("RAM: {}MiB / {}MiB\0", mem_info.used.mb, mem_info.total.mb).as_str());
+    buf.push_str(
+        format!(
+            "RAM: {}MiB / {}MiB [{:.1}%]\0",
+            mem_info.used.mb,
+            mem_info.total.mb,
+            utils::percentage(mem_info.total.mb as u64, mem_info.used.mb as u64)
+        )
+        .as_str(),
+    );
     if mem_info.swap_enabled {
         buf.push_str(
             format!(
-                "Swap: {}MiB / {}MiB\0",
-                mem_info.swap_used.mb, mem_info.swap_total.mb
+                "Swap: {}MiB / {}MiB [{:.1}%]\0",
+                mem_info.swap_used.mb,
+                mem_info.swap_total.mb,
+                utils::percentage(mem_info.swap_total.mb as u64, mem_info.swap_used.mb as u64)
             )
             .as_str(),
         );
@@ -397,7 +407,7 @@ fn print_info(whale: bool, stdout: bool) {
         to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
 
         let mut distro_name = software::os::get_name().name;
-        if distro_name == "Unknown" {
+        if distro_name.is_empty() {
             distro_name = "Linux".to_string();
         } else {
             for trash in ["/", "GNU", "Linux"] {
@@ -454,16 +464,16 @@ fn print_info(whale: bool, stdout: bool) {
         }
 
         // Display info
-        to_display.iter().for_each(|info_line| {
-            println!("{}", info_line);
-        });
+        for l in to_display {
+            println!("{l}");
+        }
     } else {
-        info.keys().rev().for_each(|key| {
+        for key in info.keys().rev() {
             println!("- {}", key);
-            info.get(key.as_str()).unwrap().iter().for_each(|line| {
+            for line in info.get(key.as_str()).unwrap() {
                 println!("{}", line);
-            });
-        });
+            }
+        }
     }
 }
 
