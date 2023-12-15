@@ -35,8 +35,12 @@ pub fn get_battery_info() -> Option<BatteryInfo> {
     }
 
     if Path::new(&battery_dir).exists() {
-        result.model = match fs::read_to_string(format!("{}/model_name", battery_dir)) {
+        let vendor = match fs::read_to_string(format!("{}/manufacturer", battery_dir)) {
             Ok(content) => content.trim().to_string(),
+            Err(_) => "Unknown".to_string(),
+        };
+        result.model = match fs::read_to_string(format!("{}/model_name", battery_dir)) {
+            Ok(content) => format!("{vendor} {content}").trim().to_string(),
             Err(_) => "Unknown".to_string(),
         };
         result.technology = match fs::read_to_string(format!("{}/technology", battery_dir)) {

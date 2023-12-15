@@ -332,7 +332,7 @@ fn format_info(
                     let mut line = info_line.split(": ");
                     let line_param = line.next().unwrap();
                     let param_len = get_len(&line_param.to_string());
-                    let line_val = line.next().unwrap().trim().to_string();
+                    let line_val = utils::uniqalize(line.next().unwrap().trim().to_string());
                     if &line_val != "Unknown" && &line_val != "0" {
                         buf.push(format!(
                             "{}:{}{}",

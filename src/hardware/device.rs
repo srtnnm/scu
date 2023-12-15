@@ -35,21 +35,27 @@ pub fn get_device_model() -> Option<String> {
 
         result = format!("{brand} {model}");
     } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
+        && Path::new("/sys/devices/virtual/dmi/id/product_name").exists()
+        && Path::new("/sys/devices/virtual/dmi/id/product_version").exists()
+    {
+        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor")
+            .unwrap()
+            .trim()
+            .to_string();
+        model = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name")
+            .unwrap()
+            .trim()
+            .to_string();
+        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap();
+
+        result = format!("{brand} {model} {version}");
+    } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
         && Path::new("/sys/devices/virtual/dmi/id/board_name").exists()
     {
         brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap();
         model = fs::read_to_string("/sys/devices/virtual/dmi/id/board_name").unwrap();
 
         result = format!("{brand} {model}");
-    } else if Path::new("/sys/devices/virtual/dmi/id/board_vendor").exists()
-        && Path::new("/sys/devices/virtual/dmi/id/product_name").exists()
-        && Path::new("/sys/devices/virtual/dmi/id/product_version").exists()
-    {
-        brand = fs::read_to_string("/sys/devices/virtual/dmi/id/board_vendor").unwrap();
-        model = fs::read_to_string("/sys/devices/virtual/dmi/id/product_name").unwrap();
-        let version = fs::read_to_string("/sys/devices/virtual/dmi/id/product_version").unwrap();
-
-        result = format!("{brand} {model} {version}");
     } else if Path::new("/sys/devices/virtual/dmi/id/product_name").exists()
         && Path::new("/sys/devices/virtual/dmi/id/product_version").exists()
     {
@@ -69,6 +75,7 @@ pub fn get_device_model() -> Option<String> {
         "System Version",
         "To Be Filled By O.E.M.",
         "Default string",
+        "Type1ProductConfigId",
     ] {
         result = result.replace(trash, "");
     }
