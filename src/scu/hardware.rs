@@ -1,0 +1,12 @@
+#[cfg(feature = "battery")]
+pub mod battery;
+#[cfg(feature = "cpu")]
+pub mod cpu;
+#[cfg(feature = "device")]
+pub mod device;
+#[cfg(feature = "drives")]
+pub mod drive;
+#[cfg(feature = "gpu")]
+pub mod gpu;
+#[cfg(feature = "ram")]
+pub mod ram;

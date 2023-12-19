@@ -1,3 +1,5 @@
+#![cfg(feature = "battery")]
+
 use std::fs;
 use std::path::Path;
 

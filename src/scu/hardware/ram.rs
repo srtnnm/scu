@@ -1,3 +1,5 @@
+#![cfg(feature = "ram")]
+
 use regex::Regex;
 use std::fs;
 

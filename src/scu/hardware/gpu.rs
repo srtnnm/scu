@@ -1,4 +1,7 @@
-use crate::pci_ids::PciIdentifiers;
+#![cfg(feature = "gpu")]
+
+use crate::pci_ids;
+
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -102,19 +105,17 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                 }
             }
             if !model.is_empty() {
-                if PciIdentifiers::contains_key(lower(model.as_str()).as_str()) {
+                if pci_ids::contains(lower(model.as_str()).as_str()) {
                     let id = lower(model.as_str());
-                    let name = PciIdentifiers::get(id.as_str());
+                    let name = pci_ids::get(id.as_str());
                     if name.is_some() {
                         model = name.unwrap().to_string();
                     }
                 } else if model.contains(' ')
-                    && PciIdentifiers::contains_key(
-                        lower(model.split(' ').next().unwrap()).as_str(),
-                    )
+                    && pci_ids::contains(lower(model.split(' ').next().unwrap()).as_str())
                 {
                     let id = lower(model.split(' ').next().unwrap());
-                    let name = PciIdentifiers::get(id.as_str());
+                    let name = pci_ids::get(id.as_str());
                     if name.is_some() {
                         model = name.unwrap().to_string();
                     }

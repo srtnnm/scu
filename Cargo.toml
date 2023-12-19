@@ -1,7 +1,16 @@
 [package]
 name = "scu"
-version = "1.1.1"
+version = "1.2.0"
 edition = "2021"
+
+[lib]
+name = "scu"
+path = "src/scu/lib.rs"
+
+[[bin]]
+name = "scu"
+path = "src/main.rs"
+required-features = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami"]
 
 [profile.release]
 strip = true
@@ -9,3 +18,20 @@ lto = true
 
 [dependencies]
 regex = { version = "1", default-features = false, features = ["unicode-perl", "std"] }
+
+[features]
+default = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami"]
+battery = []
+device = []
+drives = []
+cpu = []
+gpu = []
+ram = []
+graphics = []
+init_system = []
+kernel = []
+os = []
+packages = []
+proc = []
+terminal = []
+whoami = []

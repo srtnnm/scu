@@ -1,5 +1,10 @@
-use crate::utils;
+#![cfg(feature = "graphics")]
+
+use crate::utils::extract_version;
+
 use std::env;
+
+use super::proc;
 
 pub fn get_session_type() -> Option<String> {
     return match env::var("XDG_SESSION_TYPE")
@@ -13,7 +18,7 @@ pub fn get_session_type() -> Option<String> {
 }
 
 pub fn detect_de() -> Option<String> {
-    for proc in utils::process::list_process() {
+    for proc in proc::list_process() {
         let de = match proc.command.as_str() {
             "gnome-shell" => "GNOME",
             "plasmashell" => "KDE Plasma",
@@ -31,7 +36,7 @@ pub fn detect_de() -> Option<String> {
 }
 
 pub fn detect_wm() -> Option<String> {
-    for proc in utils::process::list_process() {
+    for proc in proc::list_process() {
         let mut wm = match proc.command.as_str() {
             "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16 (irl 15)
             "kwin_x11" | "kwin_wayland" => "KWin",
@@ -47,7 +52,7 @@ pub fn detect_wm() -> Option<String> {
 
         if !wm.is_empty() {
             if wm != "Hyprland" {
-                match utils::get_version(match wm.as_str() {
+                match extract_version(match wm.as_str() {
                     "Mutter" => "mutter",
                     _ => proc.command.as_str(),
                 }) {

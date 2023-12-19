@@ -1,5 +1,10 @@
+#![cfg(feature = "init_system")]
+
 use crate::utils;
+
 use std::path::{Path, PathBuf};
+
+use super::proc;
 
 pub struct InitSystem {
     pub name: String,
@@ -35,7 +40,7 @@ pub fn detect() -> Option<InitSystem> {
         name: "".to_string(),
         count_services: 0,
     };
-    let proc_info = utils::process::get_info(1);
+    let proc_info = proc::get_info(1);
 
     if let Ok(proc_info) = proc_info {
         result.name = String::from(match proc_info.command.trim() {
@@ -65,16 +70,15 @@ pub fn detect() -> Option<InitSystem> {
         });
 
         if result.name == "SystemD" {
-            result.count_services =
-                utils::fs::scan_dir(std::path::PathBuf::from("/lib/systemd/system"))
-                    .iter()
-                    .map(|path| path.clone())
-                    .filter(|s| is_service(s.clone()))
-                    .count() as u16
+            result.count_services = utils::scan_dir(std::path::PathBuf::from("/lib/systemd/system"))
+                .iter()
+                .map(|path| path.clone())
+                .filter(|s| is_service(s.clone()))
+                .count() as u16
         } else {
             for services_dir in ["/etc/init.d", "/etc/init"] {
                 if Path::new(services_dir).exists() {
-                    result.count_services = utils::fs::scan_dir(PathBuf::from(services_dir))
+                    result.count_services = utils::scan_dir(PathBuf::from(services_dir))
                         .iter()
                         .map(|p| p.clone())
                         .filter(|p| is_service(p.clone()))

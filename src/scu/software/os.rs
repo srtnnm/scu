@@ -1,7 +1,11 @@
-use crate::utils;
-use std::env;
-use std::fs;
+#![cfg(feature = "os")]
+
+use crate::utils::{converter, extract_version};
+
 use std::process::Command;
+use std::{env, fs};
+
+use super::proc;
 
 pub struct OSRelease {
     pub pretty_name: String,
@@ -42,12 +46,12 @@ pub fn get_name() -> OSRelease {
     result
 }
 
-pub fn get_uptime() -> Option<utils::converter::Time> {
+pub fn get_uptime() -> Option<converter::Time> {
     let time = fs::read_to_string("/proc/uptime");
     if let Ok(time) = time {
         let time = time.split('.').next().unwrap().parse::<i32>().unwrap();
 
-        return Some(utils::converter::time_from_seconds(time));
+        return Some(converter::time_from_seconds(time));
     }
 
     None
@@ -70,20 +74,20 @@ pub fn get_hostname() -> String {
 
 pub fn get_shell() -> String {
     let mut result: String = String::new();
-    let mut ppid = utils::process::get_ppid(utils::process::get_pid()).unwrap();
+    let mut ppid = proc::get_ppid(proc::get_pid()).unwrap();
     while ppid > 1 {
-        let command = utils::process::get_info(ppid).unwrap().command;
+        let command = proc::get_info(ppid).unwrap().command;
         if ["bash", "fish", "tcsh", "ksh", "zsh", "dash"].contains(&command.as_str()) {
             result = command.clone();
             if command != "dash" {
-                match utils::get_version(command.as_str()) {
+                match extract_version(command.as_str()) {
                     Some(v) => result.push_str(&format!(" v{v}")),
                     None => {}
                 }
             }
             break;
         }
-        ppid = utils::process::get_ppid(ppid).unwrap();
+        ppid = proc::get_ppid(ppid).unwrap();
     }
     result
 }

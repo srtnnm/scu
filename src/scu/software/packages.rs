@@ -1,4 +1,7 @@
+#![cfg(feature = "packages")]
+
 use crate::utils;
+
 use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
@@ -12,7 +15,7 @@ pub struct PackageManager {
 pub fn detect_managers(managers: Vec<&'static str>) -> Vec<&'static str> {
     let mut result: Vec<&'static str> = Vec::new();
     for mgr in managers {
-        if utils::fs::which(mgr).is_some() {
+        if utils::which(mgr).is_some() {
             result.push(mgr);
         }
     }

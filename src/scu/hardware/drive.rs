@@ -1,3 +1,5 @@
+#![cfg(feature = "drives")]
+
 use std::fs;
 
 use crate::utils;

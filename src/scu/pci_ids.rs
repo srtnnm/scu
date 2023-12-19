@@ -1,6 +1,12 @@
-use std::collections::BTreeMap;
+pub fn contains(id: &str) -> bool {
+    IDS.iter().any(|&(k, _)| id == k)
+}
 
-static IDS: [(&str, &str); 36137] = [
+pub fn get(id: &str) -> Option<&str> {
+    IDS.iter().find(|(k, _)| &id == k).map(|&(_, v)| v)
+}
+
+const IDS: [(&str, &str); 36137] = [
 	("0001","SafeNet (wrong ID)"),
 	("0010","Allied Telesis, Inc (Wrong ID)"),
 	("0010:8139","AT-2500TX V3 Ethernet"),
@@ -36140,18 +36146,3 @@ static IDS: [(&str, &str); 36137] = [
 	("C:12","Broadband"),
 	("C:21","802.1b controller"),
 ];
-
-pub struct PciIdentifiers;
-
-impl PciIdentifiers {
-    pub fn contains_key(key: &str) -> bool {
-        IDS.iter().any(|&(k, _)| key == k)
-    }
-
-    pub fn get(key: &str) -> Option<&str> {
-        IDS.iter().find(|(k, _)| &key == k).map(|&(_, v)| v)
-    }
-}
-pub fn pci_identifiers() -> BTreeMap<&'static str, &'static str> {
-    BTreeMap::from(IDS)
-}

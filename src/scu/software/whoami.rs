@@ -1,3 +1,5 @@
+#![cfg(feature = "whoami")]
+
 use crate::utils::libc::{getpwuid, getuid};
 use std::ffi::CStr;
 

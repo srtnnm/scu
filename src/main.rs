@@ -1,8 +1,11 @@
-#![allow(dead_code, unused_must_use)]
-mod hardware;
-pub mod pci_ids;
-mod software;
+#![allow(unused_must_use)]
+use scu::{
+    hardware, software,
+    utils::{converter, libc},
+};
 
+mod ascii_art;
+mod distro_colors;
 mod utils;
 
 use std::collections::BTreeMap;
@@ -25,7 +28,7 @@ fn get_max_len(arr: Vec<String>) -> usize {
     result
 }
 
-fn drive_size_to_string(size: utils::converter::MemorySize) -> String {
+fn drive_size_to_string(size: converter::MemorySize) -> String {
     let mut _size: f64 = 0_f64;
     let mut suffix = "";
     if size.gb == 0 {
@@ -51,7 +54,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let distro_name = software::os::get_name().pretty_name;
     let uptime = software::os::get_uptime();
     let hostname = software::os::get_hostname();
-    let username = utils::whoami::username().unwrap();
+    let username = software::whoami::username().unwrap();
     let shell = software::os::get_shell();
     let kernel_version = software::kernel::get_version();
     let init_system = software::init_system::detect();
@@ -371,7 +374,7 @@ fn colorize_background(str: &str, r: u16, g: u16, b: u16) -> String {
 }
 
 fn print_info(whale: bool, stdout: bool) {
-    let is_in_pipe: bool = unsafe { utils::libc::isatty(utils::libc::STDOUT_FILENO) == 0 };
+    let is_in_pipe: bool = unsafe { libc::isatty(libc::STDOUT_FILENO) == 0 };
     let info = format_info(get_info(), is_in_pipe);
 
     if !is_in_pipe && !stdout {
@@ -414,9 +417,9 @@ fn print_info(whale: bool, stdout: bool) {
                 distro_name = distro_name.replace(trash, "");
             }
         }
-        let mut logo_lines: Vec<String> = utils::ascii_art::generate(&distro_name);
+        let mut logo_lines: Vec<String> = ascii_art::generate(&distro_name);
         if whale {
-            logo_lines = utils::ascii_art::WHALE
+            logo_lines = ascii_art::WHALE
                 .split("\0")
                 .map(|l| l.to_string())
                 .collect();
@@ -447,7 +450,7 @@ fn print_info(whale: bool, stdout: bool) {
                     ));
                 }
                 if line > 0 && line - 1 < logo_lines.len() {
-                    let color = utils::distro_colors::get_color(&distro_name);
+                    let color = distro_colors::get_color(&distro_name);
                     let colorized_line = match color {
                         Some(color) => {
                             colorize_background(&logo_lines[line - 1], color.r, color.g, color.b)
