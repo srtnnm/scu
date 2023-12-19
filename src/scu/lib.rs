@@ -1,4 +1,6 @@
-pub mod hardware;
+mod hardware;
+pub use hardware::*;
 mod pci_ids;
-pub mod software;
+mod software;
+pub use software::*;
 pub mod utils;

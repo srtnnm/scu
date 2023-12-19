@@ -1,7 +1,7 @@
 #![allow(unused_must_use)]
 use scu::{
-    hardware, software,
     utils::{converter, libc},
+    *,
 };
 
 mod ascii_art;
@@ -50,15 +50,15 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let mut buf = String::new();
 
     // System
-    let device_name = hardware::device::get_device_model();
-    let distro_name = software::os::get_name().pretty_name;
-    let uptime = software::os::get_uptime();
-    let hostname = software::os::get_hostname();
-    let username = software::whoami::username().unwrap();
-    let shell = software::os::get_shell();
-    let kernel_version = software::kernel::get_version();
-    let init_system = software::init_system::detect();
-    let terminal = software::terminal::get_name();
+    let device_name = device::get_device_model();
+    let distro_name = os::get_name().pretty_name;
+    let uptime = os::get_uptime();
+    let hostname = os::get_hostname();
+    let username = whoami::username().unwrap();
+    let shell = os::get_shell();
+    let kernel_version = kernel::get_version();
+    let init_system = init_system::detect();
+    let terminal = terminal::get_name();
 
     write!(buf, "Hostname: {hostname}\0");
     write!(buf, "Username: {username}\0");
@@ -116,7 +116,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.clear();
 
     // Packages
-    let pkg_info = software::packages::get_info();
+    let pkg_info = packages::get_info();
     if !pkg_info.is_empty() {
         for manager in pkg_info {
             buf.push_str(format!("{}: {}\0", manager.manager, manager.count_of_packages).as_str());
@@ -129,7 +129,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Processor
-    let cpu_info = hardware::cpu::get_info();
+    let cpu_info = cpu::get_info();
     buf.push_str(format!("Model: {}\0", cpu_info.model).as_str());
     buf.push_str(format!("Frequency: {:.2}GHz\0", cpu_info.frequency.ghz).as_str());
     if cpu_info.cores > 0 {
@@ -152,7 +152,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.clear();
 
     // Memory
-    let mem_info = hardware::ram::get_info();
+    let mem_info = ram::get_info();
     buf.push_str(
         format!(
             "RAM: {}MiB / {}MiB [{:.1}%]\0",
@@ -181,7 +181,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     buf.clear();
 
     // Battery
-    let battery = hardware::battery::get_battery_info();
+    let battery = battery::get_battery_info();
     if let Some(battery) = battery {
         buf.push_str(
             format!(
@@ -198,7 +198,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Drives
-    let drives = hardware::drive::scan_drives();
+    let drives = drive::scan_drives();
     if let Some(drives) = drives {
         if !drives.is_empty() {
             for drive in drives {
@@ -215,7 +215,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     }
 
     // Graphics
-    let gpus = hardware::gpu::get_info();
+    let gpus = gpu::get_info();
     if let Some(gpus) = gpus {
         let count_gpus = gpus.len();
         for entry in gpus {
@@ -258,15 +258,15 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
             }
         }
     }
-    let session_type = software::graphics::get_session_type();
+    let session_type = graphics::get_session_type();
     if let Some(session_type) = session_type {
         write!(buf, "Session type: {session_type}\0");
     }
-    let de = software::graphics::detect_de();
+    let de = graphics::detect_de();
     if let Some(de) = de {
         write!(buf, "Environment: {de}\0");
     }
-    let wm = software::graphics::detect_wm();
+    let wm = graphics::detect_wm();
     if let Some(wm) = wm {
         write!(buf, "Window manager: {wm}\0");
     }
@@ -409,7 +409,7 @@ fn print_info(whale: bool, stdout: bool) {
         }
         to_display.push(format!("└{}┘", "─".repeat(max_len + 2)));
 
-        let mut distro_name = software::os::get_name().name;
+        let mut distro_name = os::get_name().name;
         if distro_name.is_empty() {
             distro_name = "Linux".to_string();
         } else {
@@ -426,7 +426,7 @@ fn print_info(whale: bool, stdout: bool) {
             distro_name = "Whale".to_string();
         }
         let logo_max_len = get_max_len(logo_lines.clone());
-        if software::terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
+        if terminal::get_size().unwrap().width > max_len + logo_max_len + 3_usize
             && to_display.len() >= logo_lines.len() + 3
         {
             let _logo_box_height = logo_lines.len() + 2;
