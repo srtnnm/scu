@@ -1,6 +1,6 @@
 #![cfg(feature = "graphics")]
 
-use crate::utils::extract_version;
+use crate::version::extract_version;
 
 use std::env;
 

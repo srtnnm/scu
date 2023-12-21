@@ -1,6 +1,6 @@
 #![cfg(feature = "os")]
 
-use crate::utils::{converter, extract_version};
+use crate::{utils::converter, version::extract_version};
 
 use std::process::Command;
 use std::{env, fs};
