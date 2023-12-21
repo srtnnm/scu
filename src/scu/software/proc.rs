@@ -60,10 +60,10 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
                 .to_ascii_lowercase()
                 .as_str()
             {
-                "name" => {
+                "Name" => {
                     result.command = value;
                 }
-                "ppid" => {
+                "PPid" => {
                     result.ppid = value.parse::<u32>().unwrap();
                 }
                 _ => {
