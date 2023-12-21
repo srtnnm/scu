@@ -17,16 +17,16 @@ strip = true
 lto = true
 
 [dependencies]
-regex = { version = "1", default-features = false, features = ["unicode-perl", "std"] }
+regex = { version = "1", default-features = false, features = ["unicode-perl", "std"], optional = true }
 
 [features]
 default = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami"]
 battery = []
 device = []
 drives = []
-cpu = []
+cpu = ["dep:regex"]
 gpu = []
-ram = []
+ram = ["dep:regex"]
 graphics = []
 init_system = []
 kernel = []
