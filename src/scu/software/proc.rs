@@ -53,7 +53,7 @@ pub fn get_info(pid: u32) -> Result<Process, ProcessError> {
     for line in status_content {
         if line.contains(':') {
             let value = line.split(':').nth(1).unwrap().trim().to_string();
-            match line.split(':').next().unwrap().as_str() {
+            match line.split(':').next().unwrap() {
                 "Name" => {
                     result.command = value;
                 }
