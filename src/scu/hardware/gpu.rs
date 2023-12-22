@@ -7,6 +7,8 @@ use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
+use regex::Regex;
+
 pub struct GPUInfo {
     pub model: String,
     pub driver: String,
@@ -49,10 +51,7 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                 .for_each(|hwentry| {
                     let hwentry = hwentry.unwrap().file_name();
                     let hwentry = hwentry.to_str().unwrap();
-                    if regex::Regex::new("hwmon[[:digit:]]")
-                        .unwrap()
-                        .is_match(hwentry)
-                    {
+                    if Regex::new("hwmon[[:digit:]]").unwrap().is_match(hwentry) {
                         hwmon_path = format!("{}/hwmon/{}", entry, hwentry);
                     }
                 });
