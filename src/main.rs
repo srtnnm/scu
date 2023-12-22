@@ -218,7 +218,7 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
     let gpus = gpu::get_info();
     if let Some(gpus) = gpus {
         let count_gpus = gpus.len();
-        for entry in gpus {
+        for entry in gpus.iter().enumerate() {
             let gpu_id = entry.0;
             let gpu_info = entry.1;
             let mut sub_info: Vec<String> = Vec::new();

@@ -3,7 +3,6 @@
 #[cfg(feature = "pci_ids")]
 use crate::pci_ids;
 
-use std::collections::BTreeMap;
 use std::fs;
 use std::path::Path;
 
@@ -21,8 +20,8 @@ fn lower(_str: &str) -> String {
     result
 }
 
-pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
-    let mut result: BTreeMap<u8, GPUInfo> = BTreeMap::new();
+pub fn get_info() -> Option<Vec<GPUInfo>> {
+    let mut result: Vec<GPUInfo> = Vec::new();
 
     if !Path::new("/sys/bus/pci/devices").exists() {
         return None;
@@ -134,18 +133,15 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                 if model.contains(&vendor) {
                     model = model.replace(&vendor, "");
                 }
-                result.insert(
-                    result.len() as u8 + 1,
-                    GPUInfo {
-                        model: if !vendor.is_empty() {
-                            format!("{} ", vendor)
-                        } else {
-                            "".to_string()
-                        } + model.trim(),
-                        driver,
-                        temperature,
-                    },
-                );
+                result.push(GPUInfo {
+                    model: if !vendor.is_empty() {
+                        format!("{} ", vendor)
+                    } else {
+                        "".to_string()
+                    } + model.trim(),
+                    driver,
+                    temperature,
+                });
             }
         }
     }

@@ -10,7 +10,7 @@ path = "src/scu/lib.rs"
 [[bin]]
 name = "scu"
 path = "src/main.rs"
-required-features = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version"]
+required-features = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version","pci_ids"]
 
 [profile.release]
 strip = true
@@ -20,7 +20,7 @@ lto = true
 regex = { version = "1", default-features = false, features = ["unicode-perl", "std"], optional = true }
 
 [features]
-default = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version"]
+default = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version","pci_ids"]
 battery = []
 device = []
 drives = []
