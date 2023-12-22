@@ -230,12 +230,13 @@ fn get_info() -> BTreeMap<String, Vec<String>> {
             }
             buf.push_str(
                 format!(
-                    "GPU{}: {}\0",
+                    "GPU{}: {} {}\0",
                     if count_gpus > 1 {
                         format!(" #{}", gpu_id)
                     } else {
                         String::from("")
                     },
+                    gpu_info.vendor,
                     gpu_info.model,
                 )
                 .as_str(),

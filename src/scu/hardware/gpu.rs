@@ -9,6 +9,7 @@ use std::path::Path;
 use regex::Regex;
 
 pub struct GPUInfo {
+    pub vendor: String,
     pub model: String,
     pub driver: String,
     pub temperature: f32,
@@ -134,11 +135,8 @@ pub fn get_info() -> Option<Vec<GPUInfo>> {
                     model = model.replace(&vendor, "");
                 }
                 result.push(GPUInfo {
-                    model: if !vendor.is_empty() {
-                        format!("{} ", vendor)
-                    } else {
-                        "".to_string()
-                    } + model.trim(),
+                    vendor,
+                    model,
                     driver,
                     temperature,
                 });
