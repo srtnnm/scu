@@ -1,3 +1,5 @@
+#![cfg(feature = "pci_ids")]
+
 pub fn contains(id: &str) -> bool {
     IDS.iter().any(|&(k, _)| id == k)
 }

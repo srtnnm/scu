@@ -1,5 +1,6 @@
 #![cfg(feature = "gpu")]
 
+#[cfg(feature = "pci_ids")]
 use crate::pci_ids;
 
 use std::collections::BTreeMap;
@@ -105,19 +106,21 @@ pub fn get_info() -> Option<BTreeMap<u8, GPUInfo>> {
                 }
             }
             if !model.is_empty() {
-                if pci_ids::contains(lower(model.as_str()).as_str()) {
-                    let id = lower(model.as_str());
-                    let name = pci_ids::get(id.as_str());
-                    if name.is_some() {
-                        model = name.unwrap().to_string();
-                    }
-                } else if model.contains(' ')
-                    && pci_ids::contains(lower(model.split(' ').next().unwrap()).as_str())
-                {
-                    let id = lower(model.split(' ').next().unwrap());
-                    let name = pci_ids::get(id.as_str());
-                    if name.is_some() {
-                        model = name.unwrap().to_string();
+                if cfg!(feature = "pci_ids") {
+                    if pci_ids::contains(lower(model.as_str()).as_str()) {
+                        let id = lower(model.as_str());
+                        let name = pci_ids::get(id.as_str());
+                        if name.is_some() {
+                            model = name.unwrap().to_string();
+                        }
+                    } else if model.contains(' ')
+                        && pci_ids::contains(lower(model.split(' ').next().unwrap()).as_str())
+                    {
+                        let id = lower(model.split(' ').next().unwrap());
+                        let name = pci_ids::get(id.as_str());
+                        if name.is_some() {
+                            model = name.unwrap().to_string();
+                        }
                     }
                 }
                 if model.contains('[') && model.contains(']') {
