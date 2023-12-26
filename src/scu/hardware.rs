@@ -10,3 +10,5 @@ pub mod drive;
 pub mod gpu;
 #[cfg(feature = "ram")]
 pub mod ram;
+#[cfg(feature = "bootmode")]
+pub mod bootmode;
