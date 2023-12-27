@@ -70,7 +70,7 @@ fn get_vendor(vendor_id: &str) -> String {
 pub fn get_info() -> CPUInfo {
     let mut result = CPUInfo {
         model: String::from("Unknown"),
-        frequency: utils::converter::frequency_from_hz(0),
+        frequency: utils::converter::Frequency::new(),
         cores: 0,
         threads: 0,
         temperature: 0.0,
@@ -121,7 +121,7 @@ pub fn get_info() -> CPUInfo {
 
     result.model = utils::string::remove_multiple_spaces(result.model);
 
-    result.frequency = utils::converter::frequency_from_mhz(max_freq_mhz);
+    result.frequency = utils::converter::Frequency::from_mhz(max_freq_mhz);
 
     if !vendor.is_empty() {
         result.model = format!("{} {}", vendor, result.model).trim().to_string();
@@ -146,10 +146,10 @@ pub fn get_info() -> CPUInfo {
 
     // get max_freq
     let cpu_freq_files_path = "/sys/devices/system/cpu/cpu0/cpufreq/";
-    for file in ["bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
+    for file in ["base_frequency", "bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
         let file_path = format!("{}{}", cpu_freq_files_path, file);
         if fs::metadata(file_path.clone()).is_ok() {
-            result.frequency = utils::converter::frequency_from_hz(extract_i64(
+            result.frequency = utils::converter::Frequency::from_hz(extract_i64(
                 fs::read_to_string(file_path.clone()).unwrap().as_str(),
             ));
             break;

@@ -63,10 +63,10 @@ pub fn get_info() -> RAMInfo {
     }
 
     RAMInfo {
-        total: utils::converter::memory_size_from_kb(total),
-        used: utils::converter::memory_size_from_kb(used),
+        total: utils::converter::MemorySize::from_kb(total),
+        used: utils::converter::MemorySize::from_kb(used),
         swap_enabled: swap_total != 0,
-        swap_total: utils::converter::memory_size_from_kb(swap_total),
-        swap_used: utils::converter::memory_size_from_kb(swap_total - swap_free),
+        swap_total: utils::converter::MemorySize::from_kb(swap_total),
+        swap_used: utils::converter::MemorySize::from_kb(swap_total - swap_free),
     }
 }

@@ -51,7 +51,7 @@ pub fn get_uptime() -> Option<converter::Time> {
     if let Ok(time) = time {
         let time = time.split('.').next().unwrap().parse::<i32>().unwrap();
 
-        return Some(converter::time_from_seconds(time));
+        return Some(converter::Time::from_seconds(time));
     }
 
     None

@@ -58,7 +58,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
                 break;
             }
         }
-        let size = utils::converter::memory_size_from_blocks(
+        let size = utils::converter::MemorySize::from_blocks(
             fs::read_to_string(format!("/sys/block/{}/size", device))
                 .unwrap()
                 .replace('\n', "")
