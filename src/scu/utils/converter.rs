@@ -6,6 +6,17 @@ pub struct MemorySize {
     pub gb: i64,
 }
 
+impl MemorySize {
+    pub fn new() -> MemorySize {
+        MemorySize {
+            blocks: 0,
+            kb: 0,
+            mb: 0,
+            gb: 0,
+        }
+    }
+}
+
 pub fn memory_size_from_blocks(_blocks: i64) -> MemorySize {
     MemorySize {
         blocks: _blocks,
