@@ -57,11 +57,22 @@ impl std::ops::Add for MemorySize {
 
     fn add(self, other: Self) -> Self {
         Self {
-            blocks: self.blocks+other.blocks,
-            kb: self.kb+other.kb,
-            mb: self.mb+other.mb,
-            gb: self.gb+other.gb,
+            blocks: self.blocks + other.blocks,
+            kb: self.kb + other.kb,
+            mb: self.mb + other.mb,
+            gb: self.gb + other.gb,
         }
+    }
+}
+
+impl std::ops::AddAssign for MemorySize {
+    fn add_assign(&mut self, other: Self) {
+        *self = Self {
+            blocks: self.blocks + other.blocks,
+            kb: self.kb + other.kb,
+            mb: self.mb + other.mb,
+            gb: self.gb + other.gb,
+        };
     }
 }
 
