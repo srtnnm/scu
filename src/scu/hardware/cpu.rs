@@ -146,7 +146,12 @@ pub fn get_info() -> CPUInfo {
 
     // get max_freq
     let cpu_freq_files_path = "/sys/devices/system/cpu/cpu0/cpufreq/";
-    for file in ["base_frequency", "bios_limit", "scaling_max_freq", "cpuinfo_max_freq"] {
+    for file in [
+        "base_frequency",
+        "bios_limit",
+        "scaling_max_freq",
+        "cpuinfo_max_freq",
+    ] {
         let file_path = format!("{}{}", cpu_freq_files_path, file);
         if fs::metadata(file_path.clone()).is_ok() {
             result.frequency = utils::converter::Frequency::from_hz(extract_i64(

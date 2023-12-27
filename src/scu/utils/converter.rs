@@ -52,6 +52,19 @@ impl MemorySize {
     }
 }
 
+impl std::ops::Add for MemorySize {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            blocks: self.blocks+other.blocks,
+            kb: self.kb+other.kb,
+            mb: self.mb+other.mb,
+            gb: self.gb+other.gb,
+        }
+    }
+}
+
 pub struct Time {
     pub seconds: i32,
     pub minutes: i32,
