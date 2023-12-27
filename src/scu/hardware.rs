@@ -1,5 +1,7 @@
 #[cfg(feature = "battery")]
 pub mod battery;
+#[cfg(feature = "bootmode")]
+pub mod bootmode;
 #[cfg(feature = "cpu")]
 pub mod cpu;
 #[cfg(feature = "device")]
@@ -10,5 +12,3 @@ pub mod drive;
 pub mod gpu;
 #[cfg(feature = "ram")]
 pub mod ram;
-#[cfg(feature = "bootmode")]
-pub mod bootmode;

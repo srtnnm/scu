@@ -1,3 +1,4 @@
+#[derive(Clone, PartialEq, Debug)]
 pub struct MemorySize {
     pub blocks: i64,
     pub kb: i64,

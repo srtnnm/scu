@@ -14,4 +14,3 @@ pub mod proc;
 pub mod terminal;
 #[cfg(feature = "whoami")]
 pub mod whoami;
-
