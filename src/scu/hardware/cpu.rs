@@ -5,6 +5,7 @@ use regex::Regex;
 use std::fs;
 
 pub struct CPUInfo {
+    pub vendor: String,
     pub model: String,
     pub frequency: utils::converter::Frequency,
     pub cores: u8,
@@ -69,6 +70,7 @@ fn get_vendor(vendor_id: &str) -> String {
 
 pub fn get_info() -> CPUInfo {
     let mut result = CPUInfo {
+        vendor: String::from("Unknown"),
         model: String::from("Unknown"),
         frequency: utils::converter::Frequency::new(),
         cores: 0,
@@ -77,7 +79,6 @@ pub fn get_info() -> CPUInfo {
     };
 
     // parse /proc/cpuinfo
-    let mut vendor = String::new();
     let mut max_freq_mhz: i32 = 0;
     for line in fs::read_to_string("/proc/cpuinfo")
         .expect("NO /proc/cpuinfo FILE")
@@ -96,7 +97,7 @@ pub fn get_info() -> CPUInfo {
                 ));
             }
             "vendor_id" => {
-                vendor = get_vendor(value.as_str());
+                result.vendor = get_vendor(value.as_str());
             }
             "cpu cores" => {
                 result.cores = value.trim().parse::<u8>().unwrap();
@@ -110,7 +111,7 @@ pub fn get_info() -> CPUInfo {
             "cpu" => {
                 if value.contains("POWER9") {
                     result.model = "POWER9".to_string();
-                    vendor = "IBM".to_string();
+                    result.vendor = "IBM".to_string();
                 }
             }
             _ => {
@@ -122,10 +123,6 @@ pub fn get_info() -> CPUInfo {
     result.model = utils::string::remove_multiple_spaces(result.model);
 
     result.frequency = utils::converter::Frequency::from_mhz(max_freq_mhz);
-
-    if !vendor.is_empty() {
-        result.model = format!("{} {}", vendor, result.model).trim().to_string();
-    }
 
     // get threads (all units)
     if fs::metadata("/sys/bus/cpu/devices").is_ok() {
