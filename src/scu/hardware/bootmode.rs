@@ -1,6 +1,6 @@
 #![cfg(feature = "bootmode")]
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum BootMode {
     BIOS,
     UEFI,
