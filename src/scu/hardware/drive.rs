@@ -62,6 +62,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             || device.starts_with("zram")
             || device.starts_with("ram")
             || device.contains("boot")
+            || device.starts_with("mtdblock")
             || device.starts_with("block")
             || get_devtype(
                 fs::read_to_string(device_uevent.clone())
