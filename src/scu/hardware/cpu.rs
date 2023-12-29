@@ -45,6 +45,9 @@ fn extract_model_name(mut _str: String) -> String {
         "Mobile",
         "Series",
         "Graphics",
+        "redwood",
+        "based",
+        "\\."
     ] {
         let re = Regex::new(trash).unwrap();
         _str = match re.find(&_str) {
@@ -121,6 +124,15 @@ pub fn get_info() -> CPUInfo {
     }
 
     result.model = utils::string::remove_multiple_spaces(result.model);
+
+    // extract vendor from model to vendor field
+    for vendor in ["AMD", "Intel", "Qualcomm", "Unisoc"] {
+        if result.model.contains(vendor) {
+            result.model = result.model.replace(vendor, "");
+            result.vendor = vendor.to_string();
+            break
+        }
+    }
 
     result.frequency = utils::converter::Frequency::from_mhz(max_freq_mhz);
 
