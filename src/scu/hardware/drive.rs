@@ -1,13 +1,30 @@
 #![cfg(feature = "drives")]
 
 use std::fs;
+use std::path::PathBuf;
 
 use crate::utils;
 
+const SYSFS_BLOCKS: &str = "/sys/block";
+
+#[derive(Debug, PartialEq)]
+pub enum DriveTechnology {
+    HDD,
+    SSD,
+}
+
+#[derive(Debug)]
 pub struct Drive {
     pub path: String,
     pub model: String,
     pub size: utils::converter::MemorySize,
+    pub technology: DriveTechnology,
+}
+
+impl Drive {
+    pub fn is_ssd(&self) -> bool {
+        self.technology == DriveTechnology::SSD
+    }
 }
 
 fn get_devtype(content: String) -> String {
@@ -23,17 +40,21 @@ fn get_devtype(content: String) -> String {
 pub fn scan_drives() -> Option<Vec<Drive>> {
     let mut result: Vec<Drive> = Vec::new();
 
-    let block_devices = fs::read_dir("/sys/block");
-    if block_devices.is_err() {
+    let sysblock = PathBuf::from(SYSFS_BLOCKS);
+    if !sysblock.exists() || !sysblock.is_dir() {
         return None;
     }
-    let block_devices = block_devices.unwrap();
-    for block_device in block_devices {
-        let device = block_device.unwrap().file_name().into_string().unwrap();
+    let readdir = fs::read_dir(sysblock);
+    if readdir.is_err() {
+        return None;
+    }
+    for block_device in readdir.unwrap() {
+        let dev = PathBuf::from(block_device.unwrap().path());
+        let device = dev.file_name().unwrap().to_str().unwrap().to_string();
         let mut model = device.clone();
 
-        let device_data = format!("/sys/block/{}/device", device);
-        let device_uevent = format!("/sys/block/{}/uevent", device);
+        let device_data = dev.join("device"); // format!("/sys/block/{}/device", device);
+        let device_uevent = dev.join("uevent"); //format!("/sys/block/{}/uevent", device);
 
         if device.starts_with("dm")
             || device.starts_with("loop")
@@ -42,15 +63,27 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             || device.contains("boot")
             || get_devtype(
                 fs::read_to_string(device_uevent.clone())
-                    .unwrap_or_else(|_| panic!("NO {} FILE", device_uevent)),
+                    .unwrap_or_else(|_| panic!("NO {} FILE", device_uevent.to_str().unwrap())),
             ) != *"disk"
         {
             continue;
         }
 
+        let technology: DriveTechnology = match fs::read_to_string(dev.join("queue/rotational")) {
+            Ok(content) => {
+                if content.trim() == "1" {
+                    DriveTechnology::HDD
+                } else {
+                    DriveTechnology::SSD
+                }
+            }
+            Err(_) => DriveTechnology::HDD,
+        };
+
         for model_name_file in ["model", "name"] {
-            if fs::metadata(format!("{}/{}", device_data, model_name_file)).is_ok() {
-                model = fs::read_to_string(format!("{}/{}", device_data, model_name_file))
+            let model_file = device_data.join(model_name_file);
+            if fs::metadata(model_file.clone()).is_ok() {
+                model = fs::read_to_string(model_file)
                     .unwrap()
                     .replace('\n', "")
                     .trim()
@@ -59,7 +92,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             }
         }
         let size = utils::converter::MemorySize::from_blocks(
-            fs::read_to_string(format!("/sys/block/{}/size", device))
+            fs::read_to_string(dev.join("size"))
                 .unwrap()
                 .replace('\n', "")
                 .parse::<i64>()
@@ -71,8 +104,9 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
 
         result.push(Drive {
             path: format!("/dev/{}", device),
-            model,
+            model: model.to_string(),
             size,
+            technology,
         });
     }
 
