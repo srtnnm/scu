@@ -19,6 +19,7 @@ pub struct Drive {
     pub model: String,
     pub size: utils::converter::MemorySize,
     pub technology: DriveTechnology,
+    pub removable: bool
 }
 
 impl Drive {
@@ -83,6 +84,11 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             Err(_) => DriveTechnology::HDD,
         };
 
+        let removable = match fs::read_to_string(dev.join("removable")) {
+            Ok(content) => content.trim()=="1",
+            Err(_) => false
+        };
+
         for model_name_file in ["model", "name"] {
             let model_file = device_data.join(model_name_file);
             if fs::metadata(model_file.clone()).is_ok() {
@@ -110,6 +116,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             model: model.to_string(),
             size,
             technology,
+            removable
         });
     }
 
