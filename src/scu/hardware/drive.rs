@@ -7,19 +7,19 @@ use crate::utils;
 
 const SYSFS_BLOCKS: &str = "/sys/block";
 
-#[derive(Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq)]
 pub enum DriveTechnology {
     HDD,
     SSD,
 }
 
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct Drive {
     pub path: String,
     pub model: String,
     pub size: utils::converter::MemorySize,
     pub technology: DriveTechnology,
-    pub removable: bool
+    pub removable: bool,
 }
 
 impl Drive {
@@ -85,8 +85,8 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
         };
 
         let removable = match fs::read_to_string(dev.join("removable")) {
-            Ok(content) => content.trim()=="1",
-            Err(_) => false
+            Ok(content) => content.trim() == "1",
+            Err(_) => false,
         };
 
         for model_name_file in ["model", "name"] {
@@ -116,7 +116,7 @@ pub fn scan_drives() -> Option<Vec<Drive>> {
             model: model.to_string(),
             size,
             technology,
-            removable
+            removable,
         });
     }
 
