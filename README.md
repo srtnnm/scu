@@ -1,18 +1,15 @@
 <div align="center">
-
-# SCU
-
-command-line system fetch utility written in [Rust](https://www.rust-lang.org)
-
+  
+# scu
+Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
+  
 ### Currently supported operating systems
-
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
 <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white">
 
 </div>
 
 ## Screenshots
-
 <details height="100px"><summary>Gentoo</summary>
 <div>
 
@@ -35,88 +32,34 @@ command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 </details>
 
 ## Usage
-
 **You can download latest release of scu from [releases](https://github.com/omnitix/scu/releases/latest) or compile it by yourself**
 
 ### CLI flags
+* `--stdout`
 
-<details><summary>--stdout</summary>
+  Outputs information in a much simpler form, forced by default when output is piped
+* `--whale`
 
-> prints info in simplified format \
-  also simplified format works automatically when scu's output is piped \
-  you can use it if you wanna parse scu's output
-
-```
-- System
-Hostname: windows98
-Username: me
-Distro: Manjaro Linux
-Device: HP ENVY Notebook 13-ab0XX
-Kernel: 6.1.69-1-MANJARO
-Init system: SystemD
-  Services: 275
-Terminal: Alacritty
-Shell: zsh v5.9
-Uptime: 20:41:48
-- Processor
-Model: Intel i7-7500U
-Frequency: 2.70GHz
-Computing units: 2 Cores / 4 Threads
-Temperature: 65.0°C
-- Graphics
-GPU: Intel HD Graphics 620
-  Driver: i915
-Session type: Xorg
-Environment: KDE Plasma
-Window manager: KWin
-- Memory
-RAM: 3633MiB / 7705MiB [47.2%]
-Swap: 1192MiB / 9011MiB [13.2%]
-- Packages
-pacman: 1521
-- Drives
-[SSD] THNSN5256GPUK TOSHIBA: 238.0GiB
-- Battery
-Model: Hewlett-Packard Primary
-Technology: Li-ion
-Capacity: 89%
-Status: Charging
-```
-
-</details>
-
-<details><summary>--whale</summary>
-
-> replaces ascii art (distro's name) with whale
-
-![whale](images/with_whale_flag.png)
-
-</details>
+  Replaces logo with beautiful whale 🐳
 
 ### Configuration
-When you starting scu at first time it automatically generates default config. \
-Config path - ```~/.config/scu```
-
-Config format is just elements separated by `,` \
-Default config is ```system,processor,graphics,memory,packages,drives,battery```. You can change the order and remove/add entries as you wish
-
-Entries that doesn't exists will be ignored
+scu generates default config at `~/.config/scu` when you first start it.
+Config format is scu features, separated by commas, the default is `system,processor,graphics,memory,packages,drives,battery`.
+Entries that doesn't exists will be ignored.
 
 ## Compilation
-1. **Install rust with instruction from [Rust official website](https://www.rust-lang.org/tools/install)**
+1. Install Rust toolchain.
+2. Clone scu and compile it with cargo.
+```
+$ git clone https://github.com/omnitix/scu
+$ cd scu
+$ cargo build --release
+```
+Compiled binary is located at `target/release/scu`.
 
-2. **Run this command in SCU directory**
-  ```
-  cargo build --release
-  ```
-  
-> After compilation binary file will be located in ```./target/release/``` \
-  Name of binary file ```scu``` \
-  So full path will be ```./target/release/scu```
-
-> Also you can install scu to your system by copying release binary to /usr/bin directory
-``` shell
-sudo cp target/release/scu /usr/bin && sudo chmod +x /usr/bin/scu
+3. Install systemwide (optional)
+```
+# cp target/release/scu /usr/local/bin
 ```
 
 ### Support development
