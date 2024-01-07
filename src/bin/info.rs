@@ -293,6 +293,9 @@ fn formatted_info(cfg: Config, simplify_output: bool) -> Vec<(String, Vec<String
         }
         let table = tables.get(&table).unwrap().clone();
         let mut table_buf = Vec::<String>::new();
+        if table.entries.is_empty() {
+            continue
+        }
         for entry in table.entries {
             let param_len = len::len(&entry.name);
             let line_val = utils::uniqalize(entry.value);
