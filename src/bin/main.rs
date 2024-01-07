@@ -12,7 +12,7 @@ fn main() {
     let cfg = config::Config::new();
 
     let simplify_output =
-        unsafe { isatty(STDOUT_FILENO) == 0 } || args.contains(&"--stdout".to_string());
+        (unsafe { isatty(STDOUT_FILENO) == 0 } || args.contains(&"--simplify".to_string())) && !args.contains(&"--ignore-pipe".to_string());
 
     info::print_info(cfg, args.contains(&"--whale".to_string()), simplify_output);
 }

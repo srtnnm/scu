@@ -1,6 +1,6 @@
 <div align="center">
   
-# scu
+# SCU
 Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
   
 ### Currently supported operating systems
@@ -32,29 +32,38 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 </details>
 
 ## Usage
+
 **You can download latest release of scu from [releases](https://github.com/omnitix/scu/releases/latest) or compile it by yourself**
 
 ### CLI flags
-* `--stdout`
+
+* `--simplify`
 
   Outputs information in a much simpler form, forced by default when output is piped
+* `--ignore-pipe`
+
+  Outputs information in regular form, even if it's piped (disables --simplify forcing)
 * `--whale`
 
-  Replaces logo with beautiful whale 🐳
+  Replaces ascii art with beautiful whale 🐳
 
 ### Configuration
+
 scu generates default config at `~/.config/scu` when you first start it.
 Config format is scu features, separated by commas, the default is `system,processor,graphics,memory,packages,drives,battery`.
 Entries that doesn't exists will be ignored.
 
 ## Compilation
+
 1. Install Rust toolchain.
 2. Clone scu and compile it with cargo.
-```
+
+``` shell
 $ git clone https://github.com/omnitix/scu
 $ cd scu
 $ cargo build --release
 ```
+
 Compiled binary is located at `target/release/scu`.
 
 3. Install systemwide (optional)
