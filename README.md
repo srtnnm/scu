@@ -50,7 +50,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 ### Configuration
 
 scu generates default config at `~/.config/scu` when you first start it.
-Config format is scu features, separated by commas, the default is `system,processor,graphics,memory,packages,drives,battery`.
+Config format is ordered scu features, separated by commas, the default is `system,processor,graphics,memory,packages,drives,battery`.
 Entries that doesn't exists will be ignored.
 
 ## Compilation
