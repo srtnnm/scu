@@ -9,7 +9,7 @@ pub fn len(str: &str) -> usize {
 }
 
 pub fn max_len(strs: Vec<String>) -> usize {
-    strs.into_iter().map(|s| len(&s)).max().unwrap()
+    strs.into_iter().map(|s| len(&s)).max().unwrap_or(0)
 }
 
 pub fn param_max_len(tables: Vec<Table>) -> usize {
