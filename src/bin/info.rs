@@ -24,7 +24,7 @@ fn drive_size_to_string(size: converter::MemorySize) -> String {
     format!("{:.1}{}", _size, suffix)
 }
 
-fn collect_info(cfg: Vec<String>) -> BTreeMap<String, Table> {
+fn collect_info(cfg: Vec<String>, simplify_output: bool) -> BTreeMap<String, Table> {
     let mut result: BTreeMap<String, Table> = BTreeMap::new();
     let mut buf = Table::new();
 
@@ -126,11 +126,16 @@ fn collect_info(cfg: Vec<String>) -> BTreeMap<String, Table> {
         if cpu_info.temperature > 0.0 {
             buf.add(
                 "Temperature",
-                &utils::colorize::colorize_by_num(
-                    format!("{:.1}°C", cpu_info.temperature).as_str(),
-                    utils::percentage(90, cpu_info.temperature as u64) as u16,
-                    false,
-                ),
+                if !simplify_output {
+                    colorize_by_num(
+                        format!("{:.1}°C", cpu_info.temperature).as_str(),
+                        utils::percentage(90, cpu_info.temperature as u64) as u16,
+                        false,
+                    )
+                } else {
+                    format!("{:.1}°C", cpu_info.temperature)
+                }
+                .as_str(),
             );
         }
 
@@ -152,11 +157,15 @@ fn collect_info(cfg: Vec<String>) -> BTreeMap<String, Table> {
                 "{}MiB / {}MiB [{}]",
                 mem_info.used.mb,
                 mem_info.total.mb,
-                colorize_by_num(
-                    format!("{:.1}%", ram_usage_percents).as_str(),
-                    ram_usage_percents as u16,
-                    false
-                )
+                if !simplify_output {
+                    colorize_by_num(
+                        format!("{:.1}%", ram_usage_percents).as_str(),
+                        ram_usage_percents as u16,
+                        false,
+                    )
+                } else {
+                    format!("{:.1}%", ram_usage_percents)
+                }
             )
             .as_str(),
         );
@@ -167,11 +176,15 @@ fn collect_info(cfg: Vec<String>) -> BTreeMap<String, Table> {
                     "{}MiB / {}MiB [{}]",
                     mem_info.swap_used.mb,
                     mem_info.swap_total.mb,
-                    colorize_by_num(
-                        format!("{:.1}%", swap_usage_percents).as_str(),
-                        swap_usage_percents as u16,
-                        false
-                    )
+                    if !simplify_output {
+                        colorize_by_num(
+                            format!("{:.1}%", swap_usage_percents).as_str(),
+                            swap_usage_percents as u16,
+                            false,
+                        )
+                    } else {
+                        format!("{:.1}%", swap_usage_percents)
+                    }
                 )
                 .as_str(),
             );
@@ -269,7 +282,7 @@ fn collect_info(cfg: Vec<String>) -> BTreeMap<String, Table> {
 }
 
 fn formatted_info(cfg: Config, simplify_output: bool) -> Vec<(String, Vec<String>)> {
-    let tables = collect_info(cfg.order.clone());
+    let tables = collect_info(cfg.order.clone(), simplify_output);
     let mut result: Vec<(String, Vec<String>)> = Vec::new();
 
     let max_param_len = len::param_max_len(tables.clone().into_iter().map(|elm| elm.1).collect());
