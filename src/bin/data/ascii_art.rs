@@ -60,11 +60,11 @@ pub static LETTERS: [(&str, &str); 52] = [
 
 pub static WHALE: &str = "        .                  \0       \":\"                 \0     ___:____     |\"\\/\"|   \0   ,'        `.    \\  /    \0   |  O        \\___/  |    \0 ~^~^~^~^~^~^~^~^~^~^~^~^~ ";
 
-pub fn generate(_str: &str) -> Vec<String> {
+pub fn generate(text: &str) -> Vec<String> {
     let btm = BTreeMap::from(LETTERS);
     let mut result: Vec<String> = Vec::new();
     let mut buf_letters: Vec<Vec<String>> = Vec::new();
-    _str.chars().for_each(|c| {
+    for c in text.chars() {
         let c = String::from(c);
         if btm.contains_key(c.as_str()) {
             let mut letter: Vec<String> = Vec::new();
@@ -73,7 +73,7 @@ pub fn generate(_str: &str) -> Vec<String> {
             });
             buf_letters.push(letter);
         }
-    });
+    }
     for i in 0..5 {
         let mut buf: String = String::new();
         buf_letters.iter().for_each(|c| {

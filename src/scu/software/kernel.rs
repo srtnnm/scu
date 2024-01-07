@@ -7,6 +7,10 @@ pub fn get_version() -> String {
         let mut uts: UtsName = std::mem::zeroed();
         uname(&mut uts);
 
-        return String::from_utf8_lossy(&uts.release).trim().to_string();
+        return String::from_utf8(uts.release.to_vec())
+            .unwrap_or("".to_string())
+            .replace("\0", "")
+            .trim()
+            .to_string();
     }
 }

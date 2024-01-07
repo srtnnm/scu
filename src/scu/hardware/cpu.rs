@@ -47,7 +47,7 @@ fn extract_model_name(mut _str: String) -> String {
         "Graphics",
         "redwood",
         "based",
-        "\\."
+        "\\.",
     ] {
         let re = Regex::new(trash).unwrap();
         _str = match re.find(&_str) {
@@ -130,7 +130,7 @@ pub fn get_info() -> CPUInfo {
         if result.model.contains(vendor) {
             result.model = result.model.replace(vendor, "");
             result.vendor = vendor.to_string();
-            break
+            break;
         }
     }
 

@@ -27,4 +27,10 @@ pub struct UtsName {
 #[repr(C)]
 pub struct Passwd {
     pub pw_name: *const std::os::raw::c_char,
+    pub pw_passwd: *const std::os::raw::c_char,
+    pub pw_uid: *const std::os::raw::c_char,
+    pub pw_gid: *const std::os::raw::c_char,
+    pub pw_dir: *const std::os::raw::c_char,
+    pub pw_gecos: *const std::os::raw::c_char,
+    pub pw_shell: *const std::os::raw::c_char,
 }

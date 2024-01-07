@@ -2,6 +2,8 @@
 name = "scu"
 version = "1.2.0"
 edition = "2021"
+default-run = "scu"
+autobins = false
 
 [lib]
 name = "scu"
@@ -9,7 +11,7 @@ path = "src/scu/lib.rs"
 
 [[bin]]
 name = "scu"
-path = "src/main.rs"
+path = "src/bin/main.rs"
 required-features = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version","pci_ids","bootmode"]
 
 [profile.release]

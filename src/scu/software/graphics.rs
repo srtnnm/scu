@@ -1,7 +1,5 @@
 #![cfg(feature = "graphics")]
 
-use crate::version::extract_version;
-
 use std::env;
 
 use super::proc;
@@ -18,8 +16,8 @@ pub fn get_session_type() -> Option<String> {
 }
 
 pub fn detect_de() -> Option<String> {
-    for proc in proc::list_process() {
-        let de = match proc.command.as_str() {
+    for process in proc::list_process() {
+        let de = match process.command.as_str() {
             "gnome-shell" => "GNOME",
             "plasmashell" => "KDE Plasma",
             "xfce4-session" => "XFCE4",
@@ -31,14 +29,14 @@ pub fn detect_de() -> Option<String> {
             return Some(de.to_string());
         }
     }
-
+    
     None
 }
 
 pub fn detect_wm() -> Option<String> {
-    for proc in proc::list_process() {
-        let mut wm = match proc.command.as_str() {
-            "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16 (irl 15)
+    for process in proc::list_process() {
+        let wm = match process.command.as_str() {
+            "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16 (actually 15)
             "kwin_x11" | "kwin_wayland" => "KWin",
             "xfwm4" => "XFWM4",
             "openbox" => "Openbox",
@@ -51,18 +49,11 @@ pub fn detect_wm() -> Option<String> {
         .to_string();
 
         if !wm.is_empty() {
-            if wm != "Hyprland" {
-                match extract_version(match wm.as_str() {
-                    "Mutter" => "mutter",
-                    _ => proc.command.as_str(),
-                }) {
-                    Some(version) => wm.push_str(&format!(" v{version}")),
-                    _ => {}
-                };
-            }
             return Some(wm);
+        } else {
+            return None;
         }
     }
 
-    None
+    return None;
 }
