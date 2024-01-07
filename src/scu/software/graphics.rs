@@ -50,8 +50,6 @@ pub fn detect_wm() -> Option<String> {
 
         if !wm.is_empty() {
             return Some(wm);
-        } else {
-            return None;
         }
     }
 
