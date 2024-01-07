@@ -94,14 +94,13 @@ Status: Charging
 </details>
 
 ### Configuration
-when you starting scu at first time it automatically generates default config \
-config path - ```~/.config/scu```
+When you starting scu at first time it automatically generates default config. \
+Config path - ```~/.config/scu```
 
-config format is just elements separated by `,` \
-default config is ```system,processor,graphics,memory,packages,drives,battery``` \
-you can change the order and remove/add entries as you wish
+Config format is just elements separated by `,` \
+Default config is ```system,processor,graphics,memory,packages,drives,battery```. You can change the order and remove/add entries as you wish
 
-entries that doesn't exists will be ignored
+Entries that doesn't exists will be ignored
 
 ## Compilation
 1. **Install rust with instruction from [Rust official website](https://www.rust-lang.org/tools/install)**
