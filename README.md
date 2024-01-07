@@ -94,13 +94,11 @@ Status: Charging
 </details>
 
 ### Configuration
-when you starting scu at first time \
-it automatically generates default config \
+when you starting scu at first time it automatically generates default config \
 config path - ```~/.config/scu```
 
 config format is just elements separated by `,` \
 default config is ```system,processor,graphics,memory,packages,drives,battery``` \
-it contains all available information entries \
 you can change the order and remove/add entries as you wish
 
 entries that doesn't exists will be ignored
