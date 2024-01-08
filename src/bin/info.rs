@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+use scu::utils::converter::Size2D;
 use scu::{utils::converter, *};
 
 use crate::config::Config;
@@ -362,7 +363,7 @@ fn add_logo(output_text: &mut Vec<String>, max_len: usize, override_whale: bool)
         ascii_art::generate(&distro_name)
     };
     let logo_max_len = len::max_len(logo_lines.clone());
-    if terminal::get_size().unwrap().width > max_len + logo_max_len + 5_usize
+    if terminal::get_size().unwrap_or(Size2D{width:999,height:999}).width > max_len + logo_max_len + 5_usize
         && output_text.len() >= logo_lines.len() + 3
     {
         let _logo_box_height = logo_lines.len() + 2;
