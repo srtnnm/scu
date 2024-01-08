@@ -2,6 +2,8 @@
 
 use std::env;
 
+use crate::version::extract_version;
+
 use super::proc;
 
 pub fn get_session_type() -> Option<String> {
@@ -33,9 +35,9 @@ pub fn detect_de() -> Option<String> {
     None
 }
 
-pub fn detect_wm() -> Option<String> {
+pub fn detect_wm(enable_version: bool) -> Option<String> {
     for process in proc::list_process() {
-        let wm = match process.command.as_str() {
+        let mut wm = match process.command.as_str() {
             "mutter-x11-fram" => "Mutter", // max /proc/x/comm content lenght is 16 (actually 15)
             "kwin_x11" | "kwin_wayland" => "KWin",
             "xfwm4" => "XFWM4",
@@ -49,6 +51,15 @@ pub fn detect_wm() -> Option<String> {
         .to_string();
 
         if !wm.is_empty() {
+            if enable_version && wm != "Hyprland" {
+                match extract_version(match wm.as_str() {
+                    "Mutter" => "mutter",
+                    _ => process.command.as_str(),
+                }) {
+                    Some(version) => wm.push_str(&format!(" v{version}")),
+                    _ => {}
+                };
+            }
             return Some(wm);
         }
     }

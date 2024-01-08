@@ -24,7 +24,7 @@ fn drive_size_to_string(size: converter::MemorySize) -> String {
     format!("{:.1}{}", _size, suffix)
 }
 
-fn collect_info(cfg: Vec<String>, simplify_output: bool) -> BTreeMap<String, Table> {
+fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) -> BTreeMap<String, Table> {
     let mut result: BTreeMap<String, Table> = BTreeMap::new();
     let mut buf = Table::new();
 
@@ -268,7 +268,7 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool) -> BTreeMap<String, Tab
         if let Some(de) = de {
             buf.add("Environment", &de);
         }
-        let wm = graphics::detect_wm();
+        let wm = graphics::detect_wm(force_version);
         if let Some(wm) = wm {
             buf.add("Window manager", &wm);
         }
@@ -281,8 +281,8 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool) -> BTreeMap<String, Tab
     result
 }
 
-fn formatted_info(cfg: Config, simplify_output: bool) -> Vec<(String, Vec<String>)> {
-    let tables = collect_info(cfg.order.clone(), simplify_output);
+fn formatted_info(cfg: Config, simplify_output: bool, force_version: bool) -> Vec<(String, Vec<String>)> {
+    let tables = collect_info(cfg.order.clone(), simplify_output, force_version);
     let mut result: Vec<(String, Vec<String>)> = Vec::new();
 
     let max_param_len = len::param_max_len(tables.clone().into_iter().map(|elm| elm.1).collect());
@@ -403,8 +403,8 @@ fn add_logo(output_text: &mut Vec<String>, max_len: usize, override_whale: bool)
     }
 }
 
-pub fn print_info(cfg: Config, override_whale: bool, simplify_output: bool) {
-    let info = formatted_info(cfg, simplify_output);
+pub fn print_info(cfg: Config, override_whale: bool, simplify_output: bool, force_version: bool) {
+    let info = formatted_info(cfg, simplify_output, force_version);
 
     if !simplify_output {
         let max_len = info

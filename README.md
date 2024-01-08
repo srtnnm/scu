@@ -43,9 +43,19 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 * `--ignore-pipe`
 
   Outputs information in regular form, even if it's piped (disables --simplify forcing)
+* `--force-versions`
+
+  Enables version fetching for WMs (was disabled by default in commit [a0c0bad](https://github.com/omnitix/scu/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#diff-cdbbefc12a476b75b1d5602de3f284eb522c71cbd5c88328ccc775177991932c) due to bad performance)
 * `--whale`
 
-  Replaces ascii art with beautiful whale 🐳
+  Replaces ascii text with whale 🐳
+* `-v`, `--version`
+
+  Prints scu's version
+
+* `-h`, `--help`
+
+  Prints help page
 
 ### Configuration
 
