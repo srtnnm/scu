@@ -2,7 +2,7 @@ const ORG_NAME: &str = "Omnitix";
 const SOFTWARE_NAME: &str = "scu";
 const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
-const VERSION: &str = "1.3.2";
+const VERSION: &str = "1.3.3";
 const LICENSE: &str = "GNU/GPLv3";
 
 const FLAGS: [(&str, &str); 6] = [
@@ -48,11 +48,11 @@ pub fn print_help() {
 /*
 
 version
-scu - version 1.3.2
+scu - version 1.3.3
 
 
 about
-[Omnitix]/scu - version 1.3.2
+[Omnitix]/scu - version 1.3.3
   description
   Published under LICENCE license
 
