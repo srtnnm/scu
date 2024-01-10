@@ -3,7 +3,7 @@ pub const SOFTWARE_NAME: &str = "scu";
 pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
 pub const VERSION: &str = "1.3.3";
-pub const LICENSE: &str = "GNU/GPLv3";
+pub const PROJECT_URL: &str = "https://github.com/omnitix/scu";
 
 const FLAGS: [(&str, &str); 6] = [
     ("--simplify", "Outputs information in a much simpler form, forced by default when output is piped"),
@@ -28,19 +28,20 @@ pub fn print_help() {
     );
 
     /* show cli flags */
-    println!("Flags:");
-    let max_flag_len = FLAGS.iter().map(|f| f.0.chars().count()).max().unwrap_or(0);
-    for flag in FLAGS {
-        println!(
-            "  {}{}- {}",
-            flag.0,
-            " ".repeat(max_flag_len - flag.0.chars().count() + 2),
-            flag.1
-        );
+    if !FLAGS.is_empty() {
+        println!("Flags:");
+        let max_flag_len = FLAGS.iter().map(|f| f.0.chars().count()).max().unwrap_or(0);
+        for flag in FLAGS {
+            println!(
+                "  {}{}- {}",
+                flag.0,
+                " ".repeat(max_flag_len - flag.0.chars().count() + 2),
+                flag.1
+            );
+        }
     }
 
-    /* print license */
-    println!("\nPublished under {LICENSE} license");
-
-    println!("More info about scu you can read from https://github.com/omnitix/scu")
+    if !PROJECT_URL.is_empty() {
+        println!("More info about scu you can read from {PROJECT_URL}")
+    }
 }
