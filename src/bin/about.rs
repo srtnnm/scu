@@ -1,9 +1,9 @@
-const ORG_NAME: &str = "Omnitix";
-const SOFTWARE_NAME: &str = "scu";
-const DESCRIPTION: &str =
+pub const ORG_NAME: &str = "Omnitix";
+pub const SOFTWARE_NAME: &str = "scu";
+pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
-const VERSION: &str = "1.3.3";
-const LICENSE: &str = "GNU/GPLv3";
+pub const VERSION: &str = "1.3.3";
+pub const LICENSE: &str = "GNU/GPLv3";
 
 const FLAGS: [(&str, &str); 6] = [
     ("--simplify", "Outputs information in a much simpler form, forced by default when output is piped"),
@@ -44,17 +44,3 @@ pub fn print_help() {
 
     println!("More info about scu you can read from https://github.com/omnitix/scu")
 }
-
-/*
-
-version
-scu - version 1.3.3
-
-
-about
-[Omnitix]/scu - version 1.3.3
-  description
-  Published under LICENCE license
-
-
-*/
