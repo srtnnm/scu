@@ -12,8 +12,8 @@ if [ $# -eq 0 ]
   else
     if [[ "$1" =~ ^[0-9]\.[0-9]\.[0-9]$ ]]
     then
-      sed -i "s/version = \"[0-9]\.[0-9]\.[0-9]\"/version = \"$1\"/" Cargo.toml
-      sed -i "s/[0-9]\.[0-9]\.[0-9]/$1/" src/bin/about.rs
+      sed -i "0,/version = \"[0-9]\.[0-9]\.[0-9]\"/s//version = \"$1\"/" Cargo.toml
+      sed -i "s/[0-9]\.[0-9]\.[0-9]/$1/" src/about.rs
       release_build_dir+="/$1"
       mkdir -p $release_build_dir
     else

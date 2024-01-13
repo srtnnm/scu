@@ -9,7 +9,7 @@
     battery
 */
 
-use scu::whoami::{home_dir, userid};
+use libscu::software::whoami::{fetch_home_dir, fetch_uid};
 use std::fs;
 
 const ALL_TABLES: [&str; 7] = [
@@ -59,7 +59,7 @@ impl Config {
         }
     }
     fn init() -> Option<std::path::PathBuf> {
-        if let Some(homedir) = home_dir(userid()) {
+        if let Some(homedir) = fetch_home_dir(fetch_uid()) {
             let full_path =
                 std::path::PathBuf::from(CONFIG_PATH.replace("$HOME", homedir.to_str().unwrap()));
             if full_path.exists() {

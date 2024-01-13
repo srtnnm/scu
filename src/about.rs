@@ -2,7 +2,7 @@ pub const ORG_NAME: &str = "Omnitix";
 pub const SOFTWARE_NAME: &str = "scu";
 pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
-pub const VERSION: &str = "1.3.3";
+pub const VERSION: &str = "1.3.4";
 pub const PROJECT_URL: &str = "https://github.com/omnitix/scu";
 
 const FLAGS: [(&str, &str); 6] = [

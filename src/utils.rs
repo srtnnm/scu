@@ -16,7 +16,7 @@ pub fn uniqalize(_str: String) -> String {
 }
 
 pub fn regex_find(re: &str, s: &str) -> String {
-    match regex::Regex::new(re).unwrap().find(s) {
+    match regex_lite::Regex::new(re).unwrap().find(s) {
         Some(_match) => _match.as_str().to_string(),
         None => "".to_string(),
     }

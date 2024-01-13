@@ -1,42 +1,12 @@
 [package]
 name = "scu"
-version = "1.3.3"
+version = "1.3.4"
 edition = "2021"
-default-run = "scu"
-autobins = false
-
-[lib]
-name = "scu"
-path = "src/scu/lib.rs"
-
-[[bin]]
-name = "scu"
-path = "src/bin/main.rs"
-required-features = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version","pci_ids","bootmode"]
 
 [profile.release]
 strip = true
 lto = true
 
 [dependencies]
-regex = { version = "1", default-features = false, features = ["unicode-perl", "std"], optional = true }
-
-[features]
-default = ["battery","device","drives","cpu","gpu","ram","graphics","init_system","kernel","os","packages","proc","terminal","whoami","extract_version","pci_ids","bootmode"]
-battery = []
-device = []
-drives = []
-cpu = ["dep:regex"]
-gpu = ["dep:regex"]
-ram = ["dep:regex"]
-graphics = ["extract_version"]
-init_system = []
-kernel = []
-os = ["extract_version"]
-packages = []
-proc = []
-terminal = []
-whoami = []
-extract_version = []
-pci_ids = []
-bootmode = []
+regex-lite = { version = "0.1.5" }
+libscu = { git = "https://github.com/omnitix/libscu", features = ["full"] }

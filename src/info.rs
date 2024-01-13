@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
-use scu::utils::converter::Size2D;
-use scu::{utils::converter, *};
+use libscu::utils::converter;
+use libscu::{hardware::*, software::*};
 
 use crate::config::Config;
 use crate::data::{ascii_art, distro_colors, table::*};
@@ -11,13 +11,13 @@ use crate::utils::{colorize::*, len};
 fn drive_size_to_string(size: converter::MemorySize) -> String {
     let mut _size: f64 = 0_f64;
     let mut suffix = "";
-    if size.gb == 0 {
+    if size.gb == 0_f64 {
         _size = size.mb as f64;
         suffix = "MiB";
-    } else if size.gb < 1024 {
+    } else if size.gb < 1024_f64 {
         _size = size.gb as f64;
         suffix = "GiB";
-    } else if size.gb > 1024 {
+    } else if size.gb > 1024_f64 {
         _size = size.gb as f64 / 1024_f64;
         suffix = "TiB";
     }
@@ -25,23 +25,29 @@ fn drive_size_to_string(size: converter::MemorySize) -> String {
     format!("{:.1}{}", _size, suffix)
 }
 
-fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) -> BTreeMap<String, Table> {
+fn collect_info(
+    cfg: Vec<String>,
+    simplify_output: bool,
+    force_version: bool,
+) -> BTreeMap<String, Table> {
     let mut result: BTreeMap<String, Table> = BTreeMap::new();
     let mut buf = Table::new();
 
     // System
     if cfg.contains(&"system".to_string()) {
-        let device_name = device::get_device_model();
-        let distro_name = os::get_name().pretty_name;
-        let uptime = os::get_uptime();
-        let hostname = os::get_hostname();
-        let username = whoami::username().unwrap();
-        let shell = os::get_shell();
-        let kernel_version = kernel::get_version();
-        let init_system = init_system::detect();
-        let terminal = terminal::get_name();
+        let device_name = device::fetch_model();
+        let distro_name = os::fetch_name().pretty_name;
+        let uptime = uptime::fetch();
+        let hostname = hostname::fetch();
+        let username = whoami::fetch_name().unwrap();
+        let shell = shell::fetch_name();
+        let kernel_version = kernel::fetch_version();
+        let init_system = init_system::fetch_info();
+        let terminal = terminal::fetch_name();
 
-        buf.add("Hostname", &hostname);
+        if let Some(hostname) = hostname {
+            buf.add("Hostname", &hostname)
+        }
         buf.add("Username", &username);
         buf.add("Distro", &distro_name);
         if let Some(device_name) = device_name {
@@ -60,7 +66,21 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
             );
         }
         buf.add("Terminal", &terminal);
-        buf.add("Shell", &shell);
+        if let Some(shell) = shell {
+            buf.add(
+                "Shell",
+                format!(
+                    "{}{}",
+                    shell.name,
+                    if let Some(shell_version) = shell.version {
+                        format!(" v{}", shell_version)
+                    } else {
+                        "".to_string()
+                    }
+                )
+                .as_str(),
+            );
+        }
         if let Some(mut uptime) = uptime {
             let mut uptime_str = String::new();
             if uptime.hours > 24 {
@@ -96,7 +116,7 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
 
     // Packages
     if cfg.contains(&"packages".to_string()) {
-        let pkg_info = packages::get_info();
+        let pkg_info = packages::fetch_all();
         if !pkg_info.is_empty() {
             for manager in pkg_info {
                 buf.add(manager.manager, &manager.count_of_packages.to_string());
@@ -109,7 +129,7 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
 
     // Processor
     if cfg.contains(&"processor".to_string()) {
-        let cpu_info = cpu::get_info();
+        let cpu_info = cpu::fetch_info();
         buf.add(
             "Model",
             format!("{} {}", cpu_info.vendor, cpu_info.model).as_str(),
@@ -147,7 +167,7 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
 
     // Memory
     if cfg.contains(&"memory".to_string()) {
-        let mem_info = ram::get_info();
+        let mem_info = ram::fetch_info();
         let (ram_usage_percents, swap_usage_percents) = (
             utils::percentage(mem_info.total.mb as u64, mem_info.used.mb as u64),
             utils::percentage(mem_info.swap_total.mb as u64, mem_info.swap_used.mb as u64),
@@ -198,22 +218,36 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
 
     // Battery
     if cfg.contains(&"battery".to_string()) {
-        let battery = battery::get_battery_info();
-        if let Some(battery) = battery {
-            buf.add("Model", &battery.model);
-            buf.add("Technology", &battery.technology);
-            buf.add("Capacity", format!("{}%", battery.capacity).as_str());
-            buf.add("Status", &battery.status);
+        if let Some(batteries) = battery::fetch_batteries() {
+            if !batteries.is_empty() {
+                let bat = batteries.first().unwrap();
+                let _ = bat.model.clone().is_some_and(|model| {
+                    buf.add("Model", &model);
+                    true
+                });
+                let _ = bat.technology.clone().is_some_and(|technology| {
+                    buf.add("Technology", &technology);
+                    true
+                });
+                let _ = bat.capacity.is_some_and(|capacity| {
+                    buf.add("Capacity", format!("{}%", capacity).as_str());
+                    true
+                });
+                let _ = bat.status.clone().is_some_and(|status| {
+                    buf.add("Status", &status);
+                    true
+                });
 
-            buf.set_name("Battery");
-            result.insert(buf.title.to_ascii_lowercase(), buf.clone());
-            buf.clear();
+                buf.set_name("Battery");
+                result.insert(buf.title.to_ascii_lowercase(), buf.clone());
+                buf.clear();
+            }
         }
     }
 
     // Drives
     if cfg.contains(&"drives".to_string()) {
-        let drives = drive::scan_drives();
+        let drives = drives::fetch_all();
         if let Some(drives) = drives {
             if !drives.is_empty() {
                 for drive in drives {
@@ -231,8 +265,8 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
 
     // Graphics
     if cfg.contains(&"graphics".to_string()) {
-        let gpus = gpu::get_info();
-        if let Some(gpus) = gpus {
+        let gpus = gpu::fetch_all();
+        if !gpus.is_empty() {
             let count_gpus = gpus.len();
             for entry in gpus.iter().enumerate() {
                 let (gpu_id, gpu_info) = (entry.0, entry.1);
@@ -240,12 +274,15 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
                 if gpu_info.driver != "Unknown" {
                     sub_info.push(TableEntry::new("Driver", &gpu_info.driver));
                 }
-                if gpu_info.temperature > 0.0 {
-                    sub_info.push(TableEntry::new(
-                        "Temperature",
-                        format!("{}°C", gpu_info.temperature).as_str(),
-                    ));
-                }
+                let _ = gpu_info.temperature.is_some_and(|temp| {
+                    if temp > 0.0 {
+                        sub_info.push(TableEntry::new(
+                            "Temperature",
+                            format!("{}°C", temp).as_str(),
+                        ));
+                    };
+                    true
+                });
                 buf.add_with_additional(
                     format!(
                         "GPU{}",
@@ -261,17 +298,26 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
                 );
             }
         }
-        let session_type = graphics::get_session_type();
-        if let Some(session_type) = session_type {
-            buf.add("Session type", &session_type);
+        if let Some(display_server) = graphics::fetch_display_server() {
+            buf.add("Display server", format!("{:?}", display_server).as_str());
         }
-        let de = graphics::detect_de();
-        if let Some(de) = de {
+        if let Some(de) = graphics::fetch_desktop_environment() {
             buf.add("Environment", &de);
         }
-        let wm = graphics::detect_wm(force_version);
-        if let Some(wm) = wm {
-            buf.add("Window manager", &wm);
+        if let Some(wm) = graphics::fetch_window_manager(force_version) {
+            buf.add(
+                "Window manager",
+                format!(
+                    "{}{}",
+                    wm.name,
+                    if let Some(wm_version) = wm.version {
+                        format!(" v{}", wm_version)
+                    } else {
+                        "".to_string()
+                    }
+                )
+                .as_str(),
+            );
         }
 
         buf.set_name("Graphics");
@@ -282,7 +328,11 @@ fn collect_info(cfg: Vec<String>, simplify_output: bool, force_version: bool) ->
     result
 }
 
-fn formatted_info(cfg: Config, simplify_output: bool, force_version: bool) -> Vec<(String, Vec<String>)> {
+fn formatted_info(
+    cfg: Config,
+    simplify_output: bool,
+    force_version: bool,
+) -> Vec<(String, Vec<String>)> {
     let tables = collect_info(cfg.order.clone(), simplify_output, force_version);
     let mut result: Vec<(String, Vec<String>)> = Vec::new();
 
@@ -295,7 +345,7 @@ fn formatted_info(cfg: Config, simplify_output: bool, force_version: bool) -> Ve
         let table = tables.get(&table).unwrap().clone();
         let mut table_buf = Vec::<String>::new();
         if table.entries.is_empty() {
-            continue
+            continue;
         }
         for entry in table.entries {
             let param_len = len::len(&entry.name);
@@ -345,7 +395,7 @@ fn formatted_info(cfg: Config, simplify_output: bool, force_version: bool) -> Ve
 }
 
 fn add_logo(output_text: &mut Vec<String>, max_len: usize, override_whale: bool) {
-    let mut distro_name = os::get_name().name;
+    let mut distro_name = os::fetch_name().name;
     if distro_name.is_empty() {
         distro_name = "Linux".to_string();
     } else {
@@ -363,7 +413,13 @@ fn add_logo(output_text: &mut Vec<String>, max_len: usize, override_whale: bool)
         ascii_art::generate(&distro_name)
     };
     let logo_max_len = len::max_len(logo_lines.clone());
-    if terminal::get_size().unwrap_or(Size2D{width:999,height:999}).width > max_len + logo_max_len + 5_usize
+    if terminal::fetch_size()
+        .unwrap_or(converter::Size2D {
+            width: 999,
+            height: 999,
+        })
+        .width
+        > max_len + logo_max_len + 5_usize
         && output_text.len() >= logo_lines.len() + 3
     {
         let _logo_box_height = logo_lines.len() + 2;
