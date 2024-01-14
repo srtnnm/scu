@@ -218,30 +218,29 @@ fn collect_info(
 
     // Battery
     if cfg.contains(&"battery".to_string()) {
-        if let Some(batteries) = battery::fetch_batteries() {
-            if !batteries.is_empty() {
-                let bat = batteries.first().unwrap();
-                let _ = bat.model.clone().is_some_and(|model| {
-                    buf.add("Model", &model);
-                    true
-                });
-                let _ = bat.technology.clone().is_some_and(|technology| {
-                    buf.add("Technology", &technology);
-                    true
-                });
-                let _ = bat.capacity.is_some_and(|capacity| {
-                    buf.add("Capacity", format!("{}%", capacity).as_str());
-                    true
-                });
-                let _ = bat.status.clone().is_some_and(|status| {
-                    buf.add("Status", &status);
-                    true
-                });
+        let batteries = battery::fetch_batteries();
+        if !batteries.is_empty() {
+            let bat = batteries.first().unwrap();
+            let _ = bat.model.clone().is_some_and(|model| {
+                buf.add("Model", &model);
+                true
+            });
+            let _ = bat.technology.clone().is_some_and(|technology| {
+                buf.add("Technology", &technology);
+                true
+            });
+            let _ = bat.capacity.is_some_and(|capacity| {
+                buf.add("Capacity", format!("{}%", capacity).as_str());
+                true
+            });
+            let _ = bat.status.clone().is_some_and(|status| {
+                buf.add("Status", &status);
+                true
+            });
 
-                buf.set_name("Battery");
-                result.insert(buf.title.to_ascii_lowercase(), buf.clone());
-                buf.clear();
-            }
+            buf.set_name("Battery");
+            result.insert(buf.title.to_ascii_lowercase(), buf.clone());
+            buf.clear();
         }
     }
 

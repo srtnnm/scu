@@ -5,7 +5,7 @@ version = 3
 [[package]]
 name = "libscu"
 version = "1.3.3"
-source = "git+https://github.com/omnitix/libscu#e297ef5a82b4b81b7e7ba6bc1955ccb1e101ffc6"
+source = "git+https://github.com/omnitix/libscu#a7490c4756d5aa8aff20a456dcb48d41c84bfcf6"
 dependencies = [
  "regex-lite",
 ]
