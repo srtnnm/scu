@@ -151,6 +151,7 @@ fn collect_info(
                     colorize_by_num(
                         format!("{:.1}°C", cpu_info.temperature).as_str(),
                         utils::percentage(90, cpu_info.temperature as u64) as u16,
+                        100,
                         false,
                     )
                 } else {
@@ -182,6 +183,7 @@ fn collect_info(
                     colorize_by_num(
                         format!("{:.1}%", ram_usage_percents).as_str(),
                         ram_usage_percents as u16,
+                        100,
                         false,
                     )
                 } else {
@@ -201,6 +203,7 @@ fn collect_info(
                         colorize_by_num(
                             format!("{:.1}%", swap_usage_percents).as_str(),
                             swap_usage_percents as u16,
+                            100,
                             false,
                         )
                     } else {
@@ -230,7 +233,18 @@ fn collect_info(
                 true
             });
             let _ = bat.capacity.is_some_and(|capacity| {
-                buf.add("Capacity", format!("{}%", capacity).as_str());
+                buf.add(
+                    "Capacity",
+                    format!(
+                        "{}",
+                        if !simplify_output {
+                            colorize_by_num(format!("{}%", capacity).as_str(), capacity, 100, true)
+                        } else {
+                            format!("{}%", capacity)
+                        }
+                    )
+                    .as_str(),
+                );
                 true
             });
             let _ = bat.status.clone().is_some_and(|status| {
@@ -270,8 +284,8 @@ fn collect_info(
             for entry in gpus.iter().enumerate() {
                 let (gpu_id, gpu_info) = (entry.0, entry.1);
                 let mut sub_info: Vec<TableEntry> = Vec::new();
-                if gpu_info.driver != "Unknown" {
-                    sub_info.push(TableEntry::new("Driver", &gpu_info.driver));
+                if let Some(gpu_driver) = &gpu_info.driver {
+                    sub_info.push(TableEntry::new("Driver", &gpu_driver));
                 }
                 let _ = gpu_info.temperature.is_some_and(|temp| {
                     if temp > 0.0 {
@@ -317,6 +331,34 @@ fn collect_info(
                 )
                 .as_str(),
             );
+        }
+        if let Some(display_brightness) = display::fetch_brightness() {
+            let percentage = utils::percentage(
+                display_brightness.max as u64,
+                display_brightness.current as u64,
+            ) as u16;
+            buf.add(
+                "Brightness",
+                // format!(
+                //     "{}%",
+                //     utils::percentage(
+                //         display_brightness.max as u64,
+                //         display_brightness.current as u64
+                //     ) as u16
+                // )
+                // .as_str(),
+                if !simplify_output {
+                    colorize_by_num(
+                        format!("{}%", percentage).as_str(),
+                        percentage as u16,
+                        40,
+                        true,
+                    )
+                } else {
+                    format!("{}%", percentage)
+                }
+                .as_str(),
+            )
         }
 
         buf.set_name("Graphics");
