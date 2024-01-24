@@ -44,4 +44,6 @@ pub fn print_help() {
     if !PROJECT_URL.is_empty() {
         println!("More info about scu you can read from {PROJECT_URL}")
     }
+
+    std::process::exit(0)
 }

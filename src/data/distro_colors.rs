@@ -27,7 +27,7 @@ pub static COLORS: [(&str, (u16, u16, u16)); 12] = [
 
 pub fn get_color(distro_name: &str) -> Option<Color> {
     for (distro, (r, g, b)) in &COLORS {
-        if String::from(distro_name).contains(distro) {
+        if distro_name.contains(distro) {
             return Some(Color::new(*r, *g, *b));
         }
     }

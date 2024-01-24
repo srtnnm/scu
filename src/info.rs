@@ -5,8 +5,7 @@ use libscu::{hardware::*, software::*};
 
 use crate::config::Config;
 use crate::data::{ascii_art, distro_colors, table::*};
-use crate::utils;
-use crate::utils::{colorize::*, len};
+use crate::utils::{self, colorize::*, len};
 
 fn drive_size_to_string(size: converter::MemorySize) -> String {
     let mut _size: f64 = 0_f64;
@@ -35,27 +34,19 @@ fn collect_info(
 
     // System
     if cfg.contains(&"system".to_string()) {
-        let device_name = device::fetch_model();
-        let distro_name = os::fetch_name().pretty_name;
-        let uptime = uptime::fetch();
-        let hostname = hostname::fetch();
-        let username = whoami::fetch_name().unwrap();
-        let shell = shell::fetch_name();
-        let kernel_version = kernel::fetch_version();
-        let init_system = init_system::fetch_info();
-        let terminal = terminal::fetch_name();
-
-        if let Some(hostname) = hostname {
+        if let Some(hostname) = hostname::fetch() {
             buf.add("Hostname", &hostname)
         }
-        buf.add("Username", &username);
-        buf.add("Distro", &distro_name);
-        if let Some(device_name) = device_name {
+        if let Some(username) = whoami::fetch_name() {
+            buf.add("Username", &username)
+        }
+        buf.add("Distro", &os::fetch_name().pretty_name);
+        if let Some(device_name) = device::fetch_model() {
             buf.add("Device", &device_name);
         }
-        buf.add("Kernel", &kernel_version);
+        buf.add("Kernel", &kernel::fetch_version());
 
-        if let Some(init_system) = init_system {
+        if let Some(init_system) = init_system::fetch_info() {
             buf.add_with_additional(
                 "Init system",
                 &init_system.name,
@@ -65,8 +56,8 @@ fn collect_info(
                 )]),
             );
         }
-        buf.add("Terminal", &terminal);
-        if let Some(shell) = shell {
+        buf.add("Terminal", &terminal::fetch_name());
+        if let Some(shell) = shell::fetch_name() {
             buf.add(
                 "Shell",
                 format!(
@@ -81,7 +72,7 @@ fn collect_info(
                 .as_str(),
             );
         }
-        if let Some(mut uptime) = uptime {
+        if let Some(mut uptime) = uptime::fetch() {
             let mut uptime_str = String::new();
             if uptime.hours > 24 {
                 uptime_str += format!("{}d", uptime.hours / 24).as_str();
@@ -224,33 +215,40 @@ fn collect_info(
         let batteries = battery::fetch_batteries();
         if !batteries.is_empty() {
             let bat = batteries.first().unwrap();
-            let _ = bat.model.clone().is_some_and(|model| {
-                buf.add("Model", &model);
-                true
-            });
-            let _ = bat.technology.clone().is_some_and(|technology| {
-                buf.add("Technology", &technology);
-                true
-            });
-            let _ = bat.capacity.is_some_and(|capacity| {
-                buf.add(
-                    "Capacity",
-                    format!(
-                        "{}",
-                        if !simplify_output {
-                            colorize_by_num(format!("{}%", capacity).as_str(), capacity, 100, true)
-                        } else {
-                            format!("{}%", capacity)
-                        }
-                    )
-                    .as_str(),
-                );
-                true
-            });
-            let _ = bat.status.clone().is_some_and(|status| {
-                buf.add("Status", &status);
-                true
-            });
+            let (_, _, _, _) = (
+                bat.model.as_ref().is_some_and(|model| {
+                    buf.add("Model", &model);
+                    true
+                }),
+                bat.technology.as_ref().is_some_and(|technology| {
+                    buf.add("Technology", &technology);
+                    true
+                }),
+                bat.capacity.is_some_and(|capacity| {
+                    buf.add(
+                        "Capacity",
+                        format!(
+                            "{}",
+                            if !simplify_output {
+                                colorize_by_num(
+                                    format!("{}%", capacity).as_str(),
+                                    capacity,
+                                    100,
+                                    true,
+                                )
+                            } else {
+                                format!("{}%", capacity)
+                            }
+                        )
+                        .as_str(),
+                    );
+                    true
+                }),
+                bat.status.as_ref().is_some_and(|status| {
+                    buf.add("Status", &status);
+                    true
+                }),
+            );
 
             buf.set_name("Battery");
             result.insert(buf.title.to_ascii_lowercase(), buf.clone());
@@ -265,8 +263,13 @@ fn collect_info(
             if !drives.is_empty() {
                 for drive in drives {
                     buf.add(
-                        format!("[{:?}] {}", drive.technology, drive.model).as_str(),
-                        drive_size_to_string(drive.size).as_str(),
+                        drive.model.as_str(),
+                        format!(
+                            "{} [{:?}]",
+                            drive_size_to_string(drive.size),
+                            drive.technology
+                        )
+                        .as_str(),
                     );
                 }
                 buf.set_name("Drives");
@@ -284,29 +287,32 @@ fn collect_info(
             for entry in gpus.iter().enumerate() {
                 let (gpu_id, gpu_info) = (entry.0, entry.1);
                 let mut sub_info: Vec<TableEntry> = Vec::new();
-                if let Some(gpu_driver) = &gpu_info.driver {
-                    sub_info.push(TableEntry::new("Driver", &gpu_driver));
-                }
-                let _ = gpu_info.temperature.is_some_and(|temp| {
-                    if temp > 0.0 {
-                        sub_info.push(TableEntry::new(
-                            "Temperature",
-                            format!("{}°C", temp).as_str(),
-                        ));
-                    };
-                    true
-                });
+                let (_, _) = (
+                    gpu_info.driver.as_ref().is_some_and(|gpu_driver| {
+                        sub_info.push(TableEntry::new("Driver", &gpu_driver));
+                        true
+                    }),
+                    gpu_info.temperature.is_some_and(|temp| {
+                        if temp > 0.0 {
+                            sub_info.push(TableEntry::new(
+                                "Temperature",
+                                format!("{}°C", temp).as_str(),
+                            ));
+                        };
+                        true
+                    }),
+                );
                 buf.add_with_additional(
                     format!(
                         "GPU{}",
                         if count_gpus > 1 {
                             format!(" #{}", gpu_id)
                         } else {
-                            String::from("")
+                            "".to_string()
                         }
                     )
                     .as_str(),
-                    format!("{} {}", gpu_info.vendor, gpu_info.model,).as_str(),
+                    format!("{} {}", gpu_info.vendor, gpu_info.model).as_str(),
                     sub_info,
                 );
             }
@@ -339,14 +345,6 @@ fn collect_info(
             ) as u16;
             buf.add(
                 "Brightness",
-                // format!(
-                //     "{}%",
-                //     utils::percentage(
-                //         display_brightness.max as u64,
-                //         display_brightness.current as u64
-                //     ) as u16
-                // )
-                // .as_str(),
                 if !simplify_output {
                     colorize_by_num(
                         format!("{}%", percentage).as_str(),
@@ -389,24 +387,22 @@ fn formatted_info(
             continue;
         }
         for entry in table.entries {
-            let param_len = len::len(&entry.name);
             let line_val = utils::uniqalize(entry.value);
-            if &line_val != "Unknown" && &line_val != "0" {
+            if !line_val.contains("Unknown") && line_val != "0" {
                 table_buf.push(format!(
-                    "{}:{}{}",
+                    "{}:{}{line_val}",
                     &entry.name,
                     " ".repeat(if !simplify_output {
-                        max_param_len - param_len + 2
+                        max_param_len - len::len(&entry.name) + 2
                     } else {
                         1
                     }),
-                    line_val
                 ));
             }
             for additional in entry.additional.clone().into_iter().enumerate() {
                 let (i, additional) = additional;
                 let add_line_val = utils::uniqalize(additional.value);
-                if &add_line_val != "Unknown" && &add_line_val != "0" {
+                if !add_line_val.contains("Unknown") && add_line_val != "0" {
                     table_buf.push(format!(
                         "{}{}:{}{}",
                         if simplify_output {

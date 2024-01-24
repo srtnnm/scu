@@ -65,12 +65,14 @@ pub fn generate(text: &str) -> Vec<String> {
     let mut result: Vec<String> = Vec::new();
     let mut buf_letters: Vec<Vec<String>> = Vec::new();
     for c in text.chars() {
-        let c = String::from(c);
-        if btm.contains_key(c.as_str()) {
+        if btm.contains_key(c.to_string().as_str()) {
             let mut letter: Vec<String> = Vec::new();
-            btm.get(c.as_str()).unwrap().split("\0").for_each(|line| {
-                letter.push(String::from(line));
-            });
+            btm.get(c.to_string().as_str())
+                .unwrap()
+                .split("\0")
+                .for_each(|line| {
+                    letter.push(String::from(line));
+                });
             buf_letters.push(letter);
         }
     }

@@ -35,7 +35,10 @@ impl Config {
         }
     }
     fn load() -> Vec<String> {
-        let default = DEFAULT_CONFIG.split(",").map(|s| s.to_string()).collect();
+        let default = DEFAULT_CONFIG
+            .split(",")
+            .map(|s| s.to_string())
+            .collect::<Vec<String>>();
         if let Some(cfg_path) = Self::init() {
             if let Ok(cfg_content) = fs::read_to_string(cfg_path) {
                 let order: Vec<String> = cfg_content
@@ -46,34 +49,24 @@ impl Config {
                     .map(|s| s.to_string())
                     .collect();
 
-                if order.is_empty() {
-                    default
-                } else {
-                    order
+                if !order.is_empty() {
+                    return order;
                 }
-            } else {
-                default
             }
-        } else {
-            default
         }
+        default
     }
     fn init() -> Option<std::path::PathBuf> {
         if let Some(homedir) = fetch_home_dir(fetch_uid()) {
             let full_path =
                 std::path::PathBuf::from(CONFIG_PATH.replace("$HOME", homedir.to_str().unwrap()));
-            if full_path.exists() {
+            if full_path.exists()
+                || (fs::create_dir_all(full_path.parent().unwrap()).is_ok()
+                    && fs::write(full_path.clone(), DEFAULT_CONFIG).is_ok())
+            {
                 return Some(full_path);
             }
-            if fs::create_dir_all(full_path.parent().unwrap()).is_ok()
-                && fs::write(full_path.clone(), DEFAULT_CONFIG).is_ok()
-            {
-                Some(full_path)
-            } else {
-                None
-            }
-        } else {
-            None
         }
+        None
     }
 }
