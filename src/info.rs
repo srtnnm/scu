@@ -57,7 +57,7 @@ fn collect_info(
             );
         }
         buf.add("Terminal", &terminal::fetch_name());
-        if let Some(shell) = shell::fetch_name() {
+        if let Some(shell) = shell::fetch_name(force_version) {
             buf.add(
                 "Shell",
                 format!(
@@ -110,7 +110,7 @@ fn collect_info(
         let pkg_info = packages::fetch_all();
         if !pkg_info.is_empty() {
             for manager in pkg_info {
-                buf.add(manager.manager, &manager.count_of_packages.to_string());
+                buf.add(manager.name, &manager.count_of_packages.to_string());
             }
             buf.set_name("Packages");
             result.insert(buf.title.to_ascii_lowercase(), buf.clone());

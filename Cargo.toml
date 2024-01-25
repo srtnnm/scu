@@ -9,4 +9,4 @@ lto = true
 
 [dependencies]
 regex-lite = { version = "0.1.5" }
-libscu = { git = "https://github.com/omnitix/libscu", features = ["full"] }
+libscu = { version = "1.3.6", features = ["full"] }
