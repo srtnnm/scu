@@ -16,10 +16,10 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 ![gentoo](images/gentoo.png)
 </div>
 </details>
-<details height="100px"><summary>Manjaro</summary>
+<details height="100px"><summary>with --simplify</summary>
 <div>
 
-![manjaro](images/manjaro.png)
+![manjaro](images/gentoo_simplify.png)
 </div>
 </details>
 <details height="100px"><summary>Android</summary>
@@ -27,7 +27,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
 > Running in termux
 
-![android](images/android.png)
+![android](images/android.jpg)
 </div>
 </details>
 
@@ -45,7 +45,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
   Outputs information in regular form, even if it's piped (disables --simplify forcing)
 * `--force-versions`
 
-  Enables version fetching for WMs (was disabled by default in commit [a0c0bad](https://github.com/omnitix/scu/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#diff-cdbbefc12a476b75b1d5602de3f284eb522c71cbd5c88328ccc775177991932c) due to bad performance)
+  Enables version fetching (was disabled by default in commit [a0c0bad](https://github.com/omnitix/scu/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#diff-cdbbefc12a476b75b1d5602de3f284eb522c71cbd5c88328ccc775177991932c) due to bad performance)
 * `-v`, `--version`
 
   Prints scu's version
@@ -75,8 +75,5 @@ Compiled binary is located at `target/release/scu`.
 
 3. Install systemwide (optional)
 ```
-# cp target/release/scu /usr/local/bin
+$ cp target/release/scu /usr/local/bin
 ```
-
-### Support development
-Monero ```48yd2LY19xAap9sj4aCQNxHN3Z2XFRw1mRurmSNCR3jiLDKsNtRhDKC6rtwcj3Ji5FjgFUuvZy3jPjghg9gzFiJDErXdZfE```
