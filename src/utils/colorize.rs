@@ -1,3 +1,5 @@
+use crate::utils::percentage;
+
 pub fn text(str: &str, r: u16, g: u16, b: u16) -> String {
     format!("\x1b[38;2;{r};{g};{b}m{str}\x1B[0m")
 }
@@ -13,7 +15,7 @@ pub fn colorize_by_num(string: &str, num_cur: u16, num_max: u16, more_is_better:
     if more_is_better {
         gradient.reverse()
     }
-    let elem = (crate::utils::percentage(num_max as u64, num_cur as u64) as u16 / 20) as usize;
+    let elem = (percentage(num_max as u64, num_cur as u64) as u16 / 20) as usize;
     let (r, g, b) = gradient[if elem > 4 { 4 } else { elem }];
 
     text(string, r, g, b)

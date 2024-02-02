@@ -32,16 +32,16 @@ pub struct Table {
 }
 
 impl Table {
-    pub fn new() -> Self {
+    pub fn new(title: &str) -> Self {
         Self {
-            title: String::new(),
+            title: title.to_string(),
             entries: Vec::new(),
         }
     }
     pub fn add(&mut self, entry_name: &str, entry_value: &str) {
         self.entries.push(TableEntry::new(entry_name, entry_value))
     }
-    pub fn add_with_additional<'a>(
+    pub fn add_with_additional(
         &mut self,
         entry_name: &str,
         entry_value: &str,
@@ -53,11 +53,7 @@ impl Table {
             additional,
         ))
     }
-    pub fn set_name(&mut self, name: &str) {
-        self.title = name.to_string()
-    }
-    pub fn clear(&mut self) {
-        self.title.clear();
-        self.entries.clear();
+    pub fn is_empty(&self) -> bool {
+        self.entries.is_empty()
     }
 }

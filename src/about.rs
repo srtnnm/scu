@@ -5,11 +5,10 @@ pub const DESCRIPTION: &str =
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 pub const PROJECT_URL: &str = "https://github.com/omnitix/scu";
 
-const FLAGS: [(&str, &str); 6] = [
+const FLAGS: [(&str, &str); 5] = [
     ("--simplify", "Outputs information in a much simpler form, forced by default when output is piped"),
     ("--ignore-pipe", "Outputs information in regular form, even if it's piped (disables --simplify)"),
     ("--force-versions", "Enables version fetching for WMs (it was disabled by default due to bad performance on some WMs)"),
-    ("--whale", "Replaces ascii text (OS name) with whale"),
     ("-v --version", "Print version"),
     ("-h --help", "Print this page"),
 ];

@@ -25,7 +25,6 @@ fn main() {
 
     info::print_info(
         cfg,
-        args.contains(&"--whale"),
         simplify_output,
         args.contains(&"--force-versions"),
     );
