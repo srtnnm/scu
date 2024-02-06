@@ -46,7 +46,7 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
             )]),
         );
     }
-    result.add("Terminal", &terminal::fetch_name());
+    result.add("Terminal", &terminal::fetch_name(force_version));
     if let Some(shell) = shell::fetch_name(force_version) {
         result.add(
             "Shell",
