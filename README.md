@@ -66,7 +66,7 @@ Entries that doesn't exists will be ignored.
 2. Clone scu and compile it with cargo.
 
 ``` shell
-$ git clone https://github.com/omnitix/scu
+$ git clone https://gitlab.com/omnitix/scu
 $ cd scu
 $ cargo build --release
 ```
