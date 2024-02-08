@@ -33,7 +33,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
 ## Usage
 
-**You can download latest release of scu from [releases](https://github.com/omnitix/scu/releases/latest) or compile it by yourself**
+**You can download latest release of scu from [releases](https://gitlab.com/omnitix/scu/-/releases) or compile it by yourself**
 
 ### CLI flags
 
@@ -45,7 +45,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
   Outputs information in regular form, even if it's piped (disables --simplify forcing)
 * `--force-versions`
 
-  Enables version fetching (was disabled by default in commit [a0c0bad](https://github.com/omnitix/scu/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#diff-cdbbefc12a476b75b1d5602de3f284eb522c71cbd5c88328ccc775177991932c) due to bad performance)
+  Enables version fetching (was disabled by default in commit [a0c0bada](https://gitlab.com/omnitix/scu/-/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#9541a669da5368e41d92810535106685569e34d0_54_52) due to bad performance)
 * `-v`, `--version`
 
   Prints scu's version
