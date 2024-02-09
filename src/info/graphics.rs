@@ -48,8 +48,8 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     if let Some(display_server) = graphics::fetch_display_server() {
         result.add("Display server", format!("{:?}", display_server).as_str());
     }
-    if let Some(de) = graphics::fetch_desktop_environment() {
-        result.add("Environment", &de);
+    if let Some(environment) = graphics::fetch_environment() {
+        result.add("Environment", &environment);
     }
     if let Some(wm) = graphics::fetch_window_manager(force_version) {
         result.add(
