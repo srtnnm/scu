@@ -37,14 +37,20 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     result.add("Kernel", &kernel::fetch_version());
 
     if let Some(init_system) = init_system::fetch_info() {
-        result.add_with_additional(
-            "Init system",
-            &init_system.name,
-            Vec::from([TableEntry::new(
-                "Services",
-                &init_system.count_services.to_string(),
-            )]),
-        );
+        if init_system.name.is_some() {
+            result.add_with_additional(
+                "Init system",
+                &init_system.name.unwrap_or("".to_string()),
+                if init_system.count_services.is_some() {
+                    Vec::from([TableEntry::new(
+                        "Services",
+                        &init_system.count_services.unwrap_or(0).to_string(),
+                    )])
+                } else {
+                    Vec::new()
+                },
+            );
+        }
     }
     result.add("Terminal", &terminal::fetch_name(force_version));
     if let Some(shell) = shell::fetch_name(force_version) {
