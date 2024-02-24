@@ -70,7 +70,7 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     }
     if let Some(mut uptime) = uptime::fetch() {
         let mut uptime_str = String::new();
-        if uptime.hours > 24 {
+        if uptime.hours >= 24 {
             uptime_str += format!("{}d", uptime.hours / 24).as_str();
         }
         uptime.hours %= 24;
