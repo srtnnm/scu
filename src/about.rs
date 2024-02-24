@@ -3,7 +3,6 @@ pub const SOFTWARE_NAME: &str = "scu";
 pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
-pub const PROJECT_URL: &str = "https://github.com/omnitix/scu";
 
 const FLAGS: [(&str, &str); 5] = [
     ("--simplify", "Outputs information in a much simpler form, forced by default when output is piped"),
@@ -38,10 +37,6 @@ pub fn print_help() {
                 flag.1
             );
         }
-    }
-
-    if !PROJECT_URL.is_empty() {
-        println!("More info about scu you can read from {PROJECT_URL}")
     }
 
     std::process::exit(0)
