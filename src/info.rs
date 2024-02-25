@@ -31,7 +31,9 @@ fn collect_info(
     }
 
     if cfg.contains(&"processor".to_string()) {
-        result.insert("processor".to_string(), processor::collect(simplify_output));
+        if let Some(cputable) = processor::collect(simplify_output) {
+            result.insert("processor".to_string(), cputable);
+        }
     }
 
     if cfg.contains(&"memory".to_string()) {

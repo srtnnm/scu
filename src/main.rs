@@ -23,9 +23,5 @@ fn main() {
     let simplify_output = (unsafe { isatty(STDOUT_FILENO) == 0 } || args.contains(&"--simplify"))
         && !args.contains(&"--ignore-pipe");
 
-    info::print_info(
-        cfg,
-        simplify_output,
-        args.contains(&"--force-versions"),
-    );
+    info::print_info(cfg, simplify_output, args.contains(&"--force-versions"));
 }
