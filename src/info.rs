@@ -44,6 +44,7 @@ fn collect_info(
         result.insert("battery".to_string(), battery::collect(simplify_output));
     }
 
+    #[cfg(target_os="linux")]
     if cfg.contains(&"drives".to_string()) {
         result.insert("drives".to_string(), drives::collect());
     }
