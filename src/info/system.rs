@@ -37,23 +37,33 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     result.add("Kernel", &kernel::fetch_version());
 
     if let Some(init_system) = init_system::fetch_info() {
-        if init_system.name.is_some() {
-            result.add_with_additional(
-                "Init system",
-                &init_system.name.unwrap_or("".to_string()),
-                if init_system.count_services.is_some() {
-                    Vec::from([TableEntry::new(
-                        "Services",
-                        &init_system.count_services.unwrap_or(0).to_string(),
-                    )])
-                } else {
-                    Vec::new()
-                },
-            );
-        }
+        result.add_with_additional(
+            "Init system",
+            &init_system.name,
+            if let Some(number_of_services) = init_system.number_of_services {
+                Vec::from([TableEntry::new("Services", &number_of_services.to_string())])
+            } else {
+                Vec::new()
+            },
+        );
     }
-    result.add("Terminal", &terminal::fetch_name(force_version));
-    if let Some(shell) = shell::fetch_name(force_version) {
+    // result.add("Terminal", &terminal::fetch_info(force_version));
+    let terminal_info = terminal::fetch_info(force_version);
+
+    result.add(
+        "Terminal",
+        &format!(
+            "{}{}",
+            terminal_info.name,
+            if let Some(version) = terminal_info.version {
+                format!(" v{version}")
+            } else {
+                "".to_string()
+            }
+        ),
+    );
+
+    if let Some(shell) = shell::fetch_info(force_version) {
         result.add(
             "Shell",
             format!(

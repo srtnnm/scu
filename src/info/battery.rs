@@ -9,35 +9,36 @@ pub fn collect(simplify: bool) -> Table {
     let batteries = battery::fetch_batteries();
     if !batteries.is_empty() {
         let bat = batteries.first().unwrap();
-        let (_, _, _, _) = (
-            bat.model.as_ref().is_some_and(|model| {
-                result.add("Model", &model);
-                true
-            }),
-            bat.technology.as_ref().is_some_and(|technology| {
-                result.add("Technology", &technology);
-                true
-            }),
-            bat.capacity.is_some_and(|capacity| {
-                result.add(
-                    "Capacity",
-                    format!(
-                        "{}",
-                        if !simplify {
-                            colorize_by_num(format!("{}%", capacity).as_str(), capacity, 100, true)
-                        } else {
-                            format!("{}%", capacity)
-                        }
+
+        result.add("Model", &bat.model);
+
+        let _ = bat.technology.as_ref().is_some_and(|technology| {
+            result.add("Technology", &technology);
+            true
+        });
+
+        result.add(
+            "Capacity",
+            format!(
+                "{}",
+                if !simplify {
+                    colorize_by_num(
+                        format!("{}%", bat.capacity).as_str(),
+                        bat.capacity,
+                        100,
+                        true,
                     )
-                    .as_str(),
-                );
-                true
-            }),
-            bat.status.as_ref().is_some_and(|status| {
-                result.add("Status", &status);
-                true
-            }),
+                } else {
+                    format!("{}%", bat.capacity)
+                }
+            )
+            .as_str(),
         );
+
+        let _ = bat.status.as_ref().is_some_and(|status| {
+            result.add("Status", &status);
+            true
+        });
     }
 
     result
