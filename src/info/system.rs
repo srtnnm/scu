@@ -16,8 +16,8 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     if let Some(username) = whoami::fetch_name() {
         result.add("Username", &username)
     }
-    {
-        let pretty_name = os::fetch_name().pretty_name;
+    if let Some(osrelease) = os::fetch_name() {
+        let pretty_name = osrelease.pretty_name;
         result.add(
             "Distro",
             (if simplify {
