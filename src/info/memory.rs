@@ -7,10 +7,7 @@ pub fn collect(simplify: bool) -> Table {
     let mut result = Table::new("Memory");
 
     let mem_info = ram::fetch_info();
-    let (ram_usage_percents, swap_usage_percents) = (
-        percentage(mem_info.total.mb as u64, mem_info.used.mb as u64),
-        percentage(mem_info.swap_total.mb as u64, mem_info.swap_used.mb as u64),
-    );
+    let ram_usage_percents = percentage(mem_info.total.mb as u64, mem_info.used.mb as u64);
     result.add(
         "RAM",
         format!(
@@ -30,13 +27,14 @@ pub fn collect(simplify: bool) -> Table {
         )
         .as_str(),
     );
-    if mem_info.swap_enabled {
+    if let Some(swap_info) = mem_info.swap {
+        let swap_usage_percents = percentage(swap_info.total.mb as u64, swap_info.used.mb as u64);
         result.add(
             "Swap",
             format!(
                 "{}MiB / {}MiB [{}]",
-                mem_info.swap_used.mb,
-                mem_info.swap_total.mb,
+                swap_info.used.mb,
+                swap_info.total.mb,
                 if !simplify {
                     colorize_by_num(
                         format!("{:.1}%", swap_usage_percents).as_str(),

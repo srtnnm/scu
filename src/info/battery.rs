@@ -6,7 +6,7 @@ use libscu::hardware::battery;
 pub fn collect(simplify: bool) -> Table {
     let mut result = Table::new("Battery");
 
-    let batteries = battery::fetch_batteries();
+    let batteries = battery::fetch_all();
     if !batteries.is_empty() {
         let bat = batteries.first().unwrap();
 
