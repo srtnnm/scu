@@ -5,7 +5,7 @@ use crate::{
 
 use libscu::{
     hardware::device,
-    software::{hostname, init_system, kernel, os, shell, terminal, uptime, whoami},
+    software::{hostname, init_system, kernel, os, shell, terminal, uptime, users},
 };
 
 pub fn collect(simplify: bool, force_version: bool) -> Table {
@@ -13,8 +13,8 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     if let Some(hostname) = hostname::fetch() {
         result.add("Hostname", &hostname)
     }
-    if let Some(username) = whoami::fetch_name() {
-        result.add("Username", &username)
+    if let Some(user) = users::fetch_current() {
+        result.add("Username", &user.name)
     }
     if let Some(osrelease) = os::fetch_name() {
         let pretty_name = osrelease.pretty_name;

@@ -9,7 +9,7 @@
     battery
 */
 
-use libscu::software::whoami::{fetch_home_dir, fetch_uid};
+use libscu::software::users::fetch_current;
 use std::fs;
 
 const ALL_TABLES: [&str; 7] = [
@@ -57,14 +57,17 @@ impl Config {
         default
     }
     fn init() -> Option<std::path::PathBuf> {
-        if let Some(homedir) = fetch_home_dir(fetch_uid()) {
-            let full_path =
-                std::path::PathBuf::from(CONFIG_PATH.replace("$HOME", homedir.to_str().unwrap()));
-            if full_path.exists()
-                || (fs::create_dir_all(full_path.parent().unwrap()).is_ok()
-                    && fs::write(full_path.clone(), DEFAULT_CONFIG).is_ok())
-            {
-                return Some(full_path);
+        if let Some(user) = fetch_current() {
+            if let Some(homedir) = user.home_dir {
+                let full_path = std::path::PathBuf::from(
+                    CONFIG_PATH.replace("$HOME", homedir.to_str().unwrap()),
+                );
+                if full_path.exists()
+                    || (fs::create_dir_all(full_path.parent().unwrap()).is_ok()
+                        && fs::write(full_path.clone(), DEFAULT_CONFIG).is_ok())
+                {
+                    return Some(full_path);
+                }
             }
         }
         None
