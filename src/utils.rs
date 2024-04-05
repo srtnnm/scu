@@ -8,7 +8,9 @@ pub fn percentage(max: u64, cur: u64) -> f32 {
 pub fn uniqalize(_str: String) -> String {
     let mut buf = Vec::<&str>::new();
     for word in _str.split_whitespace() {
-        if word.parse::<i64>().is_ok() || !buf.contains(&word) {
+        if word.parse::<i64>().is_ok() /* that fixes bug if cpu's core number equals threads number and scu prints "Cores/Threads: N / " */
+           || !buf.contains(&word)
+        {
             buf.push(word);
         }
     }

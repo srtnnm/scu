@@ -10,40 +10,33 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     let mut result = Table::new("Graphics");
 
     let gpus = gpu::fetch_all();
-    if !gpus.is_empty() {
-        let count_gpus = gpus.len();
-        for entry in gpus.iter().enumerate() {
-            let (gpu_id, gpu_info) = (entry.0, entry.1);
-            let mut sub_info: Vec<TableEntry> = Vec::new();
-            let (_, _) = (
-                gpu_info.driver.as_ref().is_some_and(|gpu_driver| {
-                    sub_info.push(TableEntry::new("Driver", &gpu_driver));
-                    true
-                }),
-                gpu_info.temperature.is_some_and(|temp| {
-                    if temp > 0.0 {
-                        sub_info.push(TableEntry::new(
-                            "Temperature",
-                            format!("{}°C", temp).as_str(),
-                        ));
-                    };
-                    true
-                }),
-            );
-            result.add_with_additional(
-                format!(
-                    "GPU{}",
-                    if count_gpus > 1 {
-                        format!(" #{}", gpu_id)
-                    } else {
-                        "".to_string()
-                    }
-                )
-                .as_str(),
-                format!("{} {}", gpu_info.vendor, gpu_info.model).as_str(),
-                sub_info,
-            );
+    let mut gpu_sub_info: Vec<TableEntry> = Vec::new();
+    for (gpu_id, gpu_info) in gpus.iter().enumerate() {
+        if let Some(gpu_temp) = gpu_info.temperature {
+            if gpu_temp > 0.0 {
+                gpu_sub_info.push(TableEntry::new(
+                    "Temperature",
+                    format!("{}°C", gpu_temp).as_str(),
+                ));
+            };
         }
+        if let Some(gpu_driver) = gpu_info.driver.as_ref() {
+            gpu_sub_info.push(TableEntry::new("Driver", &gpu_driver))
+        }
+        result.add_with_additional(
+            format!(
+                "GPU{}",
+                if gpus.len() > 1 {
+                    format!(" #{}", gpu_id)
+                } else {
+                    "".to_string()
+                }
+            )
+            .as_str(),
+            format!("{} {}", gpu_info.vendor, gpu_info.model).as_str(),
+            gpu_sub_info.clone(),
+        );
+        gpu_sub_info.clear();
     }
     if let Some(display_server) = graphics::fetch_display_server() {
         result.add("Display server", format!("{:?}", display_server).as_str());

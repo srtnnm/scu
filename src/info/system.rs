@@ -10,30 +10,34 @@ use libscu::{
 
 pub fn collect(simplify: bool, force_version: bool) -> Table {
     let mut result = Table::new("System");
+    
     if let Some(hostname) = hostname::fetch() {
         result.add("Hostname", &hostname)
     }
+
     if let Some(user) = users::fetch_current() {
         result.add("Username", &user.name)
     }
+    
     if let Some(osrelease) = os::fetch_name() {
-        let pretty_name = osrelease.pretty_name;
         result.add(
             "Distro",
             (if simplify {
-                pretty_name
+                osrelease.pretty_name
             } else {
-                match distro_colors::get_color(&pretty_name) {
-                    Some(clr) => colorize::colorize_background(&pretty_name, clr.r, clr.g, clr.b),
-                    None => pretty_name,
+                match distro_colors::get_color(&osrelease.pretty_name) {
+                    Some(clr) => colorize::colorize_background(&osrelease.pretty_name, clr.r, clr.g, clr.b),
+                    None => osrelease.pretty_name,
                 }
             })
             .as_str(),
         );
     }
+
     if let Some(device_name) = device::fetch_model() {
         result.add("Device", &device_name);
     }
+
     result.add("Kernel", &kernel::fetch_version());
 
     if let Some(init_system) = init_system::fetch_info() {
@@ -47,9 +51,8 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
             },
         );
     }
-    // result.add("Terminal", &terminal::fetch_info(force_version));
-    let terminal_info = terminal::fetch_info(force_version);
 
+    let terminal_info = terminal::fetch_info(force_version);
     result.add(
         "Terminal",
         &format!(

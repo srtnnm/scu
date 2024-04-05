@@ -6,16 +6,12 @@ use libscu::hardware::battery;
 pub fn collect(simplify: bool) -> Table {
     let mut result = Table::new("Battery");
 
-    let batteries = battery::fetch_all();
-    if !batteries.is_empty() {
-        let bat = batteries.first().unwrap();
+    if let Some(first_battery) = battery::fetch_all().first() {
+        result.add("Model", &first_battery.model);
 
-        result.add("Model", &bat.model);
-
-        let _ = bat.technology.as_ref().is_some_and(|technology| {
+        if let Some(technology) = first_battery.technology.clone() {
             result.add("Technology", &technology);
-            true
-        });
+        }
 
         result.add(
             "Capacity",
@@ -23,22 +19,21 @@ pub fn collect(simplify: bool) -> Table {
                 "{}",
                 if !simplify {
                     colorize_by_num(
-                        format!("{}%", bat.capacity).as_str(),
-                        bat.capacity,
+                        format!("{}%", first_battery.capacity).as_str(),
+                        first_battery.capacity,
                         100,
                         true,
                     )
                 } else {
-                    format!("{}%", bat.capacity)
+                    format!("{}%", first_battery.capacity)
                 }
             )
             .as_str(),
         );
 
-        let _ = bat.status.as_ref().is_some_and(|status| {
-            result.add("Status", &status);
-            true
-        });
+        if let Some(battery_status) = first_battery.status.clone() {
+            result.add("Status", &battery_status);
+        }
     }
 
     result

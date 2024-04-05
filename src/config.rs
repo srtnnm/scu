@@ -1,5 +1,5 @@
 /*
-    all tables:
+all tables:
     system
     processor
     memory

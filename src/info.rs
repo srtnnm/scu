@@ -44,7 +44,7 @@ fn collect_info(
         result.insert("battery".to_string(), battery::collect(simplify_output));
     }
 
-    #[cfg(target_os="linux")]
+    #[cfg(target_os = "linux")]
     if cfg.contains(&"drives".to_string()) {
         result.insert("drives".to_string(), drives::collect());
     }
@@ -69,55 +69,56 @@ fn formatted_info(
 
     let max_param_len = len::param_max_len(tables.clone().into_iter().map(|elm| elm.1).collect());
 
+    let mut table_buf = Vec::<String>::new();
     for table in cfg.order {
         if !tables.contains_key(&table) {
             continue;
         }
-        let table = tables.get(&table).unwrap().clone();
-        let mut table_buf = Vec::<String>::new();
-        if table.is_empty() {
-            continue;
-        }
-        for entry in table.entries {
-            let line_val = utils::uniqalize(entry.value);
-            if !line_val.contains("Unknown") && line_val != "0" {
-                table_buf.push(format!(
-                    "{}:{}{line_val}",
-                    &entry.name,
-                    " ".repeat(if !simplify_output {
-                        max_param_len - len::len(&entry.name) + 2
-                    } else {
-                        1
-                    }),
-                ));
+        if let Some(table) = tables.get(&table).cloned() {
+            if table.is_empty() {
+                continue;
             }
-            for additional in entry.additional.clone().into_iter().enumerate() {
-                let (i, additional) = additional;
-                let add_line_val = utils::uniqalize(additional.value);
-                if !add_line_val.contains("Unknown") && add_line_val != "0" {
+            for entry in table.entries {
+                let line_val = utils::uniqalize(entry.value);
+                if !line_val.contains("Unknown") && line_val != "0" {
                     table_buf.push(format!(
-                        "{}{}:{}{}",
-                        if simplify_output {
-                            "  "
-                        } else {
-                            if i == entry.additional.len() - 1 {
-                                "┗"
-                            } else {
-                                "┣"
-                            }
-                        },
-                        &additional.name,
+                        "{}:{}{line_val}",
+                        &entry.name,
                         " ".repeat(if !simplify_output {
-                            max_param_len - len::len(&additional.name) + 1
+                            max_param_len - len::len(&entry.name) + 2
                         } else {
                             1
                         }),
-                        add_line_val
                     ));
                 }
+                for (i, additional) in entry.additional.clone().into_iter().enumerate() {
+                    let add_line_val = utils::uniqalize(additional.value);
+                    if !add_line_val.contains("Unknown") && add_line_val != "0" {
+                        table_buf.push(format!(
+                            "{}{}:{}{}",
+                            if simplify_output {
+                                "  "
+                            } else {
+                                if i == entry.additional.len() - 1 {
+                                    "┗"
+                                } else {
+                                    "┣"
+                                }
+                            },
+                            &additional.name,
+                            " ".repeat(if !simplify_output {
+                                max_param_len - len::len(&additional.name) + 1
+                            } else {
+                                1
+                            }),
+                            add_line_val
+                        ));
+                    }
+                }
             }
+            result.push((table.title, table_buf.clone()));
+            table_buf.clear();
         }
-        result.push((table.title, table_buf));
     }
 
     result
@@ -132,7 +133,7 @@ pub fn print_info(cfg: Config, simplify_output: bool, force_version: bool) {
             .into_iter()
             .map(|e| len::max_len(e.1))
             .max()
-            .unwrap();
+            .unwrap_or_default();
         let mut to_display: Vec<String> = Vec::new();
         for table in info.clone().into_iter().enumerate() {
             to_display.push(format!(
