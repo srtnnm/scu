@@ -14,9 +14,9 @@ image: "rust:latest"
 build-job:
   stage: build
   script:
-    - cargo build --release
+    - cargo build --release && cp target/release/scu .
     - cd target/release && md5sum scu > ../../scu.md5sum
   artifacts:
     paths:
-      - target/release/scu
+      - scu
       - scu.md5sum
