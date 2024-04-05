@@ -15,7 +15,7 @@ build-job:
   stage: build
   script:
     - cargo build --release
-    - md5sum target/release/scu > scu.md5sum
+    - cd target/release && md5sum target/release/scu > scu.md5sum
   artifacts:
     paths:
       - target/release/scu
