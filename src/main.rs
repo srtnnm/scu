@@ -6,7 +6,12 @@ mod utils;
 
 use std::env;
 
-use libscu::utils::platform::linux::libc::{isatty, STDOUT_FILENO};
+#[cfg(any(target_os = "linux", target_os = "android"))]
+use libscu::utils::platform::linux::libc::isatty;
+#[cfg(target_os = "macos")]
+extern "C" {
+    pub fn isatty(fileno: std::ffi::c_int) -> std::ffi::c_int;
+}
 
 fn main() {
     let args = Vec::from_iter(env::args());
@@ -20,7 +25,7 @@ fn main() {
     } else if args.contains(&"-h") || args.contains(&"--help") {
         about::print_help();
     }
-    let simplify_output = (unsafe { isatty(STDOUT_FILENO) == 0 } || args.contains(&"--simplify"))
+    let simplify_output = (unsafe { isatty(0) == 0 } || args.contains(&"--simplify"))
         && !args.contains(&"--ignore-pipe");
 
     info::print_info(cfg, simplify_output, args.contains(&"--force-versions"));

@@ -1,3 +1,5 @@
+#![cfg(any(target_os = "linux"))]
+
 use crate::data::table::*;
 use crate::utils::colorize::colorize_by_num;
 

@@ -40,6 +40,7 @@ fn collect_info(
         result.insert("memory".to_string(), memory::collect(simplify_output));
     }
 
+    #[cfg(target_os = "linux")]
     if cfg.contains(&"battery".to_string()) {
         result.insert("battery".to_string(), battery::collect(simplify_output));
     }
