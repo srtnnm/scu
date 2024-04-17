@@ -3,6 +3,7 @@ pub const SOFTWARE_NAME: &str = "scu";
 pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
+pub const LIBSCU_VERSION: &str = env!("LIBSCU_VERSION");
 
 const FLAGS: [(&str, &str); 5] = [
     ("--simplify", "Outputs information in a much simpler form, forced by default when output is piped"),
@@ -14,6 +15,9 @@ const FLAGS: [(&str, &str); 5] = [
 
 pub fn print_version() {
     println!("{SOFTWARE_NAME} - version {VERSION}");
+    if !LIBSCU_VERSION.is_empty() {
+        println!("libscu version {LIBSCU_VERSION}");
+    }
 }
 
 pub fn print_help() {
