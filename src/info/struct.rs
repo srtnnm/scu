@@ -6,7 +6,9 @@ mod packages;
 mod processor;
 mod system;
 
+#[cfg(target_os = "linux")]
 pub use battery::Battery;
+#[cfg(target_os = "linux")]
 pub use drives::Drives;
 pub use graphics::Graphics;
 pub use memory::Memory;
