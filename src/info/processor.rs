@@ -6,7 +6,7 @@ use libscu::hardware::cpu;
 pub fn collect(simplify: bool) -> Option<Table> {
     let mut result = Table::new("Processor");
 
-    if let Some(cpu_info) = cpu::fetch_info() {
+    if let Ok(cpu_info) = cpu::fetch_info() {
         result.add(
             "Model",
             format!("{} {}", cpu_info.vendor, cpu_info.model).as_str(),

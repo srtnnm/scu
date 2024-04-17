@@ -59,8 +59,11 @@ impl Config {
     fn init() -> Option<std::path::PathBuf> {
         if let Some(user) = fetch_current() {
             if let Some(homedir) = user.home_dir {
+                if homedir.is_empty() {
+                    return None;
+                }
                 let full_path = std::path::PathBuf::from(
-                    CONFIG_PATH.replace("$HOME", homedir.to_str().unwrap()),
+                    CONFIG_PATH.replace("$HOME", &homedir),
                 );
                 if full_path.exists()
                     || (fs::create_dir_all(full_path.parent().unwrap()).is_ok()

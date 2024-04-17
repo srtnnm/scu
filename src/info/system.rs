@@ -5,12 +5,12 @@ use crate::{
 
 use libscu::{
     hardware::device,
-    software::{hostname, init_system, kernel, os, shell, terminal, uptime, users},
+    software::{hostname, init, kernel, os, shell, terminal, uptime, users},
 };
 
 pub fn collect(simplify: bool, force_version: bool) -> Table {
     let mut result = Table::new("System");
-    
+
     if let Some(hostname) = hostname::fetch() {
         result.add("Hostname", &hostname)
     }
@@ -18,7 +18,7 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
     if let Some(user) = users::fetch_current() {
         result.add("Username", &user.name)
     }
-    
+
     if let Some(osrelease) = os::fetch_name() {
         result.add(
             "Distro",
@@ -26,7 +26,9 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
                 osrelease.pretty_name
             } else {
                 match distro_colors::get_color(&osrelease.pretty_name) {
-                    Some(clr) => colorize::colorize_background(&osrelease.pretty_name, clr.r, clr.g, clr.b),
+                    Some(clr) => {
+                        colorize::colorize_background(&osrelease.pretty_name, clr.r, clr.g, clr.b)
+                    }
                     None => osrelease.pretty_name,
                 }
             })
@@ -38,9 +40,11 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
         result.add("Device", &device_name);
     }
 
-    result.add("Kernel", &kernel::fetch_version());
+    if let Ok(kernel_version) = kernel::fetch_version() {
+        result.add("Kernel", &kernel_version);
+    }
 
-    if let Some(init_system) = init_system::fetch_info() {
+    if let Ok(init_system) = init::fetch_info() {
         result.add_with_additional(
             "Init system",
             &init_system.name,
@@ -52,19 +56,20 @@ pub fn collect(simplify: bool, force_version: bool) -> Table {
         );
     }
 
-    let terminal_info = terminal::fetch_info(force_version);
-    result.add(
-        "Terminal",
-        &format!(
-            "{}{}",
-            terminal_info.name,
-            if let Some(version) = terminal_info.version {
-                format!(" v{version}")
-            } else {
-                "".to_string()
-            }
-        ),
-    );
+    if let Ok(terminal_info) = terminal::fetch_info(force_version) {
+        result.add(
+            "Terminal",
+            &format!(
+                "{}{}",
+                terminal_info.name,
+                if let Some(version) = terminal_info.version {
+                    format!(" v{version}")
+                } else {
+                    "".to_string()
+                }
+            ),
+        );
+    }
 
     if let Some(shell) = shell::fetch_info(force_version) {
         result.add(

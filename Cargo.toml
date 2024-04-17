@@ -9,4 +9,4 @@ lto = true
 
 [dependencies]
 regex-lite = { version = "0.1.5" }
-libscu = { version = "1.5.2", features = ["full"] }
+libscu = { version = "2.0.0", features = ["full"] }
