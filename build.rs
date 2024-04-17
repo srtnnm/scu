@@ -1,6 +1,6 @@
 use std::process::{Command, Stdio};
 
-fn get_metadata() -> Option<String> {
+fn libscu_version() -> Option<String> {
     let output = Command::new("cargo")
         .args(["metadata", "--format-version=1", "--no-deps"])
         .stdout(Stdio::piped())
@@ -20,7 +20,6 @@ fn get_metadata() -> Option<String> {
 }
 
 fn main() {
-    if let Some(v) = get_metadata() {
-        println!("cargo::rustc-env=LIBSCU_VERSION={v}")
-    }
+    let v = libscu_version().unwrap_or_default();
+    println!("cargo::rustc-env=LIBSCU_VERSION={v}")
 }
