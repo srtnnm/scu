@@ -1,10 +1,7 @@
-mod battery;
-mod drives;
-mod graphics;
-mod memory;
-mod packages;
-mod processor;
-mod system;
+mod collect;
+mod r#struct;
+
+use collect::*;
 
 use std::collections::BTreeMap;
 
@@ -22,37 +19,43 @@ fn collect_info(
     if cfg.contains(&"system".to_string()) {
         result.insert(
             "system".to_string(),
-            system::collect(simplify_output, force_version),
+            system::collect(force_version).to_print(simplify_output),
         );
     }
 
     if cfg.contains(&"packages".to_string()) {
-        result.insert("packages".to_string(), packages::collect());
+        result.insert("packages".to_string(), packages::collect().to_print());
     }
 
     if cfg.contains(&"processor".to_string()) {
-        if let Some(cputable) = processor::collect(simplify_output) {
-            result.insert("processor".to_string(), cputable);
+        if let Some(cputable) = processor::collect() {
+            result.insert("processor".to_string(), cputable.to_print(simplify_output));
         }
     }
 
     if cfg.contains(&"memory".to_string()) {
-        result.insert("memory".to_string(), memory::collect(simplify_output));
+        result.insert(
+            "memory".to_string(),
+            memory::collect().to_print(simplify_output),
+        );
     }
 
     if cfg.contains(&"battery".to_string()) {
-        result.insert("battery".to_string(), battery::collect(simplify_output));
+        result.insert(
+            "battery".to_string(),
+            battery::collect().to_print(),
+        );
     }
 
     #[cfg(target_os = "linux")]
     if cfg.contains(&"drives".to_string()) {
-        result.insert("drives".to_string(), drives::collect());
+        result.insert("drives".to_string(), drives::collect().to_print());
     }
 
     if cfg.contains(&"graphics".to_string()) {
         result.insert(
             "graphics".to_string(),
-            graphics::collect(simplify_output, force_version),
+            graphics::collect(force_version).to_print(simplify_output),
         );
     }
 
