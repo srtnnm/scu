@@ -40,6 +40,7 @@ fn collect_info(
         );
     }
 
+    #[cfg(target_os = "linux")]
     if cfg.contains(&"battery".to_string()) {
         result.insert(
             "battery".to_string(),

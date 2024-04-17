@@ -16,7 +16,7 @@ impl Battery {
         if let Some(technology) = self.technology.clone() {
             result.add("Technology", &technology)
         }
-        result.add("Level", format!("{}", self.level).as_str());
+        result.add("Level", format!("{}%", self.level).as_str());
         if let Some(status) = self.status.clone() {
             result.add("Status", &status);
         }

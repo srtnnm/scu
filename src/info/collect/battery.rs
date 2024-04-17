@@ -1,3 +1,5 @@
+#![cfg(any(target_os = "linux"))]
+
 use crate::info::r#struct::Battery;
 
 use libscu::hardware::battery;
