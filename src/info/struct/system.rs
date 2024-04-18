@@ -1,15 +1,17 @@
 use crate::{
     data::{
         distro_colors,
-        table::{Table, TableEntry},
+        table::Table,
     },
     utils::colorize::colorize_background,
 };
 
 use libscu::{
-    software::{init::InitSystem, shell::Shell, terminal::TerminalInfo},
+    software::{shell::Shell, terminal::TerminalInfo},
     utils::converter::Time,
 };
+#[cfg(not(target_os = "android"))]
+use libscu::software::init::InitSystem;
 
 #[derive(Default)]
 pub struct System {
@@ -18,6 +20,7 @@ pub struct System {
     pub os_name: Option<String>,
     pub device_name: Option<String>,
     pub kernel_version: Option<String>,
+    #[cfg(not(target_os = "android"))]
     pub init_system: Option<InitSystem>,
     pub terminal_info: Option<TerminalInfo>,
     pub shell: Option<Shell>,
@@ -59,6 +62,7 @@ impl System {
             result.add("Kernel", &kernel_version);
         }
 
+        #[cfg(not(target_os = "android"))]
         if let Some(init_system) = self.init_system.as_ref() {
             result.add_with_additional(
                 "Init system",

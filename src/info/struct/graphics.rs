@@ -3,18 +3,17 @@ use crate::data::table::*;
 use crate::utils::{colorize::colorize_by_num, percentage};
 
 #[cfg(any(target_os = "linux", target_os = "android"))]
-use libscu::{
-    hardware::{display::Brightness, gpu::GPUInfo},
-    software::graphics::DisplayServer,
-};
+use libscu::hardware::display::Brightness;
+#[cfg(any(target_os = "linux"))]
+use libscu::{hardware::gpu::GPUInfo, software::graphics::DisplayServer};
 
 use libscu::software::graphics::WindowManager;
 
 #[derive(Default)]
 pub struct Graphics {
-    #[cfg(any(target_os = "linux"))]
+    #[cfg(target_os = "linux")]
     pub gpu_list: Vec<GPUInfo>,
-    #[cfg(any(target_os = "linux"))]
+    #[cfg(target_os = "linux")]
     pub display_server: Option<DisplayServer>,
     pub environment: Option<String>,
     pub window_manager: Option<WindowManager>,

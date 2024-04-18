@@ -1,7 +1,9 @@
 use crate::info::r#struct::Graphics;
 #[cfg(any(target_os = "linux", target_os = "android"))]
 #[cfg(any(target_os = "linux", target_os = "android"))]
-use libscu::hardware::{display, gpu};
+use libscu::hardware::display;
+#[cfg(target_os = "linux")]
+use libscu::hardware::gpu;
 use libscu::software::graphics;
 
 pub fn collect(force_version: bool) -> Graphics {
