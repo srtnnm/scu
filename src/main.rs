@@ -6,12 +6,7 @@ mod utils;
 
 use std::env;
 
-#[cfg(any(target_os = "linux", target_os = "android"))]
-use libscu::utils::platform::linux::libc::isatty;
-#[cfg(target_os = "macos")]
-extern "C" {
-    pub fn isatty(fileno: std::ffi::c_int) -> std::ffi::c_int;
-}
+use libscu::utils::platform::unix::libc::isatty;
 
 fn main() {
     let args = Vec::from_iter(env::args());

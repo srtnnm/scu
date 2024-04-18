@@ -8,9 +8,9 @@ use libscu::{
 pub fn collect(force_version: bool) -> System {
     let mut result = System::default();
 
-    result.hostname = hostname::fetch();
+    result.hostname = hostname::fetch(false);
     result.username = users::fetch_current().map(|u| u.name);
-    result.os_name = os::fetch_name().map(|on|on.pretty_name);
+    result.os_name = os::fetch_name().map(|on| on.pretty_name);
     result.device_name = device::fetch_model();
     result.kernel_version = kernel::fetch_version().ok();
     result.init_system = init::fetch_info().ok();

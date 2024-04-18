@@ -1,6 +1,5 @@
 use crate::info::r#struct::Graphics;
 #[cfg(any(target_os = "linux", target_os = "android"))]
-
 #[cfg(any(target_os = "linux", target_os = "android"))]
 use libscu::hardware::{display, gpu};
 use libscu::software::graphics;
@@ -10,7 +9,9 @@ pub fn collect(force_version: bool) -> Graphics {
 
     #[cfg(target_os = "linux")]
     {
-        result.gpu_list = gpu::fetch_all();
+        if let Ok(gpus) = gpu::fetch_all(false) {
+            result.gpu_list = gpus;
+        }
     }
     result.environment = graphics::fetch_environment();
     result.window_manager = graphics::fetch_window_manager(force_version);

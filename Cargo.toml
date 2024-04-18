@@ -1,6 +1,6 @@
 [package]
 name = "scu"
-version = "1.5.0"
+version = "1.5.1"
 edition = "2021"
 
 [profile.release]
@@ -9,4 +9,4 @@ lto = true
 
 [dependencies]
 regex-lite = { version = "0.1.5" }
-libscu = { version = "2.0.0", features = ["full"] }
+libscu = { version = "2.1.0", features = ["full"] }
