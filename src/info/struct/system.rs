@@ -1,7 +1,7 @@
 use crate::{
     data::{
         distro_colors,
-        table::Table,
+        table::{Table, TableEntry},
     },
     utils::colorize::colorize_background,
 };
