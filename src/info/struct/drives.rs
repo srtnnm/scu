@@ -2,7 +2,7 @@
 
 use crate::data::table::Table;
 
-use libscu::{hardware::drives::Drive, utils::converter::MemorySize};
+use libscu::{hardware::drives::Drive, types::Memory as MemorySize};
 
 #[derive(Default)]
 pub struct Drives {

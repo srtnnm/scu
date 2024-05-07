@@ -3,7 +3,7 @@ use crate::{
     utils::{colorize::colorize_by_num, percentage},
 };
 
-use libscu::utils::converter::Frequency;
+use libscu::types::Frequency;
 
 #[derive(Default)]
 pub struct Processor {

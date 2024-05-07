@@ -6,7 +6,7 @@ mod utils;
 
 use std::env;
 
-use libscu::utils::platform::unix::libc::isatty;
+use libscu::util::platform::unix::libc::isatty;
 
 fn main() {
     let args = Vec::from_iter(env::args());

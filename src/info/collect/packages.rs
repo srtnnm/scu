@@ -5,7 +5,9 @@ use libscu::software::packages;
 pub fn collect() -> Packages {
     let mut result = Packages::default();
 
-    result.managers = packages::fetch_all_managers();
+    for pm in packages::fetch_all_managers() {
+        result.managers.push(pm);
+    }
 
     result
 }

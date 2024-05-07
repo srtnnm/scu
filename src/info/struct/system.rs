@@ -8,7 +8,7 @@ use crate::{
 
 use libscu::{
     software::{shell::Shell, terminal::TerminalInfo},
-    utils::converter::Time,
+    types::Time,
 };
 #[cfg(not(target_os = "android"))]
 use libscu::software::init::InitSystem;

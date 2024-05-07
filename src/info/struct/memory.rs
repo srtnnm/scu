@@ -3,7 +3,7 @@ use crate::{
     utils::{colorize::colorize_by_num, percentage},
 };
 
-use libscu::utils::converter::MemorySize;
+use libscu::types::Memory as MemorySize;
 
 #[derive(Default)]
 pub struct Memory {
