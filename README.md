@@ -2,6 +2,8 @@
   
 # SCU
 Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
+
+# I'M GOING TO REWRITE IT ENTIRELY
   
 ### Currently supported operating systems
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
