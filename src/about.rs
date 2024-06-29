@@ -1,4 +1,4 @@
-pub const ORG_NAME: &str = "Omnitix";
+pub const ORG_NAME: &str = "Omnid";
 pub const SOFTWARE_NAME: &str = "scu";
 pub const DESCRIPTION: &str =
     "%SOFTWARE_NAME% is a command line system info fetch utility is aimed at informativeness";
