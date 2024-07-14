@@ -4,7 +4,8 @@
 Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
 # I'M GOING TO REWRITE IT ENTIRELY
-  
+# DON'T EVEN TRY TO USE IT SINCE YOU'LL GET AN LIBC ERROR
+
 ### Currently supported operating systems
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
 <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white">
