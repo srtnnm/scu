@@ -1,7 +1,7 @@
 mod about;
 mod config;
 mod data;
-mod info;
+// mod info;
 mod utils;
 
 use std::env;
@@ -23,5 +23,5 @@ fn main() {
     let simplify_output = (unsafe { isatty(0) == 0 } || args.contains(&"--simplify"))
         && !args.contains(&"--ignore-pipe");
 
-    info::print_info(cfg, simplify_output, args.contains(&"--force-versions"));
+    // info::print_info(cfg, simplify_output, args.contains(&"--force-versions"));
 }
