@@ -5,12 +5,12 @@ all tables:
     memory
     graphics
     packages
-    drives
+    disks
     battery
 */
 
 use libscu::software::users::fetch_current;
-use std::fs;
+use std::{fs, path::Path};
 
 const ALL_TABLES: [&str; 7] = [
     "system",
@@ -18,11 +18,12 @@ const ALL_TABLES: [&str; 7] = [
     "memory",
     "graphics",
     "packages",
-    "drives",
+    "disks",
     "battery",
 ];
-static DEFAULT_CONFIG: &str = "system,processor,graphics,memory,packages,drives,battery";
-const CONFIG_PATH: &str = "$HOME/.config/scu";
+static DEFAULT_CONFIG: &str = "system,processor,graphics,memory,packages,disks,battery";
+const CONFIG_DIRECTORY: &str = "$HOME/.config/omnid";
+const CONFIG_FILENAME: &str = "scu";
 
 pub struct Config {
     pub order: Vec<String>,
@@ -45,7 +46,7 @@ impl Config {
                     .replace(" ", "")
                     .trim()
                     .split(",")
-                    .filter(|info_table| !info_table.is_empty() && ALL_TABLES.contains(info_table))
+                    .filter(|info_table| ALL_TABLES.contains(info_table))
                     .map(|s| s.to_string())
                     .collect();
 
@@ -56,18 +57,26 @@ impl Config {
         }
         default
     }
+    fn create_config_directory(path: &Path) -> bool {
+        path.exists()
+            || fs::create_dir_all(&path)
+                .map_err(|err| {
+                    eprintln!("failed to create directory `{CONFIG_DIRECTORY}` for config: {err:?}")
+                })
+                .is_ok()
+    }
     fn init() -> Option<std::path::PathBuf> {
         if let Some(user) = fetch_current() {
             if let Some(homedir) = user.home_dir {
                 if homedir.is_empty() {
                     return None;
                 }
-                let full_path = std::path::PathBuf::from(
-                    CONFIG_PATH.replace("$HOME", &homedir),
-                );
-                if full_path.exists()
-                    || (fs::create_dir_all(full_path.parent().unwrap()).is_ok()
-                        && fs::write(full_path.clone(), DEFAULT_CONFIG).is_ok())
+                let full_path =
+                    std::path::PathBuf::from(CONFIG_DIRECTORY.replace("$HOME", &homedir));
+
+                if full_path.join(CONFIG_FILENAME).exists()
+                    || (Self::create_config_directory(&full_path)
+                        && fs::write(full_path.join(CONFIG_FILENAME), DEFAULT_CONFIG).is_ok())
                 {
                     return Some(full_path);
                 }

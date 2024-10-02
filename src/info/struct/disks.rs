@@ -21,7 +21,7 @@ fn size_to_string(size: MemorySize) -> String {
 }
 
 impl Disks {
-    pub fn to_print(&self) -> Table {
+    pub fn to_table(&self) -> Table {
         let mut result = Table::new("Drives");
 
         for disk in self.disks.clone() {

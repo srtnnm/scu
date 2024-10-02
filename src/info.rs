@@ -20,42 +20,42 @@ fn collect_info(
     if cfg.contains(&"system".to_string()) {
         result.insert(
             "system".to_string(),
-            system::collect(force_version).to_print(simplify_output),
+            system::collect(force_version).to_table(simplify_output),
         );
     }
 
     if cfg.contains(&"packages".to_string()) {
-        result.insert("packages".to_string(), packages::collect().to_print());
+        result.insert("packages".to_string(), packages::collect().to_table());
     }
 
     if cfg.contains(&"processor".to_string()) {
         if let Some(cputable) = processor::collect() {
-            result.insert("processor".to_string(), cputable.to_print(simplify_output));
+            result.insert("processor".to_string(), cputable.to_table(simplify_output));
         }
     }
 
     if cfg.contains(&"memory".to_string()) {
         if let Ok(memory_info) = memory::collect() {
-            result.insert("memory".to_string(), memory_info.to_print(simplify_output));
+            result.insert("memory".to_string(), memory_info.to_table(simplify_output));
         }
     }
 
     #[cfg(target_os = "linux")]
     if cfg.contains(&"battery".to_string()) {
         if let Some(battery_info) = battery::collect() {
-            result.insert("battery".to_string(), battery_info.to_print());
+            result.insert("battery".to_string(), battery_info.to_table());
         }
     }
 
     #[cfg(target_os = "linux")]
-    if cfg.contains(&"drives".to_string()) {
-        result.insert("drives".to_string(), drives::collect().to_print());
+    if cfg.contains(&"disks".to_string()) {
+        result.insert("disks".to_string(), disks::collect().to_table());
     }
 
     if cfg.contains(&"graphics".to_string()) {
         result.insert(
             "graphics".to_string(),
-            graphics::collect(force_version).to_print(simplify_output),
+            graphics::collect(force_version).to_table(simplify_output),
         );
     }
 

@@ -1,5 +1,5 @@
 pub mod battery;
-pub mod drives;
+pub mod disks;
 pub mod graphics;
 pub mod memory;
 pub mod packages;

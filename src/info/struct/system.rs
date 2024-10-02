@@ -6,12 +6,12 @@ use crate::{
     utils::colorize::colorize_background,
 };
 
+#[cfg(not(target_os = "android"))]
+use libscu::software::init::InitSystem;
 use libscu::{
     software::{shell::Shell, terminal::TerminalInfo},
     types::Time,
 };
-#[cfg(not(target_os = "android"))]
-use libscu::software::init::InitSystem;
 
 #[derive(Default)]
 pub struct System {
@@ -28,7 +28,7 @@ pub struct System {
 }
 
 impl System {
-    pub fn to_print(&self, disable_color: bool) -> Table {
+    pub fn to_table(&self, disable_color: bool) -> Table {
         let mut result = Table::new("System");
 
         if let Some(hostname) = self.hostname.as_ref() {

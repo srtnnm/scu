@@ -11,7 +11,7 @@ pub struct Battery {
 }
 
 impl Battery {
-    pub fn to_print(&self) -> Table {
+    pub fn to_table(&self) -> Table {
         let mut result = Table::new("Battery");
 
         result.add("Model", &self.model);

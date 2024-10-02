@@ -22,7 +22,7 @@ pub struct Graphics {
 }
 
 impl Graphics {
-    pub fn to_print(&self, _disable_color: bool) -> Table {
+    pub fn to_table(&self, _disable_color: bool) -> Table {
         let mut result = Table::new("Graphics");
 
         #[cfg(any(target_os = "linux"))]

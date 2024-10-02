@@ -15,7 +15,7 @@ pub struct Memory {
 }
 
 impl Memory {
-    pub fn to_print(&self, disable_color: bool) -> Table {
+    pub fn to_table(&self, disable_color: bool) -> Table {
         let mut result = Table::new("Memory");
 
         let ram_usage_percents = percentage(self.ram_total.mb as u64, self.ram_used.mb as u64);

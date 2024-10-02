@@ -15,7 +15,7 @@ pub struct Processor {
 }
 
 impl Processor {
-    pub fn to_print(&self, disable_color: bool) -> Table {
+    pub fn to_table(&self, disable_color: bool) -> Table {
         let mut result = Table::new("Processor");
 
         result.add("Model", format!("{}", self.model).as_str());
