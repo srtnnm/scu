@@ -63,21 +63,22 @@ impl Graphics {
         if let Some(environment) = self.environment.clone() {
             result.add("Environment", &environment);
         }
-        let _ = self.window_manager.as_ref().is_some_and(|wm| {
-            result.add(
-                "Window manager",
-                format!(
-                    "{}{}",
-                    wm.name,
-                    wm.version
-                        .as_ref()
-                        .map(|v| format!(" v{v}"))
-                        .unwrap_or_default()
-                )
-                .as_str(),
-            );
-            true
-        });
+        if let Some(wm) = self.window_manager.as_ref() {
+            if let Some(name) = wm.name.clone() {
+                result.add(
+                    "Window manager",
+                    format!(
+                        "{}{}",
+                        name,
+                        wm.version
+                            .as_ref()
+                            .map(|v| format!(" v{v}"))
+                            .unwrap_or_default()
+                    )
+                    .as_str(),
+                );
+            }
+        }
         #[cfg(any(target_os = "linux", target_os = "android"))]
         if let Some(display_brightness) = &self.display_brightness {
             let percentage = percentage(

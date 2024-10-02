@@ -9,7 +9,7 @@ mod system;
 #[cfg(target_os = "linux")]
 pub use battery::Battery;
 #[cfg(target_os = "linux")]
-pub use drives::Drives;
+pub use drives::Disks;
 pub use graphics::Graphics;
 pub use memory::Memory;
 pub use packages::Packages;

@@ -3,9 +3,6 @@
 # SCU
 Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
-# DEPRECATED
-#### error malloc_consolidate(): invalid chunk size
-
 ### Currently supported operating systems
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
 <img src="https://img.shields.io/badge/Android-3DDC84?style=for-the-badge&logo=android&logoColor=white">
@@ -80,8 +77,3 @@ Compiled binary is located at `target/release/scu`.
 ```
 $ cp target/release/scu /usr/local/bin
 ```
-
-P.s. \
-the binary size is so large (10mb) because the libscu includes the full list of pci.ids (exclusively from gpu manufacturers).\
-i've tried several times to write a runtime parser, but it didn't work out.\
-if you can write fast parser for pci.ids (find by identifier in less then 10-12ms (ofc on nvme/ssd)) you can create pull request to [libscu repository](https://gitlab.com/omnitix/libscu)

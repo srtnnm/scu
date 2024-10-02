@@ -1,8 +1,8 @@
 mod collect;
 mod r#struct;
 
-use collect::*;
 use collect::system;
+use collect::*;
 
 use std::collections::BTreeMap;
 
@@ -35,18 +35,14 @@ fn collect_info(
     }
 
     if cfg.contains(&"memory".to_string()) {
-        result.insert(
-            "memory".to_string(),
-            memory::collect().to_print(simplify_output),
-        );
+        if let Ok(memory_info) = memory::collect() {
+            result.insert("memory".to_string(), memory_info.to_print(simplify_output));
+        }
     }
 
     #[cfg(target_os = "linux")]
     if cfg.contains(&"battery".to_string()) {
-        result.insert(
-            "battery".to_string(),
-            battery::collect().to_print(),
-        );
+        result.insert("battery".to_string(), battery::collect().to_print());
     }
 
     #[cfg(target_os = "linux")]

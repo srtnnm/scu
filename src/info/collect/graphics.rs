@@ -15,7 +15,7 @@ pub fn collect(force_version: bool) -> Graphics {
             result.gpu_list = gpus;
         }
     }
-    result.environment = graphics::fetch_environment();
+    result.environment = graphics::fetch_environment().and_then(|de| Some(de.to_str().to_string()));
     result.window_manager = graphics::fetch_window_manager(force_version);
     #[cfg(any(target_os = "linux", target_os = "android"))]
     {

@@ -8,5 +8,28 @@ strip = true
 lto = true
 
 [dependencies]
+libscu = { git = "https://gitlab.com/omnid/libscu", features = [
+  "battery",
+  "bootmode",
+  "cpu",
+  "device",
+  "display",
+  "disk",
+  "extract_version",
+  "gpu",
+  "graphics",
+  "hostname",
+  "init",
+  "kernel",
+  "os",
+  "packages",
+  "pci_ids_parser",
+  "proc",
+  "ram",
+  "mounts",
+  "shell",
+  "terminal",
+  "time",
+  "users",
+] }
 regex-lite = { version = "0.1.5" }
-libscu = { version = "2.2.0-1", features = ["full"] }

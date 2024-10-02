@@ -7,11 +7,16 @@ use libscu::hardware::battery;
 pub fn collect() -> Battery {
     let mut result = Battery::default();
 
-    if let Some(first_battery) = battery::fetch_all().first() {
+    let interfaces = battery::fetch_interfaces();
+
+    if let Some(first_battery) = interfaces
+        .first()
+        .and_then(|interface| battery::collect_info(&interface))
+    {
         result.model = first_battery.model.clone();
-        result.technology = first_battery.technology.clone();
-        result.level = first_battery.capacity.clone();
-        result.status = first_battery.status.clone();
+        result.technology = Some(first_battery.technology.to_str().to_string());
+        result.level = first_battery.capacity as u16;
+        result.status = Some(first_battery.status.to_str().to_string());
     }
 
     result

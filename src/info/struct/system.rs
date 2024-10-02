@@ -107,8 +107,8 @@ impl System {
         }
         if let Some(uptime) = self.uptime.as_ref() {
             let mut uptime_str = String::new();
-            if uptime.hours >= 24 {
-                uptime_str += format!("{}d", uptime.hours / 24).as_str();
+            if uptime.days > 0 {
+                uptime_str += format!("{}d", uptime.days).as_str();
             }
             uptime_str += format!(
                 " {}:{}:{}",

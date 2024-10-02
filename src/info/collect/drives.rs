@@ -1,14 +1,14 @@
 #![cfg(target_os = "linux")]
 
-use crate::info::r#struct::Drives;
+use crate::info::r#struct::Disks;
 
-use libscu::hardware::drives;
+use libscu::hardware::disk;
 
-pub fn collect() -> Drives {
-    let mut result = Drives::default();
+pub fn collect() -> Disks {
+    let mut result = Disks::default();
 
-    if let Some(drives) = drives::fetch_all() {
-        result.drives = drives;
+    if let Ok(disks) = disk::fetch_all() {
+        result.disks = disks;
     }
 
     result

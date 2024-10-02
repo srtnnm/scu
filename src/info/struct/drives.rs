@@ -2,11 +2,11 @@
 
 use crate::data::table::Table;
 
-use libscu::{hardware::drives::Drive, types::Memory as MemorySize};
+use libscu::{hardware::disk::Disk, types::Memory as MemorySize};
 
 #[derive(Default)]
-pub struct Drives {
-    pub drives: Vec<Drive>,
+pub struct Disks {
+    pub disks: Vec<Disk>,
 }
 
 fn size_to_string(size: MemorySize) -> String {
@@ -20,14 +20,14 @@ fn size_to_string(size: MemorySize) -> String {
     }
 }
 
-impl Drives {
+impl Disks {
     pub fn to_print(&self) -> Table {
         let mut result = Table::new("Drives");
 
-        for drive in self.drives.clone() {
+        for disk in self.disks.clone() {
             result.add(
-                &drive.model,
-                format!("{} [{:?}]", size_to_string(drive.size), drive.technology).as_str(),
+                &disk.model.unwrap_or("unknown model".to_string()),
+                format!("{} [{:?}]", size_to_string(disk.size), disk.technology).as_str(),
             )
         }
 
