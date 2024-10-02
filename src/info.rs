@@ -42,7 +42,9 @@ fn collect_info(
 
     #[cfg(target_os = "linux")]
     if cfg.contains(&"battery".to_string()) {
-        result.insert("battery".to_string(), battery::collect().to_print());
+        if let Some(battery_info) = battery::collect() {
+            result.insert("battery".to_string(), battery_info.to_print());
+        }
     }
 
     #[cfg(target_os = "linux")]
