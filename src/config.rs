@@ -13,10 +13,8 @@ use bitflags::bitflags;
 use libscu::software::users::fetch_current;
 use std::{fs, path::Path};
 
-use crate::info;
-
 bitflags! {
-    #[derive(PartialEq)]
+    #[derive(Clone, Copy, Debug, PartialEq)]
     struct Table: u8 {
         const SYSTEM    = 0b0000001;
         const PROCESSOR = 0b0000010;
@@ -54,9 +52,24 @@ impl Table {
             _ => "",
         }
     }
+    pub fn full() -> Self {
+        Self::all()
+    }
 }
 
-const DEFAULT_CONFIG: [Table; 7] = [
+impl Default for Table {
+    fn default() -> Self {
+        Self::SYSTEM
+            | Self::PROCESSOR
+            | Self::MEMORY
+            | Self::GRAPHICS
+            | Self::PACKAGES
+            | Self::DISKS
+            | Self::BATTERY
+    }
+}
+
+const DEFAULT_CONFIG_ORDER: [Table; 7] = [
     Table::SYSTEM,
     Table::PROCESSOR,
     Table::MEMORY,
@@ -65,12 +78,11 @@ const DEFAULT_CONFIG: [Table; 7] = [
     Table::DISKS,
     Table::BATTERY,
 ];
-const FULL_CONFIG: [Table; 7] = DEFAULT_CONFIG;
 const CONFIG_DIRECTORY: &str = "$HOME/.config/omnid";
 const CONFIG_FILENAME: &str = "scu";
 
 fn default_config_to_file() -> String {
-    DEFAULT_CONFIG
+    DEFAULT_CONFIG_ORDER
         .iter()
         .map(|table| table.to_str())
         .filter(|table| !table.is_empty())
@@ -78,47 +90,47 @@ fn default_config_to_file() -> String {
         .trim_end()
         .replace(" ", ",")
 }
-fn full_config() -> Vec<Table> {
-    FULL_CONFIG.into_iter().collect()
-}
 
+#[derive(Debug)]
 pub struct Config {
+    pub enabled_tables: Table,
     pub order: Vec<Table>,
 }
 
 impl Config {
-    pub fn new() -> Self {
-        Self {
-            order: Self::load(),
-        }
-    }
-    fn load() -> Vec<Table> {
-        let default = DEFAULT_CONFIG.into_iter().collect::<Vec<Table>>();
+    pub fn load() -> Self {
         if let Some(cfg_path) = Self::init() {
             if let Ok(cfg_content) = fs::read_to_string(cfg_path) {
-                let config: Vec<String> = cfg_content
+                let config_order: Vec<String> = cfg_content
                     .replace(" ", "")
                     .trim()
                     .split(",")
                     .map(|s| s.to_string())
                     .collect();
 
-                let order: Vec<Table> = if config.contains(&"full".to_string()) {
-                    full_config()
+                let order: Vec<Table> = config_order
+                    .iter()
+                    .map(|table| Table::from_str(&table))
+                    .flatten()
+                    .collect();
+                let mut config = Table::empty();
+                if order.contains(&Table::full()) {
+                    config = Table::full();
                 } else {
-                    config
-                        .iter()
-                        .map(|table| Table::from_str(&table))
-                        .flatten()
-                        .collect()
-                };
+                    for table in order.iter() {
+                        config.insert(*table);
+                    }
+                }
 
                 if !order.is_empty() {
-                    return order;
+                    return Self {
+                        enabled_tables: config,
+                        order,
+                    };
                 }
             }
         }
-        default
+        Self::default()
     }
     fn create_config_directory(path: &Path) -> bool {
         path.exists()
@@ -142,10 +154,19 @@ impl Config {
                         && fs::write(full_path.join(CONFIG_FILENAME), default_config_to_file())
                             .is_ok())
                 {
-                    return Some(full_path);
+                    return Some(full_path.join(CONFIG_FILENAME));
                 }
             }
         }
         None
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            enabled_tables: Table::default(),
+            order: DEFAULT_CONFIG_ORDER.into_iter().collect()
+        }
     }
 }
