@@ -6,7 +6,7 @@ pub struct Color {
 
 impl Color {
     pub const fn new(r: u16, g: u16, b: u16) -> Color {
-        Color { r: r, g: g, b: b }
+        Color { r, g, b }
     }
 }
 
