@@ -8,6 +8,7 @@ strip = true
 lto = true
 
 [dependencies]
+bitflags = "2.6.0"
 libscu = { git = "https://gitlab.com/omnid/libscu", features = [
   "battery",
   "bootmode",
@@ -26,7 +27,6 @@ libscu = { git = "https://gitlab.com/omnid/libscu", features = [
   "pci_ids_parser",
   "proc",
   "ram",
-  "mounts",
   "shell",
   "terminal",
   "time",
