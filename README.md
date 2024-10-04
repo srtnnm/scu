@@ -54,6 +54,10 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
   Prints help page
 
+* `--raw-models`
+
+  Show models (CPU, GPU, etc.) without processing
+
 ### Configuration
 
 scu generates default config at `~/.config/omnid/scu` when you first start it.

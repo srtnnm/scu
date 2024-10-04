@@ -58,9 +58,9 @@ pub(super) fn arg_parse() -> Args {
     let env_args = std::env::args().collect::<Vec<String>>();
     let mut args = Args::default();
 
-    if env_args.contains(&"--version".to_string()) {
+    if env_args.contains(&"-v".to_string()) || env_args.contains(&"--version".to_string()) {
         version();
-    } else if env_args.contains(&"--help".to_string()) {
+    } else if env_args.contains(&"-h".to_string()) || env_args.contains(&"--help".to_string()) {
         help();
     }
 
