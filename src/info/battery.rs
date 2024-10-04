@@ -1,3 +1,4 @@
+#![cfg(target_os = "linux")]
 use libscu::hardware::battery;
 
 pub(super) fn fetch_batteries_info() -> Vec<battery::BatteryInfo> {

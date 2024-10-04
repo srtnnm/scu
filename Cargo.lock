@@ -151,7 +151,7 @@ checksum = "561d97a539a36e26a9a5fad1ea11a3039a67714694aaa379433e580854bc3dc5"
 [[package]]
 name = "libscu"
 version = "2.4.2"
-source = "git+https://gitlab.com/omnid/libscu#ed5f8779dac640f902e9bb1a5c0ca348e6c6cfa5"
+source = "git+https://gitlab.com/omnid/libscu#d16252794c2cac08b4144ec1353cc643656e63bd"
 dependencies = [
  "cc",
  "regex-lite",

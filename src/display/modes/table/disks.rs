@@ -1,3 +1,4 @@
+#![cfg(target_os = "linux")]
 use crate::{data::table::Table, info};
 
 use libscu::types::Memory;

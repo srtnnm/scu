@@ -1,3 +1,5 @@
+#![cfg(target_os = "linux")]
+
 use crate::{
     data::table::{Table, TableEntry},
     info,
