@@ -1,4 +1,4 @@
-use crate::utils::percentage;
+use super::percentage;
 
 pub fn text(str: &str, r: u16, g: u16, b: u16) -> String {
     format!("\x1b[38;2;{r};{g};{b}m{str}\x1B[0m")

@@ -1,6 +1,2 @@
-target
-Cargo.lock
-release_build
+/target
 .vscode
-fornewrelease
-logs
