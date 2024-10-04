@@ -9,13 +9,18 @@ all tables:
     battery
 */
 
+/*
+    TODO
+    implement Config::from_string()
+*/
+
 use bitflags::bitflags;
 use libscu::software::users::fetch_current;
 use std::{fs, path::Path};
 
 bitflags! {
     #[derive(Clone, Copy, Debug, PartialEq)]
-    struct Table: u8 {
+    pub struct Table: u8 {
         const SYSTEM    = 0b0000001;
         const PROCESSOR = 0b0000010;
         const MEMORY    = 0b0000100;
@@ -93,7 +98,6 @@ fn default_config_to_file() -> String {
 
 #[derive(Debug)]
 pub struct Config {
-    pub enabled_tables: Table,
     pub order: Vec<Table>,
 }
 
@@ -113,20 +117,9 @@ impl Config {
                     .map(|table| Table::from_str(&table))
                     .flatten()
                     .collect();
-                let mut config = Table::empty();
-                if order.contains(&Table::full()) {
-                    config = Table::full();
-                } else {
-                    for table in order.iter() {
-                        config.insert(*table);
-                    }
-                }
 
                 if !order.is_empty() {
-                    return Self {
-                        enabled_tables: config,
-                        order,
-                    };
+                    return Self { order };
                 }
             }
         }
@@ -165,8 +158,7 @@ impl Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            enabled_tables: Table::default(),
-            order: DEFAULT_CONFIG_ORDER.into_iter().collect()
+            order: DEFAULT_CONFIG_ORDER.into_iter().collect(),
         }
     }
 }

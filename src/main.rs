@@ -1,27 +1,19 @@
 mod about;
+mod args;
 mod config;
 mod data;
-// mod info;
-mod utils;
-
-use std::env;
-
-use libscu::util::platform::unix::libc::isatty;
+mod display;
+mod info;
+mod util;
 
 fn main() {
-    let args = Vec::from_iter(env::args());
-    let args: Vec<&str> = args.iter().map(|s| s.as_str()).collect();
-    let cfg = config::Config::new();
+    let args = args::arg_parse();
+    data::set_raw_models(args.raw_models);
 
-    if args.contains(&"-v") || args.contains(&"--version") {
-        about::print_version();
+    let config = config::Config::load();
 
-        std::process::exit(0);
-    } else if args.contains(&"-h") || args.contains(&"--help") {
-        about::print_help();
-    }
-    let simplify_output = (unsafe { isatty(0) == 0 } || args.contains(&"--simplify"))
-        && !args.contains(&"--ignore-pipe");
+    let mut info = info::SystemInformation::new();
+    info.fetch(&config, args.force_versions);
 
-    // info::print_info(cfg, simplify_output, args.contains(&"--force-versions"));
+    display::run(display::Mode::default(), &info, &config, args.simplify);
 }

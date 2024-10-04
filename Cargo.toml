@@ -1,5 +1,6 @@
 [package]
 name = "scu"
+description = "a command line system info fetch utility is aimed at informativeness"
 version = "1.5.1"
 edition = "2021"
 
@@ -9,6 +10,7 @@ lto = true
 
 [dependencies]
 bitflags = "2.6.0"
+clap = { version = "4.5.19", features = ["derive"] }
 libscu = { git = "https://gitlab.com/omnid/libscu", features = [
   "battery",
   "bootmode",
