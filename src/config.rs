@@ -19,7 +19,7 @@ use libscu::software::users::fetch_current;
 use std::{fs, path::Path};
 
 bitflags! {
-    #[derive(Clone, Copy, Debug, PartialEq)]
+    #[derive(Clone, Copy, Debug, PartialEq, Eq)]
     pub struct Table: u8 {
         const SYSTEM    = 0b0000001;
         const PROCESSOR = 0b0000010;
