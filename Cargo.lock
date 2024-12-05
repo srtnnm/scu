@@ -49,8 +49,8 @@ checksum = "09d6582e104315a817dff97f75133544b2e094ee22447d2acf4a74e189ba06fc"
 
 [[package]]
 name = "libscu"
-version = "2.4.3"
-source = "git+https://gitlab.com/omnid/libscu#16cffbf2c7aa1ae18342db629b674351c6392284"
+version = "2.4.4"
+source = "git+https://gitlab.com/omnid/libscu#ab105e06dd101c799e1ac7a253e1c0a1a8deeaf2"
 dependencies = [
  "cc",
  "regex-lite",
@@ -107,9 +107,9 @@ checksum = "0fda2ff0d084019ba4d7c6f371c95d8fd75ce3524c3cb8fb653a3023f6323e64"
 
 [[package]]
 name = "syn"
-version = "2.0.89"
+version = "2.0.90"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "44d46482f1c1c87acd84dea20c1bf5ebff4c757009ed6bf19cfd36fb10e92c4e"
+checksum = "919d3b74a5dd0ccd15aeb8f93e7006bd9e14c295087c9896a110f490752bcf31"
 dependencies = [
  "proc-macro2",
  "quote",
