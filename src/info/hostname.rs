@@ -1,3 +1,4 @@
+#[cfg(target_os = "macos")]
 use crate::data::raw_models;
 
 use libscu::software::hostname;
