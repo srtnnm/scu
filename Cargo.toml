@@ -10,7 +10,7 @@ lto = true
 
 [dependencies]
 bitflags = "2.6.0"
-libscu = { git = "https://gitlab.com/omnid/libscu", features = [
+libscu = { version = "2.4.4", git = "https://gitlab.com/omnid/libscu", features = [
   "battery",
   "bootmode",
   "cpu",
