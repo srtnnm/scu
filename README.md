@@ -58,6 +58,10 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
   Show models (CPU, GPU, etc.) without processing
 
+* `--multicpu`
+
+  Show multiple cpus instead of single cpu (currently unstable!)
+
 ### Configuration
 
 scu generates default config at `~/.config/omnid/scu` when you first start it.
