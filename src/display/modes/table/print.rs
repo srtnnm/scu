@@ -1,10 +1,7 @@
 use super::collect::collect_tables;
 
 use crate::{
-    config,
-    data::table::{self, TableEntry},
-    info,
-    util::len,
+    args::Args, config, data::table::{self, TableEntry}, info, util::len
 };
 
 fn update_max_len(max_len_buf: &mut usize, str: &String, plus_integer: usize) {
@@ -135,10 +132,10 @@ fn print_simplified(tables: &Vec<table::Table>) {
 pub(super) fn print(
     info: &info::SystemInformation,
     config: &config::Config,
-    simplify_output: bool,
+    args: &Args
 ) {
-    let tables = collect_tables(info, config, simplify_output);
-    if simplify_output {
+    let tables = collect_tables(info, config, args);
+    if args.simplify {
         print_simplified(&tables);
     } else {
         print_formatted_info(&tables);

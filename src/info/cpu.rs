@@ -1,6 +1,6 @@
 use crate::data::raw_models;
 
-use libscu::hardware::cpu;
+use libscu::hardware::cpu::{self, Unit};
 
 pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
     match cpu::fetch_info(raw_models()) {
@@ -8,6 +8,16 @@ pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
         Err(err) => {
             eprintln!("failed to get information about cpu: {err:?}");
             None
+        }
+    }
+}
+
+pub(super) fn fetch_multicpu_info() -> Vec<Unit> {
+    match cpu::fetch_multicpus(raw_models()) {
+        Ok(cpus) => cpus,
+        Err(err) => {
+            eprintln!("failed to get information about multiple cpus: {err:?}");
+            Vec::default()
         }
     }
 }

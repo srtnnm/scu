@@ -18,7 +18,10 @@ mod uptime;
 mod username;
 mod window_manager;
 
-use crate::config::{Config, Table};
+use crate::{
+    args::Args,
+    config::{Config, Table},
+};
 
 #[cfg(target_os = "linux")]
 use libscu::{
@@ -26,7 +29,11 @@ use libscu::{
     software::{graphics::DisplayServer, init::InitSystem},
 };
 use libscu::{
-    hardware::{cpu::CPUInfo, display::Brightness, ram::RAMInfo},
+    hardware::{
+        cpu::{CPUInfo, Unit},
+        display::Brightness,
+        ram::RAMInfo,
+    },
     software::{
         graphics::WindowManager, os::OSRelease, packages::PackageManager, shell::Shell,
         terminal::TerminalInfo,
@@ -40,6 +47,8 @@ pub(crate) struct SystemInformation {
     #[cfg(target_os = "linux")]
     pub batteries: Vec<BatteryInfo>,
     pub cpu: Option<CPUInfo>,
+    #[cfg(target_os = "linux")]
+    pub multicpu: Vec<Unit>,
     pub desktop_environment: Option<DesktopEnvironment>,
     pub device_name: Option<String>,
     #[cfg(target_os = "linux")]
@@ -69,6 +78,8 @@ impl Default for SystemInformation {
             #[cfg(target_os = "linux")]
             batteries: Vec::default(),
             cpu: None,
+            #[cfg(target_os = "linux")]
+            multicpu: Vec::default(),
             desktop_environment: None,
             device_name: None,
             #[cfg(target_os = "linux")]
@@ -98,10 +109,16 @@ impl SystemInformation {
     pub(crate) fn new() -> Self {
         Self::default()
     }
-    pub(crate) fn fetch(&mut self, config: &Config, force_versions: bool) {
+    pub(crate) fn fetch(&mut self, config: &Config, args: &Args) {
         for table in &config.order {
             match *table {
-                Table::PROCESSOR => self.cpu = cpu::fetch_cpu_info(),
+                Table::PROCESSOR => {
+                    self.cpu = cpu::fetch_cpu_info();
+                    #[cfg(target_os = "linux")]
+                    {
+                        self.multicpu = cpu::fetch_multicpu_info();
+                    }
+                }
                 Table::GRAPHICS => {
                     self.desktop_environment = desktop_environment::fetch();
                     self.display_brightness = display_brightness::fetch();
@@ -110,7 +127,7 @@ impl SystemInformation {
                         self.display_server = display_server::fetch();
                         self.gpus = gpu::fetch_gpus();
                     }
-                    self.window_manager = window_manager::fetch(force_versions);
+                    self.window_manager = window_manager::fetch(args.force_versions);
                 }
                 Table::MEMORY => self.ram = ram::fetch_ram_info(),
                 Table::SYSTEM => {
@@ -122,8 +139,8 @@ impl SystemInformation {
                     }
                     self.kernel = kernel::KernelInfo::fetch();
                     self.os_release = os_release::fetch();
-                    self.shell = shell::fetch(force_versions);
-                    self.terminal = terminal::fetch(force_versions);
+                    self.shell = shell::fetch(args.force_versions);
+                    self.terminal = terminal::fetch(args.force_versions);
                     self.uptime = uptime::fetch();
                     self.username = username::fetch();
                 }

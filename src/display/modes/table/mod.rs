@@ -14,8 +14,8 @@ mod system;
 mod packages;
 mod graphics;
 
-use crate::{config, info};
+use crate::{args::Args, config, info};
 
-pub(crate) fn run(info: &info::SystemInformation, config: &config::Config, simplify_output: bool) {
-    print::print(info, config, simplify_output);
+pub(crate) fn run(info: &info::SystemInformation, config: &config::Config, args: Args) {
+    print::print(info, config, &args);
 }

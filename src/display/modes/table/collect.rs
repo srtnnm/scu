@@ -1,9 +1,9 @@
-use crate::{config, data::table, info};
+use crate::{args::Args, config, data::table, info};
 
 pub(super) fn collect_tables(
     info: &info::SystemInformation,
     config: &config::Config,
-    simplify_output: bool,
+    args: &Args,
 ) -> Vec<table::Table> {
     let mut result: Vec<table::Table> = Vec::new();
 
@@ -13,11 +13,13 @@ pub(super) fn collect_tables(
             config::Table::BATTERY => super::battery::to_table(info),
             #[cfg(target_os = "linux")]
             config::Table::DISKS => super::disks::to_table(info),
-            config::Table::GRAPHICS => super::graphics::to_table(info, simplify_output),
-            config::Table::MEMORY => super::memory::to_table(info, simplify_output),
+            config::Table::GRAPHICS => super::graphics::to_table(info, args.simplify),
+            config::Table::MEMORY => super::memory::to_table(info, args.simplify),
             config::Table::PACKAGES => super::packages::to_table(info),
-            config::Table::PROCESSOR => super::processor::to_table(info, simplify_output),
-            config::Table::SYSTEM => super::system::to_table(info, simplify_output),
+            config::Table::PROCESSOR => {
+                super::processor::to_table(info, args.simplify, args.multicpu)
+            }
+            config::Table::SYSTEM => super::system::to_table(info, args.simplify),
             _ => None,
         } {
             result.push(table);

@@ -13,7 +13,7 @@ fn main() {
     let config = config::Config::load();
 
     let mut info = info::SystemInformation::new();
-    info.fetch(&config, args.force_versions);
+    info.fetch(&config, &args);
 
-    display::run(display::Mode::default(), &info, &config, args.simplify);
+    display::run(display::Mode::default(), &info, &config, args);
 }

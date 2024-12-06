@@ -49,8 +49,8 @@ checksum = "09d6582e104315a817dff97f75133544b2e094ee22447d2acf4a74e189ba06fc"
 
 [[package]]
 name = "libscu"
-version = "2.4.4"
-source = "git+https://gitlab.com/omnid/libscu#ab105e06dd101c799e1ac7a253e1c0a1a8deeaf2"
+version = "2.4.5"
+source = "git+https://gitlab.com/omnid/libscu#ae0bb7064a534bce8e642aa40cb3d4ea8c986434"
 dependencies = [
  "cc",
  "regex-lite",
@@ -92,7 +92,7 @@ dependencies = [
 
 [[package]]
 name = "scu"
-version = "1.5.1"
+version = "1.6.0"
 dependencies = [
  "bitflags",
  "libscu",

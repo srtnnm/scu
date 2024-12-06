@@ -15,6 +15,9 @@ pub(super) struct Args {
 
     // Show raw models without processing
     pub raw_models: bool,
+
+    // Show multiple cpus instead of single cpu (UNSTABLE!)
+    pub multicpu: bool,
 }
 
 fn version() {
@@ -24,11 +27,12 @@ fn version() {
     std::process::exit(0);
 }
 
-const ARGS_WITH_DESCRIPTION: [(&str,&str);6] = [
+const ARGS_WITH_DESCRIPTION: [(&str,&str);7] = [
     ("--simplify","Outputs information in a much simpler form, forced by default when output is piped"),
     ("--ignore-pipe", "Outputs information in regular form, even if it's piped (disables --simplify)"),
     ("--force-versions", "Enables version fetching for WMs (it was disabled by default due to bad performance on some WMs)"),
     ("--raw-models", "Show raw models without processing"),
+    ("--multicpu", "Show multiple cpus instead of single cpu (UNSTABLE!)"),
     ("--version", "Print version and exit."),
     ("--help", "Print this page and exit"),
 ];
@@ -68,6 +72,7 @@ pub(super) fn arg_parse() -> Args {
     args.simplify = env_args.contains(&"--simplify".to_string());
     args.ignore_pipe = env_args.contains(&"--ignore-pipe".to_string());
     args.raw_models = env_args.contains(&"--raw-models".to_string());
+    args.multicpu = env_args.contains(&"--multicpu".to_string());
 
     args.simplify = !args.ignore_pipe && (unsafe { isatty(0) == 0 } || args.simplify);
     args

@@ -1,6 +1,6 @@
 mod modes;
 
-use crate::{config, info};
+use crate::{args::Args, config, info};
 
 #[derive(Default)]
 pub enum Mode {
@@ -12,9 +12,9 @@ pub fn run(
     mode: Mode,
     info: &info::SystemInformation,
     config: &config::Config,
-    simplify_output: bool,
+    args: Args
 ) {
     match mode {
-        Mode::Table => modes::table::run(info, config, simplify_output),
+        Mode::Table => modes::table::run(info, config, args),
     }
 }
