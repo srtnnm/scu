@@ -26,12 +26,12 @@ use crate::{
 
 #[cfg(target_os = "linux")]
 use libscu::{
-    hardware::{battery::BatteryInfo, disk::Disk, gpu::GPUInfo},
+    hardware::{battery::BatteryInfo, disk::Disk, gpu::GPUInfo, cpu::Unit},
     software::{graphics::DisplayServer, init::InitSystem},
 };
 use libscu::{
     hardware::{
-        cpu::{CPUInfo, Unit},
+        cpu::CPUInfo,
         display::Brightness,
         ram::RAMInfo,
     },
