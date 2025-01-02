@@ -2,17 +2,17 @@
     graphics
 */
 
-mod print;
 mod collect;
+mod print;
 
 // tables
-mod disks;
 mod battery;
+mod disks;
+mod graphics;
 mod memory;
+mod packages;
 mod processor;
 mod system;
-mod packages;
-mod graphics;
 
 use crate::{args::Args, config, info};
 

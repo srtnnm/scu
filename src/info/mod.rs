@@ -17,6 +17,7 @@ mod terminal;
 mod uptime;
 mod username;
 mod window_manager;
+mod rootfs;
 
 use crate::{
     args::Args,
@@ -42,7 +43,7 @@ use libscu::{
     util::data::DesktopEnvironment,
 };
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub(crate) struct SystemInformation {
     #[cfg(target_os = "linux")]
     pub batteries: Vec<BatteryInfo>,
@@ -65,44 +66,13 @@ pub(crate) struct SystemInformation {
     pub os_release: Option<OSRelease>,
     pub packages: Vec<PackageManager>,
     pub ram: Option<RAMInfo>,
+    #[cfg(any(target_os = "linux", target_os = "android"))]
+    pub rootfs_fstype: Option<String>,
     pub shell: Option<Shell>,
     pub terminal: Option<TerminalInfo>,
     pub uptime: Option<Time>,
     pub username: Option<String>,
     pub window_manager: Option<WindowManager>,
-}
-
-impl Default for SystemInformation {
-    fn default() -> Self {
-        Self {
-            #[cfg(target_os = "linux")]
-            batteries: Vec::default(),
-            cpu: None,
-            #[cfg(target_os = "linux")]
-            multicpu: Vec::default(),
-            desktop_environment: None,
-            device_name: None,
-            #[cfg(target_os = "linux")]
-            disks: Vec::default(),
-            display_brightness: None,
-            #[cfg(target_os = "linux")]
-            display_server: None,
-            #[cfg(target_os = "linux")]
-            gpus: Vec::default(),
-            hostname: None,
-            #[cfg(target_os = "linux")]
-            init_system: None,
-            kernel: None,
-            os_release: None,
-            packages: Vec::default(),
-            ram: None,
-            shell: None,
-            terminal: None,
-            uptime: None,
-            username: None,
-            window_manager: None,
-        }
-    }
 }
 
 impl SystemInformation {
@@ -143,6 +113,10 @@ impl SystemInformation {
                     self.terminal = terminal::fetch(args.force_versions);
                     self.uptime = uptime::fetch();
                     self.username = username::fetch();
+                    #[cfg(any(target_os = "linux", target_os = "android"))]
+                    {
+                        self.rootfs_fstype = rootfs::get_rootfs_fstype();
+                    }
                 }
                 #[cfg(target_os = "linux")]
                 Table::BATTERY => self.batteries = battery::fetch_batteries_info(),

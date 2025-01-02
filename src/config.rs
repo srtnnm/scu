@@ -57,9 +57,6 @@ impl Table {
             _ => "",
         }
     }
-    pub fn full() -> Self {
-        Self::all()
-    }
 }
 
 impl Default for Table {

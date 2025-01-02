@@ -2,7 +2,7 @@ use crate::{data::table::Table, info};
 
 pub(super) fn to_table(info: &info::SystemInformation) -> Option<Table> {
     if info.packages.is_empty() {
-        None 
+        None
     } else {
         let mut result = Table::new("Packages");
 
@@ -15,4 +15,4 @@ pub(super) fn to_table(info: &info::SystemInformation) -> Option<Table> {
 
         Some(result)
     }
-} 
+}

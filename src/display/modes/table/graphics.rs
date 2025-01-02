@@ -1,4 +1,8 @@
-use crate::{data::table::{Table, TableEntry}, info, util::{colorize::colorize_by_num, percentage}};
+use crate::{
+    data::table::{Table, TableEntry},
+    info,
+    util::{colorize::colorize_by_num, percentage},
+};
 
 pub fn to_table(info: &info::SystemInformation, _disable_color: bool) -> Option<Table> {
     let mut result = Table::new("Graphics");

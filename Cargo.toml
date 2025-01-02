@@ -1,7 +1,10 @@
 [package]
 name = "scu"
 description = "a command line system info fetch utility is aimed at informativeness"
-version = "1.6.0"
+homepage = "https://gitlab.com/omnid/scu"
+authors = ["Artem Sokolovskiy <a641557@gmail.com>"]
+license = "GPLv3"
+version = "1.6.1"
 edition = "2021"
 
 [profile.release]
@@ -23,6 +26,7 @@ libscu = { git = "https://gitlab.com/omnid/libscu", features = [
   "hostname",
   "init",
   "kernel",
+  "mounts",
   "os",
   "packages",
   "pci_ids_parser",

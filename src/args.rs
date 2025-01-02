@@ -1,6 +1,6 @@
 use crate::about;
 
-use libscu::util::platform::unix::libc::isatty;
+use libscu::software::terminal::output_is_piped;
 
 #[derive(Default)]
 pub(super) struct Args {
@@ -28,17 +28,19 @@ fn version() {
 }
 
 const ARGS_WITH_DESCRIPTION: [(&str,&str);7] = [
-    ("--simplify","Outputs information in a much simpler form, forced by default when output is piped"),
-    ("--ignore-pipe", "Outputs information in regular form, even if it's piped (disables --simplify)"),
-    ("--force-versions", "Enables version fetching for WMs (it was disabled by default due to bad performance on some WMs)"),
-    ("--raw-models", "Show raw models without processing"),
-    ("--multicpu", "Show multiple cpus instead of single cpu (UNSTABLE!)"),
+    ("--simplify","Outputs information in a much simpler form, forced by default when output is piped."),
+    ("--ignore-pipe", "Outputs information in regular form, even if it's piped. (disables --simplify)"),
+    ("--force-versions", "Enables version fetching for WMs. (it was disabled by default due to bad performance on some WMs)"),
+    ("--raw-models", "Show raw models without processing."),
+    ("--multicpu", "Show multiple cpus instead of single cpu. (UNSTABLE!)"),
     ("--version", "Print version and exit."),
-    ("--help", "Print this page and exit"),
+    ("--help", "Print this page and exit."),
 ];
 
 fn help() {
     println!("{}", about::DESCRIPTION);
+    println!("Homepage: {}", about::HOMEPAGE);
+    println!("Licensed under {} license.", about::LICENSE);
 
     if !ARGS_WITH_DESCRIPTION.is_empty() {
         println!("\nOptions:");
@@ -74,6 +76,6 @@ pub(super) fn arg_parse() -> Args {
     args.raw_models = env_args.contains(&"--raw-models".to_string());
     args.multicpu = env_args.contains(&"--multicpu".to_string());
 
-    args.simplify = !args.ignore_pipe && (unsafe { isatty(0) == 0 } || args.simplify);
+    args.simplify = !args.ignore_pipe && (output_is_piped() || args.simplify);
     args
 }

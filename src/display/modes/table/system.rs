@@ -119,6 +119,9 @@ pub fn to_table(info: &info::SystemInformation, disable_color: bool) -> Option<T
         .as_str();
         result.add("Uptime", uptime_str.trim());
     };
+    if let Some(ref rootfs_fstype) = info.rootfs_fstype {
+        result.add("RootFS filesystem", &rootfs_fstype);
+    }
 
     Some(result)
 }
