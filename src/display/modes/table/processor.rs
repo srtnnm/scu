@@ -45,7 +45,7 @@ pub fn to_table(
             );
         }
 
-        Some(result)
+        return Some(result);
     } else {
         #[cfg(target_os = "linux")]
         {
@@ -97,8 +97,10 @@ pub fn to_table(
                         subtable_entries,
                     );
                 }
-                Some(result)
+                return Some(result);
             }
         }
     }
+    #[allow(unreachable_code)]
+    None
 }
