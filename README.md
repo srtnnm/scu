@@ -33,7 +33,7 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
 ## Usage
 
-**You can download latest release of scu from [releases](https://gitlab.com/omnitix/scu/-/releases) or compile it by yourself**
+**You can download latest release of scu from [releases](https://github.com/srtnnm/scu/releases) or compile it by yourself**
 
 ### CLI flags
 
