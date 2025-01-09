@@ -54,7 +54,6 @@ pub(crate) struct SystemInformation {
     pub os_release: Option<OSRelease>,
     pub packages: Vec<PackageManager>,
     pub ram: Option<RAMInfo>,
-    #[cfg(any(target_os = "linux", target_os = "android"))] // REMOVE THIS TOO
     pub rootfs_fstype: Option<String>,
     pub shell: Option<Shell>,
     pub terminal: Option<TerminalInfo>,
