@@ -50,7 +50,7 @@ checksum = "b5aba8db14291edd000dfcc4d620c7ebfb122c613afb886ca8803fa4e128a20a"
 [[package]]
 name = "libscu"
 version = "2.5.0"
-source = "git+https://gitlab.com/omnid/libscu#b88f25e5e59a036b8d3e2358b8b4d4c96931035b"
+source = "git+https://gitlab.com/omnid/libscu#671fca44c22297d10ed8e5acced35bd93c1235dd"
 dependencies = [
  "cc",
  "regex-lite",
