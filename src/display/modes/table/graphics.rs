@@ -7,7 +7,6 @@ use crate::{
 pub fn to_table(info: &info::SystemInformation, _disable_color: bool) -> Option<Table> {
     let mut result = Table::new("Graphics");
 
-    #[cfg(any(target_os = "linux"))]
     {
         let mut gpu_sub_info: Vec<TableEntry> = Vec::new();
         for (gpu_id, gpu_info) in info.gpus.iter().enumerate() {
@@ -61,7 +60,6 @@ pub fn to_table(info: &info::SystemInformation, _disable_color: bool) -> Option<
             );
         }
     }
-    #[cfg(any(target_os = "linux", target_os = "android"))]
     if let Some(display_brightness) = &info.display_brightness {
         let percentage = percentage(
             display_brightness.max as u64,

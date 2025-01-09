@@ -1,7 +1,6 @@
 use crate::data::raw_models;
 
 use libscu::hardware::cpu;
-#[cfg(target_os = "linux")]
 use libscu::hardware::cpu::Unit;
 
 pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
