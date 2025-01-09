@@ -1,5 +1,3 @@
-#![cfg(any(target_os = "linux", target_os = "android"))] // REMOVE THIS TOO
-
 use libscu::software::mounts;
 
 pub(crate) fn get_rootfs_fstype() -> Option<String> {

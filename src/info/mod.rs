@@ -91,10 +91,7 @@ impl SystemInformation {
                     self.terminal = terminal::fetch(args.force_versions);
                     self.uptime = uptime::fetch();
                     self.username = username::fetch();
-                    #[cfg(any(target_os = "linux", target_os = "android"))] // REMOVE THIS TOO
-                    {
-                        self.rootfs_fstype = rootfs::get_rootfs_fstype();
-                    }
+                    self.rootfs_fstype = rootfs::get_rootfs_fstype();
                 }
                 Table::BATTERY => self.batteries = battery::fetch_batteries_info(),
                 Table::DISKS => self.disks = disks::fetch_disks(),
