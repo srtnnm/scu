@@ -1,4 +1,4 @@
-use super::modules::{Header, Host, Kernel, Module, Uptime, OS};
+use super::modules::{Header, Host, Kernel, Module, Packages, Uptime, OS};
 use super::row::DataRow;
 
 use std::sync::atomic::AtomicUsize;
@@ -14,6 +14,7 @@ pub fn display(info: &crate::info::SystemInformation) {
     rows.push(Host::get(info).unwrap());
     rows.push(Kernel::get(info).unwrap());
     rows.push(Uptime::get(info).unwrap());
+    rows.push(Packages::get(info).unwrap());
 
     for row in rows {
         let row = row.to_string();

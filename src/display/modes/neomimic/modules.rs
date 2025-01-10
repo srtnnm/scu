@@ -8,6 +8,8 @@ mod kernel;
 pub use kernel::Kernel;
 mod uptime;
 pub use uptime::Uptime;
+mod packages;
+pub use packages::Packages;
 
 use super::row::DataRow;
 
