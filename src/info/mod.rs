@@ -101,3 +101,16 @@ impl SystemInformation {
         }
     }
 }
+
+pub fn get_option<T>(variable_name: &str, variable: &Option<T>) -> std::io::Result<T>
+where
+    T: Clone,
+{
+    let Some(var) = variable.clone() else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("failed to determine {variable_name}"),
+        ));
+    };
+    Ok(var)
+}

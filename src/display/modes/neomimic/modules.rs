@@ -6,6 +6,8 @@ mod host;
 pub use host::Host;
 mod kernel;
 pub use kernel::Kernel;
+mod uptime;
+pub use uptime::Uptime;
 
 use super::row::DataRow;
 
