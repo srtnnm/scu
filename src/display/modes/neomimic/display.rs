@@ -1,4 +1,4 @@
-use super::modules::{Header, Module};
+use super::modules::{Header, Host, Kernel, Module, OS};
 use super::row::DataRow;
 
 use std::sync::atomic::AtomicUsize;
@@ -10,6 +10,9 @@ pub fn display(info: &crate::info::SystemInformation) {
 
     rows.push(Header::get(info).unwrap());
     rows.push(DataRow::separator('-'));
+    rows.push(OS::get(info).unwrap());
+    rows.push(Host::get(info).unwrap());
+    rows.push(Kernel::get(info).unwrap());
 
     for row in rows {
         let row = row.to_string();

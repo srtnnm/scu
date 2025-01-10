@@ -1,5 +1,11 @@
 mod header;
 pub use header::Header;
+mod os;
+pub use os::OS;
+mod host;
+pub use host::Host;
+mod kernel;
+pub use kernel::Kernel;
 
 use super::row::DataRow;
 
