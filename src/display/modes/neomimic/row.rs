@@ -3,9 +3,9 @@ pub(crate) struct DataRow(DataRowType);
 
 #[derive(Clone)]
 enum DataRowType {
-    Information { name: String, value: String }, // (name, value)
-    Nameless { value: String },                  // (value)
-    Separator(char),                             //
+    Information { name: String, value: String },
+    Nameless { value: String },
+    Separator(char),
 }
 
 impl DataRow {
