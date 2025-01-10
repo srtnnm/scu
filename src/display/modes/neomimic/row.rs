@@ -36,7 +36,9 @@ impl fmt::Display for DataRow {
                     format!("{name}: {value}")
                 }
                 DataRowType::Nameless { value } => value,
-                DataRowType::Separator(c) => c.to_string(),
+                DataRowType::Separator(c) => c.to_string().repeat(
+                    super::display::LAST_ROW_LENGTH.load(std::sync::atomic::Ordering::Relaxed)
+                ),
             }
         )
     }
