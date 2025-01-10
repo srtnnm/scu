@@ -1,4 +1,3 @@
-#![cfg(target_os = "linux")]
 use crate::data::raw_models;
 
 use libscu::hardware::gpu;

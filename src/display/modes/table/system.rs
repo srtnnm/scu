@@ -50,7 +50,6 @@ pub fn to_table(info: &info::SystemInformation, disable_color: bool) -> Option<T
         result.add("Kernel", &kernel_version);
     }
 
-    #[cfg(not(target_os = "android"))]
     if let Some(init_system) = info.init_system.as_ref() {
         result.add_with_additional(
             "Init system",

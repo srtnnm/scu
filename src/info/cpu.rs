@@ -1,7 +1,6 @@
 use crate::data::raw_models;
 
 use libscu::hardware::cpu;
-#[cfg(target_os = "linux")]
 use libscu::hardware::cpu::Unit;
 
 pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
@@ -14,7 +13,6 @@ pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
     }
 }
 
-#[cfg(target_os = "linux")]
 pub(super) fn fetch_multicpu_info() -> Vec<Unit> {
     match cpu::fetch_multicpus(raw_models()) {
         Ok(cpus) => cpus,

@@ -1,4 +1,3 @@
-#![cfg(target_os = "linux")]
 use libscu::hardware::disk;
 
 pub(super) fn fetch_disks() -> Vec<disk::Disk> {
