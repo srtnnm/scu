@@ -15,5 +15,10 @@ fn main() {
     let mut info = info::SystemInformation::new();
     info.fetch(&config, &args);
 
-    display::run(display::Mode::default(), &info, &config, args);
+    let mode = if !args.neomimic {
+        display::Mode::default()
+    } else {
+        display::Mode::NeoMimic
+    };
+    display::run(mode, &info, &config, args);
 }
