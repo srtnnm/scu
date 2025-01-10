@@ -10,6 +10,20 @@ mod uptime;
 pub use uptime::Uptime;
 mod packages;
 pub use packages::Packages;
+mod shell;
+pub use shell::Shell;
+mod de;
+pub use de::DE;
+mod wm;
+pub use wm::WM;
+mod terminal;
+pub use terminal::Terminal;
+mod cpu;
+pub use cpu::CPU;
+mod gpu;
+pub use gpu::GPU;
+mod memory;
+pub use memory::Memory;
 
 use super::row::DataRow;
 

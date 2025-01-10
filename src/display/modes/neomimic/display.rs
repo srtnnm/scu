@@ -1,4 +1,7 @@
-use super::modules::{Header, Host, Kernel, Module, Packages, Uptime, OS};
+use super::color_blocks;
+use super::modules::{
+    Header, Host, Kernel, Memory, Module, Packages, Shell, Terminal, Uptime, CPU, DE, GPU, OS, WM,
+};
 use super::row::DataRow;
 
 use std::sync::atomic::AtomicUsize;
@@ -15,10 +18,19 @@ pub fn display(info: &crate::info::SystemInformation) {
     rows.push(Kernel::get(info).unwrap());
     rows.push(Uptime::get(info).unwrap());
     rows.push(Packages::get(info).unwrap());
+    rows.push(Shell::get(info).unwrap());
+    rows.push(DE::get(info).unwrap());
+    rows.push(WM::get(info).unwrap());
+    rows.push(Terminal::get(info).unwrap());
+    rows.push(CPU::get(info).unwrap());
+    rows.push(GPU::get(info).unwrap());
+    rows.push(Memory::get(info).unwrap());
 
     for row in rows {
         let row = row.to_string();
         println!("{}", row);
         LAST_ROW_LENGTH.store(row.chars().count(), std::sync::atomic::Ordering::Relaxed);
     }
+
+    color_blocks::print();
 }
