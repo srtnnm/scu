@@ -12,6 +12,7 @@ const TUX: &str = "        $8#####
 $3######$8#$7#######$8#$3######
 $3#######$8#$7#####$8#$3#######
   $3#####$8#######$3#####";
+const TUX_WIDTH: usize = 21;
 
 pub fn print_logo() {
     let mut linux_logo = TUX.to_string();
@@ -27,6 +28,6 @@ pub fn print_logo() {
         }
     }
 
-    print!("{linux_logo}"); //, LINUX.replace("$8", "\x1b[38;5;8m"));
+    print!("{linux_logo}");
     println!("\x1b[0m");
 }
