@@ -6,6 +6,7 @@ fn print_line(colors: std::ops::Range<u8>) {
 }
 
 pub fn print() {
+    println!();
     print_line(0..8);
     print_line(8..16);
 }
