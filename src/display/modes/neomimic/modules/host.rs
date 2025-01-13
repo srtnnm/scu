@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Host;
 
-impl Module for Host {
+impl ModuleTrait for Host {
     const NAME: &'static str = "host";
 
     fn get(

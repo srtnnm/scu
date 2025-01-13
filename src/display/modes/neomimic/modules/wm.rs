@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct WM;
 
-impl Module for WM {
+impl ModuleTrait for WM {
     const NAME: &'static str = "wm";
 
     fn get(

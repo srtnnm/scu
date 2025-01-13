@@ -1,36 +1,46 @@
-use crate::display::modes::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
-
-use super::color_blocks;
-use super::logo::print_logo;
-use super::modules::{
-    Header, Host, Kernel, Memory, Module, Packages, Shell, Terminal, Uptime, CPU, DE, GPU, OS, WM,
+use super::{
+    color_blocks,
+    logo::print_logo,
+    modules::{run_module, Module},
+    row::DataRow,
 };
-use super::row::DataRow;
+
+use crate::display::modes::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
 
 use std::sync::atomic::AtomicUsize;
 
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
+// TODO: move to non-hardcoded config
+const CONFIG: [Module; 14] = [
+    Module::Header,
+    Module::Separator,
+    Module::OS,
+    Module::Host,
+    Module::Kernel,
+    Module::Uptime,
+    Module::Packages,
+    Module::Shell,
+    Module::DE,
+    Module::WM,
+    Module::Terminal,
+    Module::CPU,
+    Module::GPU,
+    Module::Memory,
+];
+
 pub fn display(info: &crate::info::SystemInformation) {
     let mut rows: Vec<DataRow> = Vec::new();
 
-    rows.push(Header::get(info).unwrap());
-    rows.push(DataRow::separator('-'));
-    rows.push(OS::get(info).unwrap());
-    rows.push(Host::get(info).unwrap());
-    rows.push(Kernel::get(info).unwrap());
-    rows.push(Uptime::get(info).unwrap());
-    rows.push(Packages::get(info).unwrap());
-    rows.push(Shell::get(info).unwrap());
-    rows.push(DE::get(info).unwrap());
-    rows.push(WM::get(info).unwrap());
-    rows.push(Terminal::get(info).unwrap());
-    rows.push(CPU::get(info).unwrap());
-    rows.push(GPU::get(info).unwrap());
-    rows.push(Memory::get(info).unwrap());
+    for module in CONFIG {
+        if let Some(row) = run_module(&module, info) {
+            rows.push(row);
+        }
+    }
 
     print_logo();
 
+    // Return cursor to start
     println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
 
     for row in rows {

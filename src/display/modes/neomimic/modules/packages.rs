@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_vec};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Packages;
 
-impl Module for Packages {
+impl ModuleTrait for Packages {
     const NAME: &'static str = "packages";
 
     fn get(

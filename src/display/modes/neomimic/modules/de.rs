@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct DE;
 
-impl Module for DE {
+impl ModuleTrait for DE {
     const NAME: &'static str = "de";
 
     fn get(

@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Terminal;
 
-impl Module for Terminal {
+impl ModuleTrait for Terminal {
     const NAME: &'static str = "terminal";
 
     fn get(

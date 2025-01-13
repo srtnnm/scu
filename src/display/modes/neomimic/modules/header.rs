@@ -1,10 +1,10 @@
-use super::{DataRow, Module};
+use super::{DataRow, ModuleTrait};
 
 use crate::info::{get_option, SystemInformation};
 
 pub struct Header;
 
-impl Module for Header {
+impl ModuleTrait for Header {
     const NAME: &'static str = "header";
 
     fn get(info: &SystemInformation) -> std::io::Result<DataRow> {

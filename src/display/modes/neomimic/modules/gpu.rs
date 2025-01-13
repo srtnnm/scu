@@ -3,11 +3,11 @@ use crate::{
     info::{get_option, get_vec},
 };
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct GPU;
 
-impl Module for GPU {
+impl ModuleTrait for GPU {
     const NAME: &'static str = "gpu";
 
     fn get(

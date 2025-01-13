@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Kernel;
 
-impl Module for Kernel {
+impl ModuleTrait for Kernel {
     const NAME: &'static str = "kernel";
 
     fn get(

@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Uptime;
 
-impl Module for Uptime {
+impl ModuleTrait for Uptime {
     const NAME: &'static str = "uptime";
 
     fn get(

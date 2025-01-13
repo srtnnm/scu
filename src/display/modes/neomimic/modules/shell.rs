@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct Shell;
 
-impl Module for Shell {
+impl ModuleTrait for Shell {
     const NAME: &'static str = "shell";
 
     fn get(

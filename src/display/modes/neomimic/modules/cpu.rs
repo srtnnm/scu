@@ -1,10 +1,10 @@
 use crate::{display::modes::neomimic::row::DataRow, info::get_option};
 
-use super::Module;
+use super::ModuleTrait;
 
 pub struct CPU;
 
-impl Module for CPU {
+impl ModuleTrait for CPU {
     const NAME: &'static str = "cpu";
 
     fn get(
