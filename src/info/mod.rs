@@ -101,3 +101,31 @@ impl SystemInformation {
         }
     }
 }
+
+pub fn get_option<T>(variable_name: &str, variable: &Option<T>) -> std::io::Result<T>
+where
+    T: Clone,
+{
+    let Some(var) = variable.clone() else {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            format!("failed to determine {variable_name}"),
+        ));
+    };
+    Ok(var)
+}
+
+pub fn get_vec<T>(data_kind: &str, variable: &Vec<T>) -> std::io::Result<Vec<T>>
+where
+    T: Clone,
+{
+    let var = variable.clone();
+    if var.is_empty() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!("no {data_kind} found"),
+        ));
+    } else {
+        Ok(var)
+    }
+}
