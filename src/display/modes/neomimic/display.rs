@@ -1,4 +1,5 @@
 use super::color_blocks;
+use super::logo::print_logo;
 use super::modules::{
     Header, Host, Kernel, Memory, Module, Packages, Shell, Terminal, Uptime, CPU, DE, GPU, OS, WM,
 };
@@ -25,6 +26,8 @@ pub fn display(info: &crate::info::SystemInformation) {
     rows.push(CPU::get(info).unwrap());
     rows.push(GPU::get(info).unwrap());
     rows.push(Memory::get(info).unwrap());
+
+    print_logo();
 
     for row in rows {
         let row = row.to_string();
