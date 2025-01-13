@@ -29,7 +29,7 @@ const CONFIG: [Module; 14] = [
     Module::Memory,
 ];
 
-pub fn display(info: &crate::info::SystemInformation) {
+pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) {
     let mut rows: Vec<DataRow> = Vec::new();
 
     for module in CONFIG {
@@ -38,16 +38,28 @@ pub fn display(info: &crate::info::SystemInformation) {
         }
     }
 
-    print_logo();
+    let cursor_mover = if !args.simplify {
+        format!("\x1b[{}C", TUX_WIDTH + 4)
+    } else {
+        "".into()
+    };
 
-    // Return cursor to start
-    println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
+    if !args.simplify {
+        // Display logo
+        print_logo();
+        // Return cursor to start
+        println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
+    }
 
+    // Display data
     for row in rows {
         let row = row.to_string();
-        println!("\x1b[{}C{}", TUX_WIDTH + 4, row);
+        println!("{cursor_mover}{}", row);
         LAST_ROW_LENGTH.store(row.chars().count(), std::sync::atomic::Ordering::Relaxed);
     }
 
-    color_blocks::print();
+    // Display color blocks
+    if !args.simplify {
+        color_blocks::print();
+    }
 }
