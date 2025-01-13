@@ -12,7 +12,8 @@ const TUX: &str = "        $8#####
 $3######$8#$7#######$8#$3######
 $3#######$8#$7#####$8#$3#######
   $3#####$8#######$3#####";
-const TUX_WIDTH: usize = 21;
+pub const TUX_WIDTH: usize = 21;
+pub const TUX_HEIGHT: usize = 12;
 
 pub fn print_logo() {
     let mut linux_logo = TUX.to_string();

@@ -1,3 +1,5 @@
+use crate::display::modes::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
+
 use super::color_blocks;
 use super::logo::print_logo;
 use super::modules::{
@@ -29,9 +31,11 @@ pub fn display(info: &crate::info::SystemInformation) {
 
     print_logo();
 
+    println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
+
     for row in rows {
         let row = row.to_string();
-        println!("{}", row);
+        println!("\x1b[{}C{}", TUX_WIDTH + 4, row);
         LAST_ROW_LENGTH.store(row.chars().count(), std::sync::atomic::Ordering::Relaxed);
     }
 
