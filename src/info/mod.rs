@@ -9,6 +9,7 @@ mod gpu;
 mod hostname;
 mod init_system;
 mod kernel;
+mod locale;
 mod os_release;
 mod packages;
 mod ram;
@@ -51,6 +52,7 @@ pub(crate) struct SystemInformation {
     pub hostname: Option<String>,
     pub init_system: Option<InitSystem>,
     pub kernel: Option<kernel::KernelInfo>,
+    pub locale: Option<String>,
     pub os_release: Option<OSRelease>,
     pub packages: Vec<PackageManager>,
     pub ram: Option<RAMInfo>,
@@ -92,6 +94,7 @@ impl SystemInformation {
                     self.uptime = uptime::fetch();
                     self.username = username::fetch();
                     self.rootfs_fstype = rootfs::get_rootfs_fstype();
+                    self.locale = locale::fetch();
                 }
                 Table::BATTERY => self.batteries = battery::fetch_batteries_info(),
                 Table::DISKS => self.disks = disks::fetch_disks(),

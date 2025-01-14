@@ -12,7 +12,7 @@ use std::sync::atomic::AtomicUsize;
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
 // TODO: move to non-hardcoded config
-const CONFIG: [Module; 14] = [
+const CONFIG: [Module; 15] = [
     Module::Header,
     Module::Separator,
     Module::OS,
@@ -27,6 +27,7 @@ const CONFIG: [Module; 14] = [
     Module::CPU,
     Module::GPU,
     Module::Memory,
+    Module::Locale,
 ];
 
 pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) {

@@ -4,6 +4,7 @@ mod gpu;
 mod header;
 mod host;
 mod kernel;
+mod locale;
 mod memory;
 mod os;
 mod packages;
@@ -31,6 +32,7 @@ pub enum Module {
     Header,
     Host,
     Kernel,
+    Locale,
     Memory,
     OS,
     Packages,
@@ -50,6 +52,7 @@ impl Module {
             Self::Header => header::Header::get(info),
             Self::Host => host::Host::get(info),
             Self::Kernel => kernel::Kernel::get(info),
+            Self::Locale => locale::Locale::get(info),
             Self::Memory => memory::Memory::get(info),
             Self::OS => os::OS::get(info),
             Self::Packages => packages::Packages::get(info),

@@ -14,27 +14,6 @@ lto = true
 [dependencies]
 bitflags = "2.6.0"
 libscu = { version = "2.5.0", git = "https://gitlab.com/omnid/libscu", features = [
-    "battery",
-    "bootmode",
-    "cpu",
-    "device",
-    "display",
-    "disk",
-    "extract_version",
-    "gpu",
-    "graphics",
-    "hostname",
-    "init",
-    "kernel",
-    "mounts",
-    "os",
-    "packages",
-    "pci_ids_parser",
-    "proc",
-    "ram",
-    "shell",
-    "terminal",
-    "time",
-    "users",
+    "full",
 ] }
 regex-lite = { version = "0.1.5" }
