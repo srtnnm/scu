@@ -1,6 +1,6 @@
-use crate::{data::table::Table, info};
+use crate::{data::table::Table, modules};
 
-pub(super) fn to_table(info: &info::SystemInformation) -> Option<Table> {
+pub(super) fn to_table(info: &modules::SystemInformation) -> Option<Table> {
     if info.packages.is_empty() {
         None
     } else {

@@ -14,8 +14,8 @@ mod packages;
 mod processor;
 mod system;
 
-use crate::{args::Args, config, info};
+use crate::{args::Args, config, modules};
 
-pub(crate) fn run(info: &info::SystemInformation, config: &config::Config, args: Args) {
+pub(crate) fn run(info: &modules::SystemInformation, config: &config::Config, args: Args) {
     print::print(info, config, &args);
 }

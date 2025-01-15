@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_vec;
+use crate::modules::get_vec;
 
 pub struct GPU;
 
 impl ModuleTrait for GPU {
     const NAME: &'static str = "gpu";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let gpus = get_vec("gpus", &info.gpus)?;
 
         let len = gpus

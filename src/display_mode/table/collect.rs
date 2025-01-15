@@ -1,7 +1,7 @@
-use crate::{args::Args, config, data::table, info};
+use crate::{args::Args, config, data::table, modules};
 
 pub(super) fn collect_tables(
-    info: &info::SystemInformation,
+    info: &modules::SystemInformation,
     config: &config::Config,
     args: &Args,
 ) -> Vec<table::Table> {

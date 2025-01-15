@@ -1,11 +1,11 @@
 use crate::{
     data::table::{Table, TableEntry},
-    info,
+    modules,
     util::{colorize::colorize_by_num, percentage},
 };
 
 pub fn to_table(
-    info: &info::SystemInformation,
+    info: &modules::SystemInformation,
     disable_color: bool,
     multicpu: bool,
 ) -> Option<Table> {

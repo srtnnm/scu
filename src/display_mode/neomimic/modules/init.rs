@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_option;
+use crate::modules::get_option;
 
 pub struct Init;
 
 impl ModuleTrait for Init {
     const NAME: &'static str = "init";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let init = get_option("init", &info.init_system)?;
 
         Ok(DataRow::info(

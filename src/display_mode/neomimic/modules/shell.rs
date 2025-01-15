@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_option;
+use crate::modules::get_option;
 
 pub struct Shell;
 
 impl ModuleTrait for Shell {
     const NAME: &'static str = "shell";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let shell = get_option("shell", &info.shell)?;
 
         let mut shell_str = shell.name;

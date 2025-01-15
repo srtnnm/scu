@@ -1,9 +1,9 @@
 use crate::{
     data::table::{Table, TableEntry},
-    info,
+    modules,
 };
 
-pub fn to_table(info: &info::SystemInformation) -> Option<Table> {
+pub fn to_table(info: &modules::SystemInformation) -> Option<Table> {
     if info.batteries.is_empty() {
         return None;
     }

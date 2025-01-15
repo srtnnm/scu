@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_option;
+use crate::modules::get_option;
 
 pub struct Memory;
 
 impl ModuleTrait for Memory {
     const NAME: &'static str = "memory";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let memory = get_option("memory", &info.ram)?;
 
         let memory_str = format!(

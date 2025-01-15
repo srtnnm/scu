@@ -18,7 +18,7 @@ mod wm;
 
 use super::row::DataRow;
 
-use crate::info::SystemInformation;
+use crate::modules::SystemInformation;
 
 use std::io;
 
@@ -49,7 +49,7 @@ pub enum Module {
 }
 
 impl Module {
-    pub fn run(&self, info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    pub fn run(&self, info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         match self {
             Self::Battery => battery::Battery::run(info),
             Self::CPU => cpu::CPU::run(info),
@@ -73,6 +73,6 @@ impl Module {
 }
 
 // TODO: show possible errors for debugging
-pub fn run_module(module: &Module, info: &crate::info::SystemInformation) -> Option<usize> {
+pub fn run_module(module: &Module, info: &crate::modules::SystemInformation) -> Option<usize> {
     module.run(info).ok()
 }

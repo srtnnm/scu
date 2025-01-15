@@ -1,10 +1,10 @@
 use crate::{
     data::table::Table,
-    info,
+    modules,
     util::{colorize::colorize_by_num, percentage},
 };
 
-pub fn to_table(info: &info::SystemInformation, disable_color: bool) -> Option<Table> {
+pub fn to_table(info: &modules::SystemInformation, disable_color: bool) -> Option<Table> {
     let ram_info = info.ram.clone()?;
 
     let mut result = Table::new("Memory");

@@ -3,7 +3,7 @@ mod args;
 mod config;
 mod data;
 mod display_mode;
-mod info;
+mod modules;
 mod util;
 
 fn main() {
@@ -12,7 +12,7 @@ fn main() {
 
     let config = config::Config::load();
 
-    let mut info = info::SystemInformation::new();
+    let mut info = modules::SystemInformation::new();
     info.fetch(&config, &args);
 
     display_mode::run(&info, &config, args);

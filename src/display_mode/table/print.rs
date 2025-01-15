@@ -4,7 +4,7 @@ use crate::{
     args::Args,
     config,
     data::table::{self, TableEntry},
-    info,
+    modules,
     util::len,
 };
 
@@ -133,7 +133,7 @@ fn print_simplified(tables: &Vec<table::Table>) {
     }
 }
 
-pub(super) fn print(info: &info::SystemInformation, config: &config::Config, args: &Args) {
+pub(super) fn print(info: &modules::SystemInformation, config: &config::Config, args: &Args) {
     let tables = collect_tables(info, config, args);
     if args.simplify {
         print_simplified(&tables);

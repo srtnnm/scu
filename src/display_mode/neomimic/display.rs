@@ -37,7 +37,7 @@ pub fn cursor_mover() {
     print!("{}", CURSOR_MOVER.get_or_init(|| ""));
 }
 
-pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) {
+pub fn display(info: &crate::modules::SystemInformation, args: &crate::args::Args) {
     CURSOR_MOVER
         .set(if !args.simplify {
             Box::leak(format!("\x1b[{}C", TUX_WIDTH + 4).into_boxed_str())

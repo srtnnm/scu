@@ -1,7 +1,7 @@
 mod neomimic;
 mod table;
 
-use crate::{args::Args, config, info::SystemInformation};
+use crate::{args::Args, config, modules::SystemInformation};
 
 #[derive(Default)]
 pub enum Mode {

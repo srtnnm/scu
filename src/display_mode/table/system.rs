@@ -3,11 +3,11 @@ use crate::{
         distro_colors,
         table::{Table, TableEntry},
     },
-    info,
+    modules,
     util::colorize::colorize_background,
 };
 
-pub fn to_table(info: &info::SystemInformation, disable_color: bool) -> Option<Table> {
+pub fn to_table(info: &modules::SystemInformation, disable_color: bool) -> Option<Table> {
     let mut result = Table::new("System");
 
     if let Some(hostname) = &info.hostname {

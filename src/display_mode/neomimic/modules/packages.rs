@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_vec;
+use crate::modules::get_vec;
 
 pub struct Packages;
 
 impl ModuleTrait for Packages {
     const NAME: &'static str = "packages";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let mut package_managers = get_vec("package managers", &info.packages)?;
         // sort by number of packages
         package_managers.sort_by(|pm1, pm2| pm2.number_of_packages.cmp(&pm1.number_of_packages));

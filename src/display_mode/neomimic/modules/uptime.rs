@@ -1,13 +1,13 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::get_option;
+use crate::modules::get_option;
 
 pub struct Uptime;
 
 impl ModuleTrait for Uptime {
     const NAME: &'static str = "uptime";
 
-    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
+    fn run(info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
         let uptime = get_option("uptime", &info.uptime)?;
 
         let mut value = String::default();

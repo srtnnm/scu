@@ -1,6 +1,6 @@
 use super::{DataRow, ModuleTrait};
 
-use crate::info::{get_option, SystemInformation};
+use crate::modules::{get_option, SystemInformation};
 
 pub struct Locale;
 

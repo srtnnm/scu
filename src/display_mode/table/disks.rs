@@ -1,4 +1,4 @@
-use crate::{data::table::Table, info};
+use crate::{data::table::Table, modules};
 
 use libscu::types::Memory;
 
@@ -13,7 +13,7 @@ fn size_to_string(size: &Memory) -> String {
     }
 }
 
-pub(super) fn to_table(info: &info::SystemInformation) -> Option<Table> {
+pub(super) fn to_table(info: &modules::SystemInformation) -> Option<Table> {
     if info.disks.is_empty() {
         return None;
     }
