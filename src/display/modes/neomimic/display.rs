@@ -11,13 +11,14 @@ use std::sync::atomic::AtomicUsize;
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
 // TODO: move to non-hardcoded config
-const CONFIG: [Module; 16] = [
+const CONFIG: [Module; 17] = [
     Module::Header,
     Module::Separator,
     Module::OS,
     Module::Host,
     Module::Kernel,
     Module::Uptime,
+    Module::Init,
     Module::Packages,
     Module::Shell,
     Module::DE,
