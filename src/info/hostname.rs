@@ -8,4 +8,5 @@ pub(super) fn fetch() -> Option<String> {
         #[cfg(target_os = "macos")]
         raw_models(),
     )
+    .ok()
 }

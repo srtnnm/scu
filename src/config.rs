@@ -131,7 +131,7 @@ impl Config {
                 .is_ok()
     }
     fn init() -> Option<std::path::PathBuf> {
-        if let Some(user) = fetch_current() {
+        if let Ok(user) = fetch_current() {
             if let Some(homedir) = user.home_dir {
                 if homedir.is_empty() {
                     return None;

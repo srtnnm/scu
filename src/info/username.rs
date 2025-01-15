@@ -1,7 +1,7 @@
 use libscu::software::users;
 
 pub(super) fn fetch() -> Option<String> {
-    let username = users::fetch_current()?.name;
+    let username = users::fetch_current().ok()?.name;
 
     if username.is_empty() {
         None

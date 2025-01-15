@@ -13,9 +13,9 @@ impl KernelInfo {
     }
     pub(super) fn fetch() -> Option<KernelInfo> {
         let info = KernelInfo {
-            name: kernel::fetch_name(),
-            version: kernel::fetch_version(),
-            arch: kernel::fetch_arch(),
+            name: kernel::fetch_name().ok(),
+            version: kernel::fetch_version().ok(),
+            arch: kernel::fetch_arch().ok(),
         };
         if !info.is_none() {
             Some(info)

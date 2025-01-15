@@ -1,7 +1,9 @@
 use libscu::hardware::battery;
 
 pub(super) fn fetch_batteries_info() -> Vec<battery::BatteryInfo> {
-    let battery_interfaces = battery::fetch_interfaces();
+    let Ok(battery_interfaces) = battery::fetch_interfaces() else {
+        return Vec::default();
+    };
 
     battery_interfaces
         .iter()
