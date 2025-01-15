@@ -1,5 +1,5 @@
-pub mod neomimic;
-pub mod table;
+mod neomimic;
+mod table;
 
 use crate::{args::Args, config, info::SystemInformation};
 
