@@ -29,12 +29,20 @@ const CONFIG: [Module; 15] = [
     Module::Locale,
 ];
 
+static CURSOR_MOVER: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
+
+pub fn cursor_mover() {
+    print!("{}", CURSOR_MOVER.get_or_init(|| ""));
+}
+
 pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) {
-    let cursor_mover = if !args.simplify {
-        format!("\x1b[{}C", TUX_WIDTH + 4)
-    } else {
-        "".into()
-    };
+    CURSOR_MOVER
+        .set(if !args.simplify {
+            Box::leak(format!("\x1b[{}C", TUX_WIDTH + 4).into_boxed_str())
+        } else {
+            "".into()
+        })
+        .expect("attempted to set already initialized cursor mover");
 
     if !args.simplify {
         // Display logo
@@ -44,7 +52,7 @@ pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) 
     }
 
     for module in CONFIG {
-        if let Some(len) = run_module(&module, info, &cursor_mover) {
+        if let Some(len) = run_module(&module, info) {
             LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
         }
     }

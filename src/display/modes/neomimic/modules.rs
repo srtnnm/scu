@@ -67,11 +67,6 @@ impl Module {
 }
 
 // TODO: show possible errors for debugging
-pub fn run_module(
-    module: &Module,
-    info: &crate::info::SystemInformation,
-    cursor_mover: &str,
-) -> Option<usize> {
-    print!("{cursor_mover}");
+pub fn run_module(module: &Module, info: &crate::info::SystemInformation) -> Option<usize> {
     module.run(info).ok()
 }

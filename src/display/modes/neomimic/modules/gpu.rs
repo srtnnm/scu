@@ -1,9 +1,6 @@
-use crate::{
-    display::modes::neomimic::row::DataRow,
-    info::{get_option, get_vec},
-};
+use crate::info::get_vec;
 
-use super::ModuleTrait;
+use super::{DataRow, ModuleTrait};
 
 pub struct GPU;
 
@@ -13,14 +10,21 @@ impl ModuleTrait for GPU {
     fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let gpus = get_vec("gpus", &info.gpus)?;
 
-        let first_gpu = get_option("first gpu", &gpus.iter().next())?;
+        let len = gpus
+            .iter()
+            .map(|gpu| {
+                DataRow::info(
+                    "GPU",
+                    &format!(
+                        "{vendor} {model}",
+                        vendor = gpu.vendor.to_string(),
+                        model = gpu.model
+                    ),
+                )
+            })
+            .max()
+            .unwrap_or_default();
 
-        let first_gpu_str = format!(
-            "{vendor} {model}",
-            vendor = first_gpu.vendor.to_string(),
-            model = first_gpu.model
-        );
-
-        Ok(DataRow::info("GPU", &first_gpu_str))
+        Ok(len)
     }
 }
