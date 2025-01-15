@@ -1,6 +1,6 @@
-use crate::info::get_vec;
-
 use super::{DataRow, ModuleTrait};
+
+use crate::info::get_vec;
 
 pub struct GPU;
 

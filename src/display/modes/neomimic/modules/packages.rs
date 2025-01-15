@@ -1,6 +1,6 @@
-use crate::{display::modes::neomimic::row::DataRow, info::get_vec};
+use super::{DataRow, ModuleTrait};
 
-use super::ModuleTrait;
+use crate::info::get_vec;
 
 pub struct Packages;
 
