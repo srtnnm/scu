@@ -1,6 +1,7 @@
 use crate::about;
 
 use libscu::software::terminal::output_is_piped;
+use simpleargs::Arg;
 
 #[derive(Default)]
 pub(super) struct Args {
@@ -65,21 +66,32 @@ fn help() {
 }
 
 pub(super) fn arg_parse() -> Args {
-    let env_args = std::env::args().collect::<Vec<String>>();
+    let mut env_args = simpleargs::Args::from(std::env::args());
     let mut args = Args::default();
 
-    if env_args.contains(&"-v".to_string()) || env_args.contains(&"--version".to_string()) {
-        version();
-    } else if env_args.contains(&"-h".to_string()) || env_args.contains(&"--help".to_string()) {
-        help();
+    loop {
+        match env_args.next() {
+            Arg::Positional(_) => {}
+            Arg::Named(arg) => {
+                let _ = arg.parse(|name, _| {
+                    match name {
+                        "-v" | "--version" => version(),
+                        "-h" | "--help" => help(),
+                        "--force-versions" => args.force_versions = true,
+                        "--simplify" => args.simplify = true,
+                        "--ignore-pipe" => args.ignore_pipe = true,
+                        "--raw-models" => args.raw_models = true,
+                        "--multicpu" => args.multicpu = true,
+                        "--neomimic" => args.neomimic = true,
+                        _ => {}
+                    };
+                    Ok(())
+                });
+            }
+            Arg::End => break,
+            Arg::Error(_) => {}
+        }
     }
-
-    args.force_versions = env_args.contains(&"--force-versions".to_string());
-    args.simplify = env_args.contains(&"--simplify".to_string());
-    args.ignore_pipe = env_args.contains(&"--ignore-pipe".to_string());
-    args.raw_models = env_args.contains(&"--raw-models".to_string());
-    args.multicpu = env_args.contains(&"--multicpu".to_string());
-    args.neomimic = env_args.contains(&"--neomimic".to_string());
 
     args.simplify = !args.ignore_pipe && (output_is_piped() || args.simplify);
     args

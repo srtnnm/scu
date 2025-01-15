@@ -17,3 +17,4 @@ libscu = { version = "2.5.0", git = "https://gitlab.com/omnid/libscu", features 
     "full",
 ] }
 regex-lite = { version = "0.1.5" }
+simpleargs = "0.1.0"
