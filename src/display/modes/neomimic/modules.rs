@@ -1,3 +1,4 @@
+mod battery;
 mod cpu;
 mod de;
 mod gpu;
@@ -27,6 +28,7 @@ pub(crate) trait ModuleTrait {
 }
 
 pub enum Module {
+    Battery,
     CPU,
     DE,
     GPU,
@@ -47,6 +49,7 @@ pub enum Module {
 impl Module {
     pub fn run(&self, info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         match self {
+            Self::Battery => battery::Battery::run(info),
             Self::CPU => cpu::CPU::run(info),
             Self::DE => de::DE::run(info),
             Self::GPU => gpu::GPU::run(info),

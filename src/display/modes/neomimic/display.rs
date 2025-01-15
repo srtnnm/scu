@@ -11,7 +11,7 @@ use std::sync::atomic::AtomicUsize;
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
 // TODO: move to non-hardcoded config
-const CONFIG: [Module; 15] = [
+const CONFIG: [Module; 16] = [
     Module::Header,
     Module::Separator,
     Module::OS,
@@ -27,6 +27,7 @@ const CONFIG: [Module; 15] = [
     Module::GPU,
     Module::Memory,
     Module::Locale,
+    Module::Battery,
 ];
 
 static CURSOR_MOVER: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
@@ -53,7 +54,9 @@ pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) 
 
     for module in CONFIG {
         if let Some(len) = run_module(&module, info) {
-            LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
+            if len > 0 {
+                LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
+            }
         }
     }
 
