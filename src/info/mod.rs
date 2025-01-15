@@ -72,8 +72,11 @@ impl SystemInformation {
         for table in &config.order {
             match *table {
                 Table::PROCESSOR => {
-                    self.cpu = cpu::fetch_cpu_info();
-                    self.multicpu = cpu::fetch_multicpu_info();
+                    if args.multicpu {
+                        self.multicpu = cpu::fetch_multicpu_info();
+                    } else {
+                        self.cpu = cpu::fetch_cpu_info();
+                    }
                 }
                 Table::GRAPHICS => {
                     self.desktop_environment = desktop_environment::fetch();
