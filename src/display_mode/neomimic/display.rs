@@ -4,7 +4,7 @@ use super::{
     modules::{run_module, Module},
 };
 
-use crate::display::modes::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
+use crate::display_mode::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
 
 use std::sync::atomic::AtomicUsize;
 

@@ -1,4 +1,4 @@
-use crate::display::modes::neomimic::logo::TUX_WIDTH;
+use crate::display_mode::neomimic::logo::TUX_WIDTH;
 
 fn print_line(colors: std::ops::Range<u8>) {
     print!("\x1b[{}C", TUX_WIDTH + 4);

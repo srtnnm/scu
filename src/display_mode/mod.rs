@@ -1,4 +1,5 @@
-mod modes;
+pub mod neomimic;
+pub mod table;
 
 use crate::{args::Args, config, info::SystemInformation};
 
@@ -11,7 +12,7 @@ pub enum Mode {
 
 pub fn run(mode: Mode, info: &SystemInformation, config: &config::Config, args: Args) {
     match mode {
-        Mode::Table => modes::table::run(info, config, args),
-        Mode::NeoMimic => modes::neomimic::display(info, &args),
+        Mode::Table => table::run(info, config, args),
+        Mode::NeoMimic => neomimic::display(info, &args),
     }
 }

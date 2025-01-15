@@ -2,7 +2,7 @@ mod about;
 mod args;
 mod config;
 mod data;
-mod display;
+mod display_mode;
 mod info;
 mod util;
 
@@ -16,9 +16,9 @@ fn main() {
     info.fetch(&config, &args);
 
     let mode = if !args.neomimic {
-        display::Mode::default()
+        display_mode::Mode::default()
     } else {
-        display::Mode::NeoMimic
+        display_mode::Mode::NeoMimic
     };
-    display::run(mode, &info, &config, args);
+    display_mode::run(mode, &info, &config, args);
 }
