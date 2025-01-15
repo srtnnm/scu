@@ -7,9 +7,7 @@ pub struct OS;
 impl ModuleTrait for OS {
     const NAME: &'static str = "os";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let os_name = get_option("os release", &info.os_release)?;
         let os: String;
         os = if !os_name.pretty_name.is_empty() {

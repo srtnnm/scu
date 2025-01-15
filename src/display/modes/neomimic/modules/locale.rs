@@ -7,8 +7,8 @@ pub struct Locale;
 impl ModuleTrait for Locale {
     const NAME: &'static str = "locale";
 
-    fn get(info: &SystemInformation) -> std::io::Result<DataRow> {
+    fn run(info: &SystemInformation) -> std::io::Result<usize> {
         let locale = get_option("locale", &info.locale)?;
-        Ok(DataRow::info("Locale", locale))
+        Ok(DataRow::info("Locale", &locale))
     }
 }

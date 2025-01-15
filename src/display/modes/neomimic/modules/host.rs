@@ -7,11 +7,9 @@ pub struct Host;
 impl ModuleTrait for Host {
     const NAME: &'static str = "host";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let device_name = get_option("device name", &info.device_name)?;
 
-        Ok(DataRow::info("Host", device_name))
+        Ok(DataRow::info("Host", &device_name))
     }
 }

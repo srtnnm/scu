@@ -7,9 +7,7 @@ pub struct Shell;
 impl ModuleTrait for Shell {
     const NAME: &'static str = "shell";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let shell = get_option("shell", &info.shell)?;
 
         let mut shell_str = shell.name;
@@ -18,6 +16,6 @@ impl ModuleTrait for Shell {
             shell_str.push_str(version);
         }
 
-        Ok(DataRow::info("Shell", shell_str))
+        Ok(DataRow::info("Shell", &shell_str))
     }
 }

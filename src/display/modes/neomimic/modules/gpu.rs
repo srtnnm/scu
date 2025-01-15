@@ -10,9 +10,7 @@ pub struct GPU;
 impl ModuleTrait for GPU {
     const NAME: &'static str = "gpu";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let gpus = get_vec("gpus", &info.gpus)?;
 
         let first_gpu = get_option("first gpu", &gpus.iter().next())?;
@@ -23,6 +21,6 @@ impl ModuleTrait for GPU {
             model = first_gpu.model
         );
 
-        Ok(DataRow::info("GPU", first_gpu_str))
+        Ok(DataRow::info("GPU", &first_gpu_str))
     }
 }

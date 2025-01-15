@@ -7,9 +7,7 @@ pub struct WM;
 impl ModuleTrait for WM {
     const NAME: &'static str = "wm";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let wm = get_option("window manager", &info.window_manager)?;
         let wm_name = get_option("window manager name", &wm.name)?;
 
@@ -19,6 +17,6 @@ impl ModuleTrait for WM {
             wm_str.push_str(version);
         }
 
-        Ok(DataRow::info("WM", wm_str))
+        Ok(DataRow::info("WM", &wm_str))
     }
 }

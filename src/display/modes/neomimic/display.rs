@@ -2,7 +2,6 @@ use super::{
     color_blocks,
     logo::print_logo,
     modules::{run_module, Module},
-    row::DataRow,
 };
 
 use crate::display::modes::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
@@ -31,14 +30,6 @@ const CONFIG: [Module; 15] = [
 ];
 
 pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) {
-    let mut rows: Vec<DataRow> = Vec::new();
-
-    for module in CONFIG {
-        if let Some(row) = run_module(&module, info) {
-            rows.push(row);
-        }
-    }
-
     let cursor_mover = if !args.simplify {
         format!("\x1b[{}C", TUX_WIDTH + 4)
     } else {
@@ -52,11 +43,10 @@ pub fn display(info: &crate::info::SystemInformation, args: &crate::args::Args) 
         println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
     }
 
-    // Display data
-    for row in rows {
-        let row = row.to_string();
-        println!("{cursor_mover}{}", row);
-        LAST_ROW_LENGTH.store(row.chars().count(), std::sync::atomic::Ordering::Relaxed);
+    for module in CONFIG {
+        if let Some(len) = run_module(&module, info, &cursor_mover) {
+            LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
+        }
     }
 
     // Display color blocks

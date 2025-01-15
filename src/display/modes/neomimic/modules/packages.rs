@@ -7,9 +7,7 @@ pub struct Packages;
 impl ModuleTrait for Packages {
     const NAME: &'static str = "packages";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let mut package_managers = get_vec("package managers", &info.packages)?;
         // sort by number of packages
         package_managers.sort_by(|pm1, pm2| pm2.number_of_packages.cmp(&pm1.number_of_packages));
@@ -24,6 +22,6 @@ impl ModuleTrait for Packages {
         }
         value.pop();
         value.pop();
-        Ok(DataRow::info("Packages", value))
+        Ok(DataRow::info("Packages", &value))
     }
 }

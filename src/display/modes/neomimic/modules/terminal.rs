@@ -7,9 +7,7 @@ pub struct Terminal;
 impl ModuleTrait for Terminal {
     const NAME: &'static str = "terminal";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let terminal = get_option("terminal", &info.terminal)?;
 
         let mut terminal_str = terminal.name;
@@ -18,6 +16,6 @@ impl ModuleTrait for Terminal {
             terminal_str.push_str(version);
         }
 
-        Ok(DataRow::info("Terminal", terminal_str))
+        Ok(DataRow::info("Terminal", &terminal_str))
     }
 }

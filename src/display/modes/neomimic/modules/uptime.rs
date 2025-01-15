@@ -7,9 +7,7 @@ pub struct Uptime;
 impl ModuleTrait for Uptime {
     const NAME: &'static str = "uptime";
 
-    fn get(
-        info: &crate::info::SystemInformation,
-    ) -> std::io::Result<crate::display::modes::neomimic::row::DataRow> {
+    fn run(info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         let uptime = get_option("uptime", &info.uptime)?;
 
         let mut value = String::default();
@@ -24,6 +22,6 @@ impl ModuleTrait for Uptime {
         }
         value.pop();
         value.pop();
-        Ok(DataRow::info("Uptime", value))
+        Ok(DataRow::info("Uptime", &value))
     }
 }

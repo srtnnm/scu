@@ -8,6 +8,7 @@ mod locale;
 mod memory;
 mod os;
 mod packages;
+mod separator;
 mod shell;
 mod terminal;
 mod uptime;
@@ -22,7 +23,7 @@ use std::io;
 pub(crate) trait ModuleTrait {
     const NAME: &'static str;
 
-    fn get(info: &SystemInformation) -> io::Result<DataRow>;
+    fn run(info: &SystemInformation) -> io::Result<usize>; // usize is an length
 }
 
 pub enum Module {
@@ -44,28 +45,33 @@ pub enum Module {
 }
 
 impl Module {
-    pub fn run(&self, info: &crate::info::SystemInformation) -> std::io::Result<DataRow> {
+    pub fn run(&self, info: &crate::info::SystemInformation) -> std::io::Result<usize> {
         match self {
-            Self::CPU => cpu::CPU::get(info),
-            Self::DE => de::DE::get(info),
-            Self::GPU => gpu::GPU::get(info),
-            Self::Header => header::Header::get(info),
-            Self::Host => host::Host::get(info),
-            Self::Kernel => kernel::Kernel::get(info),
-            Self::Locale => locale::Locale::get(info),
-            Self::Memory => memory::Memory::get(info),
-            Self::OS => os::OS::get(info),
-            Self::Packages => packages::Packages::get(info),
-            Self::Separator => Ok(DataRow::separator('-')),
-            Self::Shell => shell::Shell::get(info),
-            Self::Terminal => terminal::Terminal::get(info),
-            Self::Uptime => uptime::Uptime::get(info),
-            Self::WM => wm::WM::get(info),
+            Self::CPU => cpu::CPU::run(info),
+            Self::DE => de::DE::run(info),
+            Self::GPU => gpu::GPU::run(info),
+            Self::Header => header::Header::run(info),
+            Self::Host => host::Host::run(info),
+            Self::Kernel => kernel::Kernel::run(info),
+            Self::Locale => locale::Locale::run(info),
+            Self::Memory => memory::Memory::run(info),
+            Self::OS => os::OS::run(info),
+            Self::Packages => packages::Packages::run(info),
+            Self::Separator => separator::Separator::run(info),
+            Self::Shell => shell::Shell::run(info),
+            Self::Terminal => terminal::Terminal::run(info),
+            Self::Uptime => uptime::Uptime::run(info),
+            Self::WM => wm::WM::run(info),
         }
     }
 }
 
 // TODO: show possible errors for debugging
-pub fn run_module(module: &Module, info: &crate::info::SystemInformation) -> Option<DataRow> {
+pub fn run_module(
+    module: &Module,
+    info: &crate::info::SystemInformation,
+    cursor_mover: &str,
+) -> Option<usize> {
+    print!("{cursor_mover}");
     module.run(info).ok()
 }
