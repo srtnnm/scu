@@ -75,14 +75,14 @@ pub(super) fn arg_parse() -> Args {
             Arg::Named(arg) => {
                 let _ = arg.parse(|name, _| {
                     match name {
-                        "-v" | "--version" => version(),
-                        "-h" | "--help" => help(),
-                        "--force-versions" => args.force_versions = true,
-                        "--simplify" => args.simplify = true,
-                        "--ignore-pipe" => args.ignore_pipe = true,
-                        "--raw-models" => args.raw_models = true,
-                        "--multicpu" => args.multicpu = true,
-                        "--neomimic" => args.neomimic = true,
+                        "v" | "version" => version(),
+                        "h" | "help" => help(),
+                        "force-versions" => args.force_versions = true,
+                        "simplify" => args.simplify = true,
+                        "ignore-pipe" => args.ignore_pipe = true,
+                        "raw-models" => args.raw_models = true,
+                        "multicpu" => args.multicpu = true,
+                        "neomimic" => args.neomimic = true,
                         _ => {}
                     };
                     Ok(())
