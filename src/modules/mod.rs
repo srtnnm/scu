@@ -13,7 +13,7 @@ export_modules!(
     brightness,
     cpu,
     de,
-    device_name,
+    device,
     disks,
     display_server,
     gpu,
@@ -101,7 +101,7 @@ impl SystemInformation {
                 Table::MEMORY => self.ram = ram::fetch_ram_info(),
                 Table::SYSTEM => {
                     self.arch = arch::fetch();
-                    self.device_name = device_name::fetch();
+                    self.device_name = device::fetch();
                     self.hostname = hostname::fetch();
                     self.init_system = init::fetch();
                     self.kernel = kernel::KernelInfo::fetch();
