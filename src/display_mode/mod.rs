@@ -19,6 +19,6 @@ pub fn run(info: &SystemInformation, config: &config::Config, args: Args) {
 
     match mode {
         Mode::Table => table::run(info, config, args),
-        Mode::NeoMimic => neomimic::display(info, &args),
+        Mode::NeoMimic => neomimic::display(&args),
     }
 }

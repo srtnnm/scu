@@ -39,12 +39,12 @@ use crate::{
 
 use libscu::{
     hardware::{
-        battery::BatteryInfo, cpu::CPUInfo, cpu::Unit, disk::Disk, display::Brightness,
-        gpu::GPUInfo, ram::RAMInfo,
+        battery as libscu_battery, cpu as libscu_cpu, disk as libscu_disk,
+        display as libscu_display, gpu as libscu_gpu, ram as libscu_ram,
     },
     software::{
-        graphics::DisplayServer, graphics::WindowManager, init::InitSystem, os::OSRelease,
-        packages::PackageManager, shell::Shell, terminal::TerminalInfo,
+        graphics, init as libscu_init, os as libscu_os, packages as libscu_packages,
+        shell as libscu_shell, terminal as libscu_terminal,
     },
     types::Time,
     util::data::DesktopEnvironment,
@@ -53,28 +53,28 @@ use libscu::{
 #[derive(Debug, Default)]
 pub(crate) struct SystemInformation {
     pub arch: Option<String>,
-    pub batteries: Vec<BatteryInfo>,
-    pub cpu: Option<CPUInfo>,
-    pub multicpu: Vec<Unit>,
+    pub batteries: Vec<libscu_battery::BatteryInfo>,
+    pub cpu: Option<libscu_cpu::CPUInfo>,
+    pub multicpu: Vec<libscu_cpu::Unit>,
     pub desktop_environment: Option<DesktopEnvironment>,
     pub device_name: Option<String>,
-    pub disks: Vec<Disk>,
-    pub display_brightness: Option<Brightness>,
-    pub display_server: Option<DisplayServer>,
-    pub gpus: Vec<GPUInfo>,
+    pub disks: Vec<libscu_disk::Disk>,
+    pub display_brightness: Option<libscu_display::Brightness>,
+    pub display_server: Option<graphics::DisplayServer>,
+    pub gpus: Vec<libscu_gpu::GPUInfo>,
     pub hostname: Option<String>,
-    pub init_system: Option<InitSystem>,
+    pub init_system: Option<libscu_init::InitSystem>,
     pub kernel: Option<kernel::KernelInfo>,
     pub locale: Option<String>,
-    pub os_release: Option<OSRelease>,
-    pub packages: Vec<PackageManager>,
-    pub ram: Option<RAMInfo>,
+    pub os_release: Option<libscu_os::OSRelease>,
+    pub packages: Vec<libscu_packages::PackageManager>,
+    pub ram: Option<libscu_ram::RAMInfo>,
     pub rootfs_fstype: Option<String>,
-    pub shell: Option<Shell>,
-    pub terminal: Option<TerminalInfo>,
+    pub shell: Option<libscu_shell::Shell>,
+    pub terminal: Option<libscu_terminal::TerminalInfo>,
     pub uptime: Option<Time>,
     pub username: Option<String>,
-    pub window_manager: Option<WindowManager>,
+    pub window_manager: Option<graphics::WindowManager>,
 }
 
 impl SystemInformation {
@@ -156,14 +156,3 @@ pub trait Detection {
 
     fn fetch() -> std::io::Result<Self::Result>;
 }
-
-/*
-macro_rules! expose_submodules {
-    ( $( $x:ident ),* ) => {
-        $(
-            mod $x;
-            pub use self::$x::*;
-        )*
-    };
-}
-*/

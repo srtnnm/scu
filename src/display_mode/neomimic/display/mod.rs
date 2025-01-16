@@ -1,3 +1,8 @@
+mod hardware;
+mod misc;
+pub use misc::*;
+mod software;
+
 use super::{
     color_blocks,
     logo::print_logo,
@@ -15,7 +20,7 @@ const CONFIG: [Module; 17] = [
     Module::Header,
     Module::Separator,
     Module::OS,
-    Module::Host,
+    Module::Device,
     Module::Kernel,
     Module::Uptime,
     Module::Init,
@@ -37,7 +42,7 @@ pub fn cursor_mover() {
     print!("{}", CURSOR_MOVER.get_or_init(|| ""));
 }
 
-pub fn display(info: &crate::modules::SystemInformation, args: &crate::args::Args) {
+pub fn display(args: &crate::args::Args) {
     CURSOR_MOVER
         .set(if !args.simplify {
             Box::leak(format!("\x1b[{}C", TUX_WIDTH + 4).into_boxed_str())
@@ -54,7 +59,7 @@ pub fn display(info: &crate::modules::SystemInformation, args: &crate::args::Arg
     }
 
     for module in CONFIG {
-        if let Some(len) = run_module(&module, info) {
+        if let Some(len) = run_module(&module) {
             if len > 0 {
                 LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
             }
@@ -65,4 +70,11 @@ pub fn display(info: &crate::modules::SystemInformation, args: &crate::args::Arg
     if !args.simplify {
         color_blocks::print();
     }
+}
+
+pub trait Display: crate::modules::Detection {
+    fn run() -> std::io::Result<usize> {
+        Self::display(Self::fetch()?)
+    }
+    fn display(data: Self::Result) -> std::io::Result<usize>;
 }

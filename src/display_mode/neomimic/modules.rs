@@ -1,32 +1,6 @@
-mod battery;
-mod cpu;
-mod de;
-mod gpu;
-mod header;
-mod host;
-mod init;
-mod kernel;
-mod locale;
-mod memory;
-mod os;
-mod packages;
-mod separator;
-mod shell;
-mod terminal;
-mod uptime;
-mod wm;
+use super::display::{Display, Header, Separator};
 
-use super::row::DataRow;
-
-use crate::modules::SystemInformation;
-
-use std::io;
-
-pub(crate) trait ModuleTrait {
-    const NAME: &'static str;
-
-    fn run(info: &SystemInformation) -> io::Result<usize>; // usize is an length
-}
+use crate::modules::*;
 
 pub enum Module {
     Battery,
@@ -34,7 +8,7 @@ pub enum Module {
     DE,
     GPU,
     Header,
-    Host,
+    Device,
     Init,
     Kernel,
     Locale,
@@ -49,30 +23,31 @@ pub enum Module {
 }
 
 impl Module {
-    pub fn run(&self, info: &crate::modules::SystemInformation) -> std::io::Result<usize> {
+    pub fn run(&self) -> std::io::Result<usize> {
         match self {
-            Self::Battery => battery::Battery::run(info),
-            Self::CPU => cpu::CPU::run(info),
-            Self::DE => de::DE::run(info),
-            Self::GPU => gpu::GPU::run(info),
-            Self::Header => header::Header::run(info),
-            Self::Host => host::Host::run(info),
-            Self::Init => init::Init::run(info),
-            Self::Kernel => kernel::Kernel::run(info),
-            Self::Locale => locale::Locale::run(info),
-            Self::Memory => memory::Memory::run(info),
-            Self::OS => os::OS::run(info),
-            Self::Packages => packages::Packages::run(info),
-            Self::Separator => separator::Separator::run(info),
-            Self::Shell => shell::Shell::run(info),
-            Self::Terminal => terminal::Terminal::run(info),
-            Self::Uptime => uptime::Uptime::run(info),
-            Self::WM => wm::WM::run(info),
+            Self::Battery => Battery::run(),
+            Self::CPU => CPU::run(),
+            Self::DE => DE::run(),
+            Self::GPU => GPU::run(),
+            Self::Header => Header::run(),
+            Self::Device => Device::run(),
+            // Self::Init => Init::run(),
+            Self::Kernel => Kernel::run(),
+            Self::Locale => Locale::run(),
+            Self::Memory => Memory::run(),
+            Self::OS => OS::run(),
+            Self::Packages => Packages::run(),
+            Self::Separator => Separator::run(),
+            Self::Shell => Shell::run(),
+            Self::Terminal => Terminal::run(),
+            Self::Uptime => Uptime::run(),
+            Self::WM => WM::run(),
+            _ => Ok(0), //todo Separator, Header, Init
         }
     }
 }
 
 // TODO: show possible errors for debugging
-pub fn run_module(module: &Module, info: &crate::modules::SystemInformation) -> Option<usize> {
-    module.run(info).ok()
+pub fn run_module(module: &Module) -> Option<usize> {
+    module.run().ok()
 }
