@@ -18,7 +18,7 @@ export_modules!(
     display_server,
     gpu,
     hostname,
-    init_system,
+    init,
     kernel,
     locale,
     os,
@@ -103,7 +103,7 @@ impl SystemInformation {
                     self.arch = arch::fetch();
                     self.device_name = device_name::fetch();
                     self.hostname = hostname::fetch();
-                    self.init_system = init_system::fetch();
+                    self.init_system = init::fetch();
                     self.kernel = kernel::KernelInfo::fetch();
                     self.os_release = os::fetch();
                     self.shell = shell::fetch(args.force_versions);
