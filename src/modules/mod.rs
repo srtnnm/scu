@@ -1,25 +1,36 @@
-mod arch;
-mod battery;
-mod cpu;
-mod desktop_environment;
-mod device_name;
-mod disks;
-mod display_brightness;
-mod display_server;
-mod gpu;
-mod hostname;
-mod init_system;
-mod kernel;
-mod locale;
-mod os_release;
-mod packages;
-mod ram;
-mod rootfs;
-mod shell;
-mod terminal;
-mod uptime;
-mod username;
-mod window_manager;
+macro_rules! export_modules {
+    ( $( $x:ident ),* ) => {
+        $(
+            mod $x;
+            pub use self::$x::*;
+        )*
+    };
+}
+
+export_modules!(
+    arch,
+    battery,
+    brightness,
+    cpu,
+    de,
+    device_name,
+    disks,
+    display_server,
+    gpu,
+    hostname,
+    init_system,
+    kernel,
+    locale,
+    os,
+    packages,
+    ram,
+    rootfs,
+    shell,
+    terminal,
+    uptime,
+    username,
+    wm
+);
 
 use crate::{
     args::Args,
@@ -81,11 +92,11 @@ impl SystemInformation {
                     }
                 }
                 Table::GRAPHICS => {
-                    self.desktop_environment = desktop_environment::fetch();
-                    self.display_brightness = display_brightness::fetch();
+                    self.desktop_environment = de::fetch();
+                    self.display_brightness = brightness::fetch();
                     self.display_server = display_server::fetch();
                     self.gpus = gpu::fetch_gpus();
-                    self.window_manager = window_manager::fetch(args.force_versions);
+                    self.window_manager = wm::fetch(args.force_versions);
                 }
                 Table::MEMORY => self.ram = ram::fetch_ram_info(),
                 Table::SYSTEM => {
@@ -94,7 +105,7 @@ impl SystemInformation {
                     self.hostname = hostname::fetch();
                     self.init_system = init_system::fetch();
                     self.kernel = kernel::KernelInfo::fetch();
-                    self.os_release = os_release::fetch();
+                    self.os_release = os::fetch();
                     self.shell = shell::fetch(args.force_versions);
                     self.terminal = terminal::fetch(args.force_versions);
                     self.uptime = uptime::fetch();
@@ -138,3 +149,21 @@ where
         Ok(var)
     }
 }
+
+pub trait Detection {
+    type Result;
+    const NAME: &'static str;
+
+    fn fetch() -> std::io::Result<Self::Result>;
+}
+
+/*
+macro_rules! expose_submodules {
+    ( $( $x:ident ),* ) => {
+        $(
+            mod $x;
+            pub use self::$x::*;
+        )*
+    };
+}
+*/

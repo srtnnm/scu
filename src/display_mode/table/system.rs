@@ -42,11 +42,7 @@ pub fn to_table(info: &modules::SystemInformation, disable_color: bool) -> Optio
         result.add("Device", &device_name);
     }
 
-    if let Some(kernel_version) = info
-        .kernel
-        .clone()
-        .and_then(|kernel_info| kernel_info.version)
-    {
+    if let Some(kernel_version) = info.kernel.clone().map(|kernel| kernel.version) {
         result.add("Kernel", &kernel_version);
     }
 

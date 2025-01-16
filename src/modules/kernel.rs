@@ -1,24 +1,33 @@
+use super::Detection;
+
 use libscu::software::kernel;
 
 #[derive(Clone, Debug, Default)]
-pub(crate) struct KernelInfo {
-    pub name: Option<String>,
-    pub version: Option<String>,
+pub struct KernelInfo {
+    pub name: String,
+    pub version: String,
 }
 
 impl KernelInfo {
-    fn is_none(&self) -> bool {
-        self.name.is_none() && self.version.is_none()
-    }
     pub(super) fn fetch() -> Option<KernelInfo> {
         let info = KernelInfo {
-            name: kernel::fetch_name().ok(),
-            version: kernel::fetch_version().ok(),
+            name: kernel::fetch_name().unwrap(),
+            version: kernel::fetch_version().unwrap(),
         };
-        if !info.is_none() {
-            Some(info)
-        } else {
-            None
-        }
+        Some(info)
+    }
+}
+
+pub struct Kernel;
+
+impl Detection for Kernel {
+    type Result = KernelInfo;
+    const NAME: &'static str = "kernel";
+
+    fn fetch() -> std::io::Result<Self::Result> {
+        Ok(KernelInfo {
+            name: kernel::fetch_name()?,
+            version: kernel::fetch_version()?,
+        })
     }
 }

@@ -1,3 +1,5 @@
+use super::Detection;
+
 use crate::data::raw_models;
 
 use libscu::hardware::gpu;
@@ -9,5 +11,16 @@ pub(super) fn fetch_gpus() -> Vec<gpu::GPUInfo> {
             eprintln!("failed to get information about GPUs: {err:?}");
             Vec::default()
         }
+    }
+}
+
+pub struct GPU;
+
+impl Detection for GPU {
+    type Result = Vec<gpu::GPUInfo>;
+    const NAME: &'static str = "gpu";
+
+    fn fetch() -> std::io::Result<Self::Result> {
+        Ok(gpu::fetch_all(raw_models())?)
     }
 }

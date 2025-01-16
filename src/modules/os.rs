@@ -1,0 +1,18 @@
+use super::Detection;
+
+use libscu::software::os;
+
+pub(super) fn fetch() -> Option<os::OSRelease> {
+    os::fetch_release().ok()
+}
+
+pub struct OS;
+
+impl Detection for OS {
+    type Result = os::OSRelease;
+    const NAME: &'static str = "os";
+
+    fn fetch() -> std::io::Result<Self::Result> {
+        os::fetch_release()
+    }
+}
