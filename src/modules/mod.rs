@@ -1,3 +1,4 @@
+mod arch;
 mod battery;
 mod cpu;
 mod desktop_environment;
@@ -40,6 +41,7 @@ use libscu::{
 
 #[derive(Debug, Default)]
 pub(crate) struct SystemInformation {
+    pub arch: Option<String>,
     pub batteries: Vec<BatteryInfo>,
     pub cpu: Option<CPUInfo>,
     pub multicpu: Vec<Unit>,
@@ -87,6 +89,7 @@ impl SystemInformation {
                 }
                 Table::MEMORY => self.ram = ram::fetch_ram_info(),
                 Table::SYSTEM => {
+                    self.arch = arch::fetch();
                     self.device_name = device_name::fetch();
                     self.hostname = hostname::fetch();
                     self.init_system = init_system::fetch();

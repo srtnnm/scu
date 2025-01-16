@@ -19,12 +19,8 @@ impl ModuleTrait for OS {
         } else {
             "Unknown OS".to_string()
         };
-        let kernel_arch = info
-            .kernel
-            .clone()
-            .and_then(|kernel| kernel.arch)
-            .unwrap_or_default();
+        let arch = info.arch.clone().unwrap_or_default();
 
-        Ok(DataRow::info("OS", format!("{os} {kernel_arch}").trim()))
+        Ok(DataRow::info("OS", format!("{os} {arch}").trim()))
     }
 }
