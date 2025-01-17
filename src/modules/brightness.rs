@@ -12,7 +12,7 @@ impl Detection for Brightness {
     type Result = display::Brightness;
     const NAME: &'static str = "brightness";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         display::fetch_brightness()
     }
 }

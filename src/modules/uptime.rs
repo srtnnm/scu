@@ -12,7 +12,7 @@ impl Detection for Uptime {
     type Result = Time;
     const NAME: &'static str = "uptime";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         time::fetch_uptime()
     }
 }

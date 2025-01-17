@@ -20,7 +20,7 @@ impl Detection for GPU {
     type Result = Vec<gpu::GPUInfo>;
     const NAME: &'static str = "gpu";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         Ok(gpu::fetch_all(raw_models())?)
     }
 }

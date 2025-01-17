@@ -18,7 +18,7 @@ impl Detection for Username {
     type Result = String;
     const NAME: &'static str = "username";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         users::fetch_current().map(|userinfo| userinfo.name)
     }
 }

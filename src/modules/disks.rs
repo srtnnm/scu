@@ -18,7 +18,7 @@ impl Detection for Disks {
     type Result = Vec<disk::Disk>;
     const NAME: &'static str = "disks";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         let disks = disk::fetch_devices()?;
 
         Ok(disks

@@ -73,8 +73,8 @@ pub fn display(args: &crate::args::Args) {
 }
 
 pub trait Display: crate::modules::Detection {
-    fn run() -> std::io::Result<usize> {
-        Self::display(Self::fetch()?)
+    fn run(&self) -> std::io::Result<usize> {
+        Self::display(self.fetch()?)
     }
     fn display(data: Self::Result) -> std::io::Result<usize>;
 }

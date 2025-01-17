@@ -8,7 +8,7 @@ impl Detection for Separator {
     type Result = ();
     const NAME: &'static str = "separator";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         Ok(())
     }
 }
@@ -24,9 +24,13 @@ impl Detection for Header {
     type Result = String;
     const NAME: &'static str = "header";
 
-    fn fetch() -> std::io::Result<Self::Result> {
-        let username = crate::modules::Username::fetch().unwrap_or("username".into());
-        let hostname = crate::modules::Hostname::fetch().unwrap_or("localhost".into());
+    fn fetch(&self) -> std::io::Result<Self::Result> {
+        let username = crate::modules::Username
+            .fetch()
+            .unwrap_or("username".into());
+        let hostname = crate::modules::Hostname
+            .fetch()
+            .unwrap_or("localhost".into());
 
         Ok(format!("{username}@{hostname}"))
     }

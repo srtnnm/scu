@@ -14,7 +14,7 @@ impl Detection for Device {
     type Result = String;
     const NAME: &'static str = "device";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         device::fetch_model(raw_models())
     }
 }

@@ -31,7 +31,7 @@ impl Detection for CPU {
     type Result = cpu::CPUInfo;
     const NAME: &'static str = "cpu";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         cpu::fetch_info(raw_models())
     }
 }
@@ -40,7 +40,7 @@ impl Detection for MultiCPU {
     type Result = Vec<cpu::Unit>;
     const NAME: &'static str = "cpu";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         cpu::fetch_multicpus(raw_models())
     }
 }

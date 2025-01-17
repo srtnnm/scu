@@ -43,7 +43,7 @@ impl Display for OS {
         } else {
             "Unknown OS".to_string()
         };
-        let arch = Arch::fetch().unwrap_or_default();
+        let arch = Arch.fetch().unwrap_or_default();
 
         Ok(DataRow::info("OS", format!("{os} {arch}").trim()))
     }

@@ -12,7 +12,7 @@ impl Detection for OS {
     type Result = os::OSRelease;
     const NAME: &'static str = "os";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         os::fetch_release()
     }
 }

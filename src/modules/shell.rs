@@ -12,7 +12,7 @@ impl Detection for Shell {
     type Result = shell::Shell;
     const NAME: &'static str = "shell";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         shell::fetch_info(false) // TODO
     }
 }

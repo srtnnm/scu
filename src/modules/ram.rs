@@ -18,7 +18,7 @@ impl Detection for Memory {
     type Result = ram::RAMInfo;
     const NAME: &'static str = "memory";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         ram::fetch_info()
     }
 }

@@ -12,7 +12,7 @@ impl Detection for Init {
     type Result = init::InitSystem;
     const NAME: &'static str = "init";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         init::fetch_info()
     }
 }

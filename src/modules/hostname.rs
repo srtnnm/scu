@@ -19,7 +19,7 @@ impl Detection for Hostname {
     type Result = String;
     const NAME: &'static str = "hostname";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         hostname::fetch(
             #[cfg(target_os = "macos")]
             raw_models(),

@@ -24,7 +24,7 @@ impl Detection for Kernel {
     type Result = KernelInfo;
     const NAME: &'static str = "kernel";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         Ok(KernelInfo {
             name: kernel::fetch_name()?,
             version: kernel::fetch_version()?,

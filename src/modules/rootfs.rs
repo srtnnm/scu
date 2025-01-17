@@ -13,7 +13,7 @@ impl Detection for RootFS {
     type Result = String;
     const NAME: &'static str = "rootfs";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         mounts::get_mountpoint_fstype("/")
     }
 }

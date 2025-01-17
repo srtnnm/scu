@@ -12,7 +12,7 @@ impl Detection for DE {
     type Result = DesktopEnvironment;
     const NAME: &'static str = "de";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         graphics::fetch_environment()
     }
 }

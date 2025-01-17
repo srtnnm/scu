@@ -1,8 +1,10 @@
+#![allow(unused_imports)]
+
 macro_rules! export_modules {
     ( $( $x:ident ),* ) => {
         $(
             mod $x;
-            pub use self::$x::*;
+            pub use $x::*;
         )*
     };
 }
@@ -154,5 +156,5 @@ pub trait Detection {
     type Result;
     const NAME: &'static str;
 
-    fn fetch() -> std::io::Result<Self::Result>;
+    fn fetch(&self) -> std::io::Result<Self::Result>;
 }

@@ -11,7 +11,7 @@ impl Detection for Terminal {
     type Result = terminal::TerminalInfo;
     const NAME: &'static str = "terminal";
 
-    fn fetch() -> std::io::Result<Self::Result> {
+    fn fetch(&self) -> std::io::Result<Self::Result> {
         terminal::fetch_info(false) // TODO
     }
 }
