@@ -1,24 +1,11 @@
-use crate::{
-    data::table::{Table, TableEntry},
-    modules,
-};
+use super::gen_table::GenerateTableEntries;
 
-pub fn to_table(info: &modules::SystemInformation) -> Option<Table> {
-    if info.batteries.is_empty() {
-        return None;
-    }
+use crate::{data::table::Table, modules::Battery};
 
+pub fn to_table() -> Option<Table> {
     let mut result = Table::new("Batteries");
 
-    for battery in &info.batteries {
-        let additional = [
-            TableEntry::new("Level", &format!("{}%", battery.level)),
-            TableEntry::new("Status", &battery.status.to_str()),
-            TableEntry::new("Technology", &battery.technology.to_string()),
-        ]
-        .to_vec();
-        result.add_with_additional("Battery", &battery.model, additional);
-    }
+    Battery.gen_entries(&mut result).ok()?;
 
     Some(result)
 }

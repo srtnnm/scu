@@ -1,8 +1,5 @@
-/*
-    graphics
-*/
-
 mod collect;
+mod gen_table;
 mod print;
 
 // tables
@@ -16,6 +13,6 @@ mod system;
 
 use crate::{args::Args, config, modules};
 
-pub(crate) fn run(info: &modules::SystemInformation, config: &config::Config, args: Args) {
-    print::print(info, config, &args);
+pub(crate) fn run(config: &config::Config, args: Args) {
+    print::print(config, &args);
 }

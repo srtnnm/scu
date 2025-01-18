@@ -1,18 +1,11 @@
-use crate::{data::table::Table, modules};
+use crate::{data::table::Table, modules::Packages};
 
-pub(super) fn to_table(info: &modules::SystemInformation) -> Option<Table> {
-    if info.packages.is_empty() {
-        None
-    } else {
-        let mut result = Table::new("Packages");
+use super::gen_table::GenerateTableEntries;
 
-        for manager in info.packages.iter() {
-            result.add(
-                manager.name,
-                manager.number_of_packages.to_string().as_str(),
-            )
-        }
+pub(super) fn to_table() -> Option<Table> {
+    let mut result = Table::new("Packages");
 
-        Some(result)
-    }
+    Packages.gen_entries(&mut result).ok()?;
+
+    Some(result)
 }

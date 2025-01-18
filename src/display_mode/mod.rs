@@ -1,7 +1,7 @@
 mod neomimic;
 mod table;
 
-use crate::{args::Args, config, modules::SystemInformation};
+use crate::{args::Args, config};
 
 #[derive(Default)]
 pub enum Mode {
@@ -10,7 +10,7 @@ pub enum Mode {
     NeoMimic,
 }
 
-pub fn run(info: &SystemInformation, config: &config::Config, args: Args) {
+pub fn run(config: &config::Config, args: Args) {
     let mode = if !args.neomimic {
         Mode::default()
     } else {
@@ -18,7 +18,7 @@ pub fn run(info: &SystemInformation, config: &config::Config, args: Args) {
     };
 
     match mode {
-        Mode::Table => table::run(info, config, args),
+        Mode::Table => table::run(config, args),
         Mode::NeoMimic => neomimic::display(&args),
     }
 }

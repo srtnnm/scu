@@ -15,7 +15,7 @@ impl TableEntry {
             additional: Vec::new(),
         }
     }
-    pub fn new_with_additional(name: &str, value: &str, additional: Vec<TableEntry>) -> Self {
+    pub fn new_with_additional(name: &str, value: &str, additional: &[TableEntry]) -> Self {
         Self {
             name: name.to_string(),
             value: value.to_string(),
@@ -47,7 +47,7 @@ impl Table {
         &mut self,
         entry_name: &str,
         entry_value: &str,
-        additional: Vec<TableEntry>,
+        additional: &[TableEntry],
     ) {
         self.entries.push(TableEntry::new_with_additional(
             entry_name,

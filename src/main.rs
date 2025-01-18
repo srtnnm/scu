@@ -12,8 +12,5 @@ fn main() {
 
     let config = config::Config::load();
 
-    let mut info = modules::SystemInformation::new();
-    info.fetch(&config, &args);
-
-    display_mode::run(&info, &config, args);
+    display_mode::run(&config, args);
 }

@@ -52,77 +52,32 @@ use libscu::{
     util::data::DesktopEnvironment,
 };
 
-#[derive(Debug, Default)]
-pub(crate) struct SystemInformation {
-    pub arch: Option<String>,
-    pub batteries: Vec<libscu_battery::BatteryInfo>,
-    pub cpu: Option<libscu_cpu::CPUInfo>,
-    pub multicpu: Vec<libscu_cpu::Unit>,
-    pub desktop_environment: Option<DesktopEnvironment>,
-    pub device_name: Option<String>,
-    pub disks: Vec<libscu_disk::Disk>,
-    pub display_brightness: Option<libscu_display::Brightness>,
-    pub display_server: Option<graphics::DisplayServer>,
-    pub gpus: Vec<libscu_gpu::GPUInfo>,
-    pub hostname: Option<String>,
-    pub init_system: Option<libscu_init::InitSystem>,
-    pub kernel: Option<kernel::KernelInfo>,
-    pub locale: Option<String>,
-    pub os_release: Option<libscu_os::OSRelease>,
-    pub packages: Vec<libscu_packages::PackageManager>,
-    pub ram: Option<libscu_ram::RAMInfo>,
-    pub rootfs_fstype: Option<String>,
-    pub shell: Option<libscu_shell::Shell>,
-    pub terminal: Option<libscu_terminal::TerminalInfo>,
-    pub uptime: Option<Time>,
-    pub username: Option<String>,
-    pub window_manager: Option<graphics::WindowManager>,
-}
-
-impl SystemInformation {
-    pub(crate) fn new() -> Self {
-        Self::default()
-    }
-    pub(crate) fn fetch(&mut self, config: &Config, args: &Args) {
-        for table in &config.order {
-            match *table {
-                Table::PROCESSOR => {
-                    if args.multicpu {
-                        self.multicpu = cpu::fetch_multicpu_info();
-                    } else {
-                        self.cpu = cpu::fetch_cpu_info();
-                    }
-                }
-                Table::GRAPHICS => {
-                    self.desktop_environment = de::fetch();
-                    self.display_brightness = brightness::fetch();
-                    self.display_server = display_server::fetch();
-                    self.gpus = gpu::fetch_gpus();
-                    self.window_manager = wm::fetch(args.force_versions);
-                }
-                Table::MEMORY => self.ram = ram::fetch_ram_info(),
-                Table::SYSTEM => {
-                    self.arch = arch::fetch();
-                    self.device_name = device::fetch();
-                    self.hostname = hostname::fetch();
-                    self.init_system = init::fetch();
-                    self.kernel = kernel::KernelInfo::fetch();
-                    self.os_release = os::fetch();
-                    self.shell = shell::fetch(args.force_versions);
-                    self.terminal = terminal::fetch(args.force_versions);
-                    self.uptime = uptime::fetch();
-                    self.username = username::fetch();
-                    self.rootfs_fstype = rootfs::get_rootfs_fstype();
-                    self.locale = locale::fetch();
-                }
-                Table::BATTERY => self.batteries = battery::fetch_batteries_info(),
-                Table::DISKS => self.disks = disks::fetch_disks(),
-                Table::PACKAGES => self.packages = packages::fetch_package_managers(),
-                _ => {}
-            }
-        }
-    }
-}
+// #[derive(Debug, Default)]
+// pub(crate) struct SystemInformation {
+//     pub arch: Option<String>,
+//     pub batteries: Vec<libscu_battery::BatteryInfo>,
+//     pub cpu: Option<libscu_cpu::CPUInfo>,
+//     pub multicpu: Vec<libscu_cpu::Unit>,
+//     pub desktop_environment: Option<DesktopEnvironment>,
+//     pub device_name: Option<String>,
+//     pub disks: Vec<libscu_disk::Disk>,
+//     pub display_brightness: Option<libscu_display::Brightness>,
+//     pub display_server: Option<graphics::DisplayServer>,
+//     pub gpus: Vec<libscu_gpu::GPUInfo>,
+//     pub hostname: Option<String>,
+//     pub init_system: Option<libscu_init::InitSystem>,
+//     pub kernel: Option<kernel::KernelInfo>,
+//     pub locale: Option<String>,
+//     pub os_release: Option<libscu_os::OSRelease>,
+//     pub packages: Vec<libscu_packages::PackageManager>,
+//     pub ram: Option<libscu_ram::RAMInfo>,
+//     pub rootfs_fstype: Option<String>,
+//     pub shell: Option<libscu_shell::Shell>,
+//     pub terminal: Option<libscu_terminal::TerminalInfo>,
+//     pub uptime: Option<Time>,
+//     pub username: Option<String>,
+//     pub window_manager: Option<graphics::WindowManager>,
+// }
 
 pub fn get_option<T>(variable_name: &str, variable: &Option<T>) -> std::io::Result<T>
 where
