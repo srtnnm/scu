@@ -113,3 +113,75 @@ pub trait Detection {
 
     fn fetch(&self) -> std::io::Result<Self::Result>;
 }
+
+#[derive(Debug, PartialEq)]
+enum Module {
+    Arch,
+    Battery,
+    Brightness,
+    CPU,
+    DE,
+    Device,
+    Disks,
+    DisplayServer,
+    GPU,
+    Header,
+    Hostname,
+    Kernel,
+    Locale,
+    Memory,
+    OS,
+    Packages,
+    RootFS,
+    Separator,
+    Shell,
+    Terminal,
+    Uptime,
+    Username,
+    WM,
+}
+
+const MODULE_STRING_REPRESENTATION: [(Module, &str); 23] = [
+    (Module::Arch, "arch"),
+    (Module::Battery, "battery"),
+    (Module::Brightness, "brightness"),
+    (Module::CPU, "cpu"),
+    (Module::DE, "de"),
+    (Module::Device, "device"),
+    (Module::Disks, "disks"),
+    (Module::DisplayServer, "display_server"),
+    (Module::GPU, "gpu"),
+    (Module::Header, "header"),
+    (Module::Hostname, "hostname"),
+    (Module::Kernel, "kernel"),
+    (Module::Locale, "locale"),
+    (Module::OS, "os"),
+    (Module::Packages, "packages"),
+    (Module::Memory, "memory"),
+    (Module::RootFS, "rootfs"),
+    (Module::Separator, "separator"),
+    (Module::Shell, "shell"),
+    (Module::Terminal, "terminal"),
+    (Module::Uptime, "uptime"),
+    (Module::Username, "username"),
+    (Module::WM, "wm"),
+];
+
+impl Module {
+    pub fn from_str(name: &str) -> Option<Self> {
+        for (module, string_representation) in MODULE_STRING_REPRESENTATION {
+            if string_representation.starts_with(name) {
+                return Some(module);
+            }
+        }
+        None
+    }
+    pub fn to_str(&self) -> &'static str {
+        for (module, string_representation) in MODULE_STRING_REPRESENTATION.iter() {
+            if module == self {
+                return string_representation;
+            }
+        }
+        panic!("string representation for {self:?} not found in MODULE_STRING_REPRESENT")
+    }
+}
