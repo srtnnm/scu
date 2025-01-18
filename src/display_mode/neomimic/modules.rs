@@ -2,28 +2,8 @@ use super::display::{Display, Header, Separator};
 
 use crate::modules::*;
 
-pub enum Module {
-    Battery,
-    CPU,
-    DE,
-    GPU,
-    Header,
-    Device,
-    Init,
-    Kernel,
-    Locale,
-    Memory,
-    OS,
-    Packages,
-    Separator,
-    Shell,
-    Terminal,
-    Uptime,
-    WM,
-}
-
 impl Module {
-    pub fn run(&self) -> std::io::Result<usize> {
+    pub fn run_neomimic(&self) -> std::io::Result<usize> {
         match self {
             Self::Battery => Battery.run(),
             Self::CPU => CPU.run(),
@@ -31,7 +11,7 @@ impl Module {
             Self::GPU => GPU.run(),
             Self::Header => Header.run(),
             Self::Device => Device.run(),
-            // Self::Init => Init::run(),
+            Self::Init => Init.run(),
             Self::Kernel => Kernel.run(),
             Self::Locale => Locale.run(),
             Self::Memory => Memory.run(),
@@ -42,12 +22,18 @@ impl Module {
             Self::Terminal => Terminal.run(),
             Self::Uptime => Uptime.run(),
             Self::WM => WM.run(),
-            _ => Ok(0), //todo Init
+            Self::Arch => Arch.run(),
+            Self::Brightness => Brightness.run(),
+            Self::Disks => Disks.run(),
+            Self::RootFS => RootFS.run(),
+            Self::Hostname => Hostname.run(),
+            Self::Username => Username.run(),
+            Self::DisplayServer => DisplayServer.run(),
         }
     }
 }
 
 // TODO: show possible errors for debugging
 pub fn run_module(module: &Module) -> Option<usize> {
-    module.run().ok()
+    module.run_neomimic().ok()
 }

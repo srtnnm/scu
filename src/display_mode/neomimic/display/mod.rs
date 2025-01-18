@@ -3,22 +3,24 @@ mod misc;
 pub use misc::*;
 mod software;
 
-use super::{
-    color_blocks,
-    logo::print_logo,
-    modules::{run_module, Module},
-};
+use super::{color_blocks, logo::print_logo, modules::run_module};
 
-use crate::display_mode::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH};
+use crate::{
+    display_mode::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH},
+    modules::Module,
+};
 
 use std::sync::atomic::AtomicUsize;
 
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
 // TODO: move to non-hardcoded config
-const CONFIG: [Module; 17] = [
+const FULL_CONFIG: [Module; 24] = [
     Module::Header,
     Module::Separator,
+    Module::Username,
+    Module::Hostname,
+    Module::Arch,
     Module::OS,
     Module::Device,
     Module::Kernel,
@@ -28,12 +30,16 @@ const CONFIG: [Module; 17] = [
     Module::Shell,
     Module::DE,
     Module::WM,
+    Module::DisplayServer,
+    Module::Brightness,
     Module::Terminal,
     Module::CPU,
     Module::GPU,
     Module::Memory,
-    Module::Locale,
+    Module::RootFS,
+    Module::Disks,
     Module::Battery,
+    Module::Locale,
 ];
 
 static CURSOR_MOVER: std::sync::OnceLock<&'static str> = std::sync::OnceLock::new();
@@ -58,7 +64,7 @@ pub fn display(args: &crate::args::Args) {
         println!("\x1b[{}A\x1b[9999999D", TUX_HEIGHT + 1);
     }
 
-    for module in CONFIG {
+    for module in FULL_CONFIG {
         if let Some(len) = run_module(&module) {
             if len > 0 {
                 LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);

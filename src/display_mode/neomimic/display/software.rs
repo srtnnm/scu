@@ -1,9 +1,15 @@
 use super::{super::row::DataRow, Display};
 
-use crate::modules::{get_option, Detection};
+use crate::modules::{get_option, Detection, DisplayServer, Hostname, Init, RootFS};
 use crate::modules::{
     Arch, Kernel, Locale, Packages, Shell, Terminal, Uptime, Username, DE, OS, WM,
 };
+
+impl Display for Arch {
+    fn display(arch: Self::Result) -> std::io::Result<usize> {
+        Ok(DataRow::info("Arch", &arch))
+    }
+}
 
 impl Display for DE {
     fn display(de: Self::Result) -> std::io::Result<usize> {
@@ -11,11 +17,30 @@ impl Display for DE {
     }
 }
 
-// impl Display for DisplayServer {} // TODO
+impl Display for DisplayServer {
+    fn display(display_server: Self::Result) -> std::io::Result<usize> {
+        Ok(DataRow::info(
+            "Display server",
+            &format!("{display_server:?}"),
+        ))
+    }
+}
 
-// impl Display for Hostname {} // TODO
+impl Display for Hostname {
+    fn display(hostname: Self::Result) -> std::io::Result<usize> {
+        Ok(DataRow::info("Hostname", &hostname))
+    }
+}
 
-// impl Display for Init {} // TODO
+impl Display for Init {
+    fn display(init: Self::Result) -> std::io::Result<usize> {
+        let mut value = init.name;
+        if let Some(number_of_services) = init.number_of_services {
+            value.push_str(&format!(" ({number_of_services} services)"));
+        }
+        Ok(DataRow::info("Init", &value))
+    }
+}
 
 impl Display for Kernel {
     fn display(kernel: Self::Result) -> std::io::Result<usize> {
@@ -67,7 +92,11 @@ impl Display for Packages {
     }
 }
 
-// impl Display for RootFS {} // TODO
+impl Display for RootFS {
+    fn display(fstype: Self::Result) -> std::io::Result<usize> {
+        Ok(DataRow::info("RootFS filesystem", &fstype))
+    }
+}
 
 impl Display for Shell {
     fn display(shell: Self::Result) -> std::io::Result<usize> {

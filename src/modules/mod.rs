@@ -115,7 +115,7 @@ pub trait Detection {
 }
 
 #[derive(Debug, PartialEq)]
-enum Module {
+pub enum Module {
     Arch,
     Battery,
     Brightness,
@@ -127,6 +127,7 @@ enum Module {
     GPU,
     Header,
     Hostname,
+    Init,
     Kernel,
     Locale,
     Memory,
@@ -141,7 +142,7 @@ enum Module {
     WM,
 }
 
-const MODULE_STRING_REPRESENTATION: [(Module, &str); 23] = [
+const MODULE_STRING_REPRESENTATION: [(Module, &str); 24] = [
     (Module::Arch, "arch"),
     (Module::Battery, "battery"),
     (Module::Brightness, "brightness"),
@@ -153,11 +154,12 @@ const MODULE_STRING_REPRESENTATION: [(Module, &str); 23] = [
     (Module::GPU, "gpu"),
     (Module::Header, "header"),
     (Module::Hostname, "hostname"),
+    (Module::Init, "init"),
     (Module::Kernel, "kernel"),
     (Module::Locale, "locale"),
+    (Module::Memory, "memory"),
     (Module::OS, "os"),
     (Module::Packages, "packages"),
-    (Module::Memory, "memory"),
     (Module::RootFS, "rootfs"),
     (Module::Separator, "separator"),
     (Module::Shell, "shell"),
