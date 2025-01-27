@@ -28,11 +28,14 @@ pub struct CPU;
 pub struct MultiCPU;
 
 impl Detection for CPU {
-    type Result = cpu::CPUInfo;
+    type Result = Vec<cpu::Unit>;
     const NAME: &'static str = "cpu";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        cpu::fetch_info(raw_models())
+        Ok(Vec::from([cpu::Unit {
+            physical_id: 0,
+            cpuinfo: cpu::fetch_info(raw_models())?,
+        }]))
     }
 }
 

@@ -30,16 +30,25 @@ impl Display for Brightness {
 }
 
 impl Display for CPU {
-    fn display(cpu: Self::Result) -> std::io::Result<usize> {
-        let cpu_str = format!(
-            "{vendor} {model} ({units}) @ {frequency:.3}GHz",
-            vendor = cpu.vendor.to_string(),
-            model = cpu.model,
-            units = cpu.cores.max(cpu.threads),
-            frequency = cpu.frequency.ghz
-        );
+    fn display(cpus: Self::Result) -> std::io::Result<usize> {
+        let len = cpus
+            .iter()
+            .map(|unit| {
+                DataRow::info(
+                    "CPU",
+                    &format!(
+                        "{vendor} {model} ({units}) @ {frequency:.3}GHz",
+                        vendor = unit.cpuinfo.vendor.to_string(),
+                        model = unit.cpuinfo.model,
+                        units = unit.cpuinfo.cores.max(unit.cpuinfo.threads),
+                        frequency = unit.cpuinfo.frequency.ghz
+                    ),
+                )
+            })
+            .max()
+            .unwrap_or_default();
 
-        Ok(DataRow::info("CPU", &cpu_str))
+        Ok(len)
     }
 }
 

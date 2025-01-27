@@ -1,14 +1,7 @@
-/*
-// TODO: multicpu
-*/
-
 use super::GenerateTableEntries;
 
 // TODO: PLACE INTO ARGUMENT PARSING
 fn disable_colors() -> bool {
-    false
-}
-fn multicpu() -> bool {
     false
 }
 
@@ -54,24 +47,28 @@ impl GenerateTableEntries for Brightness {
 }
 
 impl GenerateTableEntries for CPU {
-    fn display(cpu_info: Self::Result, table: &mut Table) {
-        if !multicpu() {
-            table.add(
+    fn display(units: Self::Result, table: &mut Table) {
+        for unit in units {
+            let cpu_info = unit.cpuinfo;
+
+            let mut subtable_entries: Vec<TableEntry> = Vec::new();
+
+            subtable_entries.push(TableEntry::new(
                 "Model",
                 format!("{} {}", cpu_info.vendor, cpu_info.model).as_str(),
-            );
-            table.add(
+            ));
+            subtable_entries.push(TableEntry::new(
                 "Frequency",
                 format!("{:.2}GHz", cpu_info.frequency.ghz).as_str(),
-            );
+            ));
             if cpu_info.cores > 0 {
-                table.add(
+                subtable_entries.push(TableEntry::new(
                     "Computing units",
                     format!("{} Cores / {} Threads", cpu_info.cores, cpu_info.threads).as_str(),
-                );
+                ));
             }
             if let Some(temp) = cpu_info.temperature {
-                table.add(
+                subtable_entries.push(TableEntry::new(
                     "Temperature",
                     if !disable_colors() {
                         colorize_by_num(
@@ -84,61 +81,14 @@ impl GenerateTableEntries for CPU {
                         format!("{:.1}°C", temp)
                     }
                     .as_str(),
-                );
+                ));
             }
-        } else {
-            // TODO MULTICPU
-            /*
-            let multiple_cpus = info.multicpu.clone();
-            if multiple_cpus.is_empty() {
-                return None;
-            } else {
-                let mut result = Table::new("Processor");
-                for cpu in multiple_cpus {
-                    let cpu_info = cpu.cpuinfo;
 
-                    let mut subtable_entries: Vec<TableEntry> = Vec::new();
-
-                    subtable_entries.push(TableEntry::new(
-                        "Model",
-                        format!("{} {}", cpu_info.vendor, cpu_info.model).as_str(),
-                    ));
-                    subtable_entries.push(TableEntry::new(
-                        "Frequency",
-                        format!("{:.2}GHz", cpu_info.frequency.ghz).as_str(),
-                    ));
-                    if cpu_info.cores > 0 {
-                        subtable_entries.push(TableEntry::new(
-                            "Computing units",
-                            format!("{} Cores / {} Threads", cpu_info.cores, cpu_info.threads).as_str(),
-                        ));
-                    }
-                    if let Some(temp) = cpu_info.temperature {
-                        subtable_entries.push(TableEntry::new(
-                            "Temperature",
-                            if !disable_color {
-                                colorize_by_num(
-                                    format!("{:.1}°C", temp).as_str(),
-                                    percentage(90, temp as u64) as u16,
-                                    100,
-                                    false,
-                                )
-                            } else {
-                                format!("{:.1}°C", temp)
-                            }
-                            .as_str(),
-                        ));
-                    }
-
-                    result.add_with_additional(
-                        format!("CPU #{}", cpu.physical_id).as_str(),
-                        "",
-                        &subtable_entries,
-                    );
-                }
-                return Some(result);
-            }
-            */
+            table.add_with_additional(
+                format!("CPU #{}", unit.physical_id).as_str(),
+                "",
+                &subtable_entries,
+            );
         }
     }
 }
