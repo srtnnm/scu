@@ -133,22 +133,8 @@ impl GenerateTableEntries for Uptime {
             uptime_str += format!("{}d", uptime.days).as_str();
         }
         uptime_str += format!(
-            " {}:{}:{}",
-            format!(
-                "{}{}",
-                if (uptime.hours % 24) < 10 { "0" } else { "" },
-                uptime.hours % 24
-            ),
-            format!(
-                "{}{}",
-                if uptime.minutes < 10 { "0" } else { "" },
-                uptime.minutes
-            ),
-            format!(
-                "{}{}",
-                if uptime.seconds < 10 { "0" } else { "" },
-                uptime.seconds
-            )
+            " {:02}:{:02}:{:02}",
+            uptime.hours, uptime.minutes, uptime.seconds
         )
         .as_str();
         table.add("Uptime", uptime_str.trim());
