@@ -2,10 +2,6 @@ use super::Detection;
 
 use libscu::software::os;
 
-pub(super) fn fetch() -> Option<os::OSRelease> {
-    os::fetch_release().ok()
-}
-
 pub struct OS;
 
 impl Detection for OS {

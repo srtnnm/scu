@@ -2,10 +2,6 @@ use super::Detection;
 
 use libscu::hardware::display;
 
-pub(super) fn fetch() -> Option<display::Brightness> {
-    display::fetch_brightness().ok()
-}
-
 pub struct Brightness;
 
 impl Detection for Brightness {

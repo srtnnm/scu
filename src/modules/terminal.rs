@@ -1,10 +1,9 @@
+use crate::config::force_versions;
+
 use super::Detection;
 
 use libscu::software::terminal;
 
-pub(super) fn fetch(force_versions: bool) -> Option<terminal::TerminalInfo> {
-    terminal::fetch_info(force_versions).ok()
-}
 pub struct Terminal;
 
 impl Detection for Terminal {
@@ -12,6 +11,6 @@ impl Detection for Terminal {
     const NAME: &'static str = "terminal";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        terminal::fetch_info(false) // TODO
+        terminal::fetch_info(force_versions())
     }
 }

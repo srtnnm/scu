@@ -1,11 +1,7 @@
 use super::GenerateTableEntries;
 
-// TODO: PLACE INTO ARGUMENT PARSING
-fn disable_colors() -> bool {
-    false
-}
-
 use crate::{
+    config::{disable_colors, multicpu},
     data::table::{Table, TableEntry},
     modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
     util::{colorize::colorize_by_num, percentage},
@@ -85,7 +81,12 @@ impl GenerateTableEntries for CPU {
             }
 
             table.add_with_additional(
-                format!("CPU #{}", unit.physical_id).as_str(),
+                if multicpu() {
+                    format!("CPU #{}", unit.physical_id)
+                } else {
+                    "CPU".to_string()
+                }
+                .as_str(),
                 "",
                 &subtable_entries,
             );

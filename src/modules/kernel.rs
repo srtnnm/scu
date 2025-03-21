@@ -8,16 +8,6 @@ pub struct KernelInfo {
     pub version: String,
 }
 
-impl KernelInfo {
-    pub(super) fn fetch() -> Option<KernelInfo> {
-        let info = KernelInfo {
-            name: kernel::fetch_name().unwrap(),
-            version: kernel::fetch_version().unwrap(),
-        };
-        Some(info)
-    }
-}
-
 pub struct Kernel;
 
 impl Detection for Kernel {

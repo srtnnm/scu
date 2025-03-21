@@ -1,28 +1,8 @@
 use super::Detection;
 
-use crate::data::raw_models;
+use crate::config::{multicpu, raw_models};
 
 use libscu::hardware::cpu;
-
-pub(super) fn fetch_cpu_info() -> Option<cpu::CPUInfo> {
-    match cpu::fetch_info(raw_models()) {
-        Ok(cpu_info) => Some(cpu_info),
-        Err(err) => {
-            eprintln!("failed to get information about cpu: {err:?}");
-            None
-        }
-    }
-}
-
-pub(super) fn fetch_multicpu_info() -> Vec<cpu::Unit> {
-    match cpu::fetch_multicpus(raw_models()) {
-        Ok(cpus) => cpus,
-        Err(err) => {
-            eprintln!("failed to get information about multiple cpus: {err:?}");
-            Vec::default()
-        }
-    }
-}
 
 pub struct CPU;
 pub struct MultiCPU;
@@ -32,10 +12,14 @@ impl Detection for CPU {
     const NAME: &'static str = "cpu";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        Ok(Vec::from([cpu::Unit {
-            physical_id: 0,
-            cpuinfo: cpu::fetch_info(raw_models())?,
-        }]))
+        if multicpu() {
+            Ok(Vec::from([cpu::Unit {
+                physical_id: 0,
+                cpuinfo: cpu::fetch_info(raw_models())?,
+            }]))
+        } else {
+            cpu::fetch_multicpus(raw_models())
+        }
     }
 }
 

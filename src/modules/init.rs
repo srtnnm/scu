@@ -2,10 +2,6 @@ use super::Detection;
 
 use libscu::software::init;
 
-pub(super) fn fetch() -> Option<init::InitSystem> {
-    init::fetch_info().ok()
-}
-
 pub struct Init;
 
 impl Detection for Init {

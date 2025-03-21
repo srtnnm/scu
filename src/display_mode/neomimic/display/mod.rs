@@ -6,6 +6,7 @@ mod software;
 use super::{color_blocks, logo::print_logo, modules::run_module};
 
 use crate::{
+    config::simplify,
     display_mode::neomimic::logo::{TUX_HEIGHT, TUX_WIDTH},
     modules::Module,
 };
@@ -48,16 +49,16 @@ pub fn cursor_mover() {
     print!("{}", CURSOR_MOVER.get_or_init(|| ""));
 }
 
-pub fn display(args: &crate::args::Args) {
+pub fn display() {
     CURSOR_MOVER
-        .set(if !args.simplify {
+        .set(if !simplify() {
             Box::leak(format!("\x1b[{}C", TUX_WIDTH + 4).into_boxed_str())
         } else {
             "".into()
         })
         .expect("attempted to set already initialized cursor mover");
 
-    if !args.simplify {
+    if !simplify() {
         // Display logo
         print_logo();
         // Return cursor to start
@@ -73,7 +74,7 @@ pub fn display(args: &crate::args::Args) {
     }
 
     // Display color blocks
-    if !args.simplify {
+    if !simplify() {
         color_blocks::print();
     }
 }

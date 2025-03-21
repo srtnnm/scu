@@ -52,33 +52,6 @@ use libscu::{
     util::data::DesktopEnvironment,
 };
 
-// #[derive(Debug, Default)]
-// pub(crate) struct SystemInformation {
-//     pub arch: Option<String>,
-//     pub batteries: Vec<libscu_battery::BatteryInfo>,
-//     pub cpu: Option<libscu_cpu::CPUInfo>,
-//     pub multicpu: Vec<libscu_cpu::Unit>,
-//     pub desktop_environment: Option<DesktopEnvironment>,
-//     pub device_name: Option<String>,
-//     pub disks: Vec<libscu_disk::Disk>,
-//     pub display_brightness: Option<libscu_display::Brightness>,
-//     pub display_server: Option<graphics::DisplayServer>,
-//     pub gpus: Vec<libscu_gpu::GPUInfo>,
-//     pub hostname: Option<String>,
-//     pub init_system: Option<libscu_init::InitSystem>,
-//     pub kernel: Option<kernel::KernelInfo>,
-//     pub locale: Option<String>,
-//     pub os_release: Option<libscu_os::OSRelease>,
-//     pub packages: Vec<libscu_packages::PackageManager>,
-//     pub ram: Option<libscu_ram::RAMInfo>,
-//     pub rootfs_fstype: Option<String>,
-//     pub shell: Option<libscu_shell::Shell>,
-//     pub terminal: Option<libscu_terminal::TerminalInfo>,
-//     pub uptime: Option<Time>,
-//     pub username: Option<String>,
-//     pub window_manager: Option<graphics::WindowManager>,
-// }
-
 pub fn get_option<T>(variable_name: &str, variable: &Option<T>) -> std::io::Result<T>
 where
     T: Clone,
@@ -90,21 +63,6 @@ where
         ));
     };
     Ok(var)
-}
-
-pub fn get_vec<T>(data_kind: &str, variable: &Vec<T>) -> std::io::Result<Vec<T>>
-where
-    T: Clone,
-{
-    let var = variable.clone();
-    if var.is_empty() {
-        return Err(std::io::Error::new(
-            std::io::ErrorKind::NotFound,
-            format!("no {data_kind} found"),
-        ));
-    } else {
-        Ok(var)
-    }
 }
 
 pub trait Detection {
@@ -142,6 +100,7 @@ pub enum Module {
     WM,
 }
 
+/*
 const MODULE_STRING_REPRESENTATION: [(Module, &str); 24] = [
     (Module::Arch, "arch"),
     (Module::Battery, "battery"),
@@ -187,3 +146,4 @@ impl Module {
         panic!("string representation for {self:?} not found in MODULE_STRING_REPRESENT")
     }
 }
+*/

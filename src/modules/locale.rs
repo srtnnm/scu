@@ -2,10 +2,6 @@ use super::Detection;
 
 use libscu::software::locale;
 
-pub(super) fn fetch() -> Option<String> {
-    locale::fetch().ok()
-}
-
 pub struct Locale;
 
 impl Detection for Locale {

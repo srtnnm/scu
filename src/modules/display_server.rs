@@ -2,10 +2,6 @@ use super::Detection;
 
 use libscu::software::graphics;
 
-pub(super) fn fetch() -> Option<graphics::DisplayServer> {
-    graphics::fetch_display_server().ok()
-}
-
 pub struct DisplayServer;
 
 impl Detection for DisplayServer {

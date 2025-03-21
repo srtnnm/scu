@@ -5,7 +5,7 @@ use crate::{
     modules::{Brightness, DisplayServer, DE, GPU, WM},
 };
 
-pub fn to_table(_disable_color: bool) -> Option<Table> {
+pub fn to_table() -> Option<Table> {
     let mut result = Table::new("Graphics");
 
     GPU.gen_entries(&mut result).ok()?;
