@@ -4,7 +4,7 @@
 pub struct TableEntry {
     pub name: String,
     pub value: String,
-    pub additional: Vec<Box<TableEntry>>,
+    pub additional: Vec<TableEntry>,
 }
 
 impl TableEntry {
@@ -15,14 +15,11 @@ impl TableEntry {
             additional: Vec::new(),
         }
     }
-    pub fn new_with_additional(name: &str, value: &str, additional: Vec<TableEntry>) -> Self {
+    pub fn new_with_additional(name: &str, value: &str, additional: &[TableEntry]) -> Self {
         Self {
             name: name.to_string(),
             value: value.to_string(),
-            additional: additional
-                .into_iter()
-                .map(|e| Box::new(e.clone()))
-                .collect(),
+            additional: additional.into_iter().map(Clone::clone).collect(),
         }
     }
 }
@@ -47,7 +44,7 @@ impl Table {
         &mut self,
         entry_name: &str,
         entry_value: &str,
-        additional: Vec<TableEntry>,
+        additional: &[TableEntry],
     ) {
         self.entries.push(TableEntry::new_with_additional(
             entry_name,

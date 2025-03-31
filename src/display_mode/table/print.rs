@@ -1,10 +1,8 @@
 use super::collect::collect_tables;
 
 use crate::{
-    args::Args,
-    config,
+    config::{self, simplify},
     data::table::{self, TableEntry},
-    info,
     util::len,
 };
 
@@ -133,9 +131,9 @@ fn print_simplified(tables: &Vec<table::Table>) {
     }
 }
 
-pub(super) fn print(info: &info::SystemInformation, config: &config::Config, args: &Args) {
-    let tables = collect_tables(info, config, args);
-    if args.simplify {
+pub(super) fn print(config: &config::Config) {
+    let tables = collect_tables(config);
+    if simplify() {
         print_simplified(&tables);
     } else {
         print_formatted_info(&tables);

@@ -159,3 +159,49 @@ impl Default for Config {
         }
     }
 }
+
+use std::sync::atomic::{AtomicBool, Ordering};
+
+static RAW_MODELS: AtomicBool = AtomicBool::new(false);
+static SIMPLIFY: AtomicBool = AtomicBool::new(false);
+static MULTICPU: AtomicBool = AtomicBool::new(false);
+static NEOMIMIC: AtomicBool = AtomicBool::new(false);
+static FORCE_VERSIONS: AtomicBool = AtomicBool::new(false);
+
+macro_rules! setup_loaders {
+    ($($var:ident => $fn_name:ident),* $(,)?) => {
+        $(
+            pub(crate) fn $fn_name() -> bool {
+                $var.load(Ordering::Relaxed)
+            }
+        )*
+    };
+}
+
+setup_loaders!(
+    RAW_MODELS => raw_models,
+    SIMPLIFY => simplify,
+    SIMPLIFY => disable_colors,
+    MULTICPU => multicpu,
+    NEOMIMIC => neomimic,
+    FORCE_VERSIONS => force_versions
+);
+
+pub(crate) enum ConfigData {
+    RawModels,
+    Simplify,
+    Multicpu,
+    Neomimic,
+    ForceVersions,
+}
+
+pub(crate) fn set(data: ConfigData, value: bool) {
+    use ConfigData::*;
+    match data {
+        RawModels => RAW_MODELS.store(value, Ordering::Relaxed),
+        Simplify => SIMPLIFY.store(value, Ordering::Relaxed),
+        Multicpu => MULTICPU.store(value, Ordering::Relaxed),
+        Neomimic => NEOMIMIC.store(value, Ordering::Relaxed),
+        ForceVersions => FORCE_VERSIONS.store(value, Ordering::Relaxed),
+    }
+}
