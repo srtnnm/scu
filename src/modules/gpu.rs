@@ -11,6 +11,6 @@ impl Detection for GPU {
     const NAME: &'static str = "gpu";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        Ok(gpu::fetch_all(raw_models())?)
+        gpu::fetch_all(raw_models())
     }
 }

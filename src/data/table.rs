@@ -4,7 +4,7 @@
 pub struct TableEntry {
     pub name: String,
     pub value: String,
-    pub additional: Vec<Box<TableEntry>>,
+    pub additional: Vec<TableEntry>,
 }
 
 impl TableEntry {
@@ -19,10 +19,7 @@ impl TableEntry {
         Self {
             name: name.to_string(),
             value: value.to_string(),
-            additional: additional
-                .into_iter()
-                .map(|e| Box::new(e.clone()))
-                .collect(),
+            additional: additional.into_iter().map(Clone::clone).collect(),
         }
     }
 }

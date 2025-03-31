@@ -11,10 +11,6 @@ impl Detection for Disks {
     fn fetch(&self) -> std::io::Result<Self::Result> {
         let disks = disk::fetch_devices()?;
 
-        Ok(disks
-            .iter()
-            .map(|device| disk::fetch_disk_info(&device))
-            .flatten()
-            .collect())
+        Ok(disks.iter().flat_map(disk::fetch_disk_info).collect())
     }
 }

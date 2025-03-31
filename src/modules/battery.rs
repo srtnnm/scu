@@ -13,8 +13,7 @@ impl Detection for Battery {
 
         Ok(battery_interfaces
             .iter()
-            .map(|interface| battery::collect_info(interface))
-            .flatten()
+            .flat_map(|interface| battery::collect_info(interface))
             .collect())
     }
 }

@@ -1,4 +1,4 @@
-use regex_lite;
+use regex_lite::Regex;
 
 const TUX: &str = "        $8#####
        $8#######
@@ -18,7 +18,7 @@ pub const TUX_HEIGHT: usize = 12;
 pub fn print_logo() {
     let mut linux_logo = TUX.to_string();
 
-    let color_re = regex_lite::Regex::new(r"\$\d").unwrap();
+    let color_re = Regex::new(r"\$\d").unwrap();
     for color in color_re.find_iter(&linux_logo.clone()) {
         if let Some(color_int) = color
             .as_str()
