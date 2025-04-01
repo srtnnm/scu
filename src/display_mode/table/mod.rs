@@ -1,5 +1,5 @@
 mod collect;
-mod config;
+pub mod config;
 mod gen_table;
 mod print;
 
@@ -12,6 +12,6 @@ mod packages;
 mod processor;
 mod system;
 
-pub(crate) fn run(config: &crate::config::Config) {
+pub(crate) fn run(config: config::TableConfig) {
     print::print(config);
 }

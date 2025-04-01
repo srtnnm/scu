@@ -2,8 +2,9 @@ mod neomimic;
 mod table;
 
 use neomimic::config::NeomimicConfig;
+use table::config::TableConfig;
 
-use crate::config::{self, neomimic};
+use crate::config::neomimic;
 
 #[derive(Default)]
 pub enum Mode {
@@ -12,7 +13,7 @@ pub enum Mode {
     NeoMimic,
 }
 
-pub fn run(config: &config::Config) {
+pub fn run() {
     let mode = if !neomimic() {
         Mode::default()
     } else {
@@ -20,7 +21,7 @@ pub fn run(config: &config::Config) {
     };
 
     match mode {
-        Mode::Table => table::run(config),
+        Mode::Table => table::run(TableConfig::default()),
         Mode::NeoMimic => neomimic::display(NeomimicConfig::default()),
     }
 }

@@ -34,10 +34,7 @@ export_modules!(
     wm
 );
 
-use crate::{
-    args::Args,
-    config::{Config, Table},
-};
+use crate::args::Args;
 
 use libscu::{
     hardware::{

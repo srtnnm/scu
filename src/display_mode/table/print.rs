@@ -131,7 +131,7 @@ fn print_simplified(tables: &Vec<table::Table>) {
     }
 }
 
-pub(super) fn print(config: &config::Config) {
+pub(super) fn print(config: TableConfig) {
     let tables = collect_tables(TableConfig::default());
     if simplify() {
         print_simplified(&tables);
