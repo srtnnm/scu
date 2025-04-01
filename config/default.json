@@ -1,0 +1,50 @@
+{
+  "global": {
+    "raw_models": false,
+    "simplify": false,
+    "no_colors": false,
+    "no_logo": false,
+    "multicpu": false,
+    "mode": "table",
+    "force_versions": false
+  },
+  "table": {
+    "categories": {
+      "System": [
+        "hostname",
+        "username",
+        "os",
+        "device",
+        "init",
+        "terminal",
+        "shell",
+        "uptime"
+      ],
+      "Processor": ["cpu"],
+      "Memory": ["memory"],
+      "Graphics": ["gpu", "display_server", "de", "wm", "brightness"],
+      "Packages": ["packages"],
+      "Disks": ["disks"],
+      "Batteries": ["battery"]
+    }
+  },
+  "neomimic": {
+    "logo": "default",
+    "modules": [
+      "header",
+      "separator",
+      "os",
+      "device",
+      "kernel",
+      "uptime",
+      "packages",
+      "shell",
+      "de",
+      "wm",
+      "terminal",
+      "cpu",
+      "gpu",
+      "memory"
+    ]
+  }
+}
