@@ -16,6 +16,7 @@ all tables:
 
 use bitflags::bitflags;
 use libscu::software::users::fetch_current;
+use std::path::PathBuf;
 use std::{fs, path::Path};
 
 // bitflags! {
@@ -203,5 +204,59 @@ pub(crate) fn set(data: ConfigData, value: bool) {
         Multicpu => MULTICPU.store(value, Ordering::Relaxed),
         Neomimic => NEOMIMIC.store(value, Ordering::Relaxed),
         ForceVersions => FORCE_VERSIONS.store(value, Ordering::Relaxed),
+    }
+}
+
+pub struct Config;
+impl Config {
+    pub fn find_config(name: Option<&str>) -> Option<PathBuf> {
+        const CONFIG_DIRECTORY: &str = "$HOME/.config/omnid/scu";
+        let mut name = name?.to_string();
+        if !name.ends_with(".json") {
+            name.push_str(".json");
+        }
+
+        let path = Path::new(&name);
+        if path.is_file() {
+            // if provided path instead of config name
+            return Some(path.to_path_buf());
+        }
+
+        // get user's HOME directory
+        let user = fetch_current().ok()?;
+        let home_dir = user.home_dir?;
+        if home_dir.is_empty() {
+            return None;
+        }
+
+        // check if config directory is file (deprecated format)
+        let full_path = PathBuf::from(CONFIG_DIRECTORY.replace("$HOME", &home_dir));
+        if full_path.is_file() {
+            logs::warning!("old config {} is file. it is now deprecated so you need remove that file and create directory with the same name",
+                full_path.to_string_lossy());
+            return None;
+        }
+
+        // create directory for configs
+        if !Self::create_config_directory(&full_path) {
+            return None;
+        }
+
+        if full_path.join(&name).is_file() {
+            Some(full_path.join(name))
+        } else {
+            None
+        }
+    }
+    fn create_config_directory(path: &Path) -> bool {
+        path.is_dir()
+            || fs::create_dir_all(&path)
+                .map_err(|err| {
+                    logs::warning!(
+                        "failed to create directory `{}` for config: {err}",
+                        path.to_string_lossy()
+                    )
+                })
+                .is_ok()
     }
 }

@@ -59,6 +59,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "logs"
+version = "0.1.0"
+source = "git+https://gitlab.com/omnid/rust-crates/logs#9173eba60a44251a30b9c2237900c0a0d4320af7"
+
+[[package]]
 name = "pkg-config"
 version = "0.3.31"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -103,6 +108,7 @@ version = "1.6.1"
 dependencies = [
  "bitflags",
  "libscu",
+ "logs",
  "regex-lite",
  "simpleargs",
 ]
