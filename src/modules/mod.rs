@@ -105,7 +105,7 @@ generate_modules_and_string_representation!(
 impl Module {
     pub fn from_str(name: &str) -> Option<Self> {
         for (module, string_representation) in MODULE_STRING_REPRESENTATION {
-            if string_representation.starts_with(name) {
+            if string_representation == name {
                 return Some(module);
             }
         }

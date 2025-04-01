@@ -1,3 +1,5 @@
+use std::path::Path;
+
 mod about;
 mod args;
 mod config;
@@ -13,6 +15,8 @@ fn main() {
     config::set(config::ConfigData::Multicpu, args.multicpu);
     config::set(config::ConfigData::Neomimic, args.neomimic);
     config::set(config::ConfigData::ForceVersions, args.force_versions);
+
+    config::Config::parse(Path::new("./config/default.json")).unwrap();
 
     // let config = config::Config::load();
 

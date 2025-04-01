@@ -18,6 +18,7 @@ use bitflags::bitflags;
 use libscu::software::users::fetch_current;
 use std::io::{Error, ErrorKind};
 use std::path::PathBuf;
+use std::sync::{LazyLock, OnceLock};
 use std::{fs, path::Path};
 
 // bitflags! {
@@ -204,6 +205,8 @@ setup_loaders!(
     FORCE_VERSIONS in_config:"force_versions" default_val:false getter=> force_versions,
 );
 
+pub static NEOMIMIC_CONFIG: OnceLock<NeomimicConfig> = OnceLock::new();
+
 pub(crate) enum ConfigData {
     RawModels,
     Simplify,
@@ -283,6 +286,7 @@ impl Config {
         if let json::JsonValue::Object(global_object) = parsed_json["global"].clone() {
             Self::parse_global(&global_object);
         }
+        let _ = NEOMIMIC_CONFIG.set(Self::parse_neomimic_config(&parsed_json["neomimic"]));
 
         Ok(())
     }
@@ -299,5 +303,82 @@ impl Config {
 
             atomic_ref.store(value, Ordering::Relaxed);
         }
+    }
+    fn parse_neomimic_config(value: &json::JsonValue) -> NeomimicConfig {
+        NeomimicConfig::from_json(value).unwrap_or_default()
+    }
+}
+
+use crate::{
+    display_mode::neomimic::{config::NeomimicConfig, logo::Logo},
+    modules::Module,
+};
+impl NeomimicConfig {
+    fn from_json(json_value: &json::JsonValue) -> Option<Self> {
+        let json::JsonValue::Object(neomimic_config) = json_value.clone() else {
+            return None;
+        };
+
+        Some(Self {
+            logo: Self::logo_from_json(&neomimic_config["logo"]),
+            modules: Module::from_json_array(&neomimic_config["modules"]),
+        })
+    }
+    fn logo_from_json(value: &json::JsonValue) -> Logo {
+        let logo = match value.clone() {
+            json::JsonValue::String(logo) => logo,
+            json::JsonValue::Null => {
+                return Logo::default();
+            }
+            _ => {
+                logs::warning!("neomimic `logo` must be a string value");
+                return Logo::default();
+            }
+        };
+
+        let logo_path = Path::new(&logo);
+        let logo_path_exists = logo_path.is_absolute() && logo_path.is_file();
+
+        match logo.as_str() {
+            path if logo_path_exists => match Logo::from_path(path) {
+                Ok(logo_from_file) => logo_from_file,
+                Err(error) => {
+                    logs::warning!("failed to read file `{logo}`: {error}");
+                    Logo::default()
+                }
+            },
+            "default" | "tux" => Logo::default(),
+            _ => {
+                logs::warning!("neomimic `logo` unknown name or path: `{logo}`");
+                Logo::default()
+            }
+        }
+    }
+}
+
+impl Module {
+    fn from_json_array(value: &json::JsonValue) -> Vec<Self> {
+        let json::JsonValue::Array(array) = value.clone() else {
+            return Vec::default();
+        };
+
+        array
+            .iter()
+            .flat_map(Self::from_json_value)
+            .collect::<Vec<Self>>()
+    }
+    fn from_json_value(value: &json::JsonValue) -> Option<Self> {
+        let module_name = match value.clone() {
+            json::JsonValue::String(module_name) => module_name,
+            json::JsonValue::Null => {
+                return None;
+            }
+            _ => {
+                logs::warning!("invalid module name value: {value}");
+                return None;
+            }
+        };
+
+        Self::from_str(&module_name)
     }
 }

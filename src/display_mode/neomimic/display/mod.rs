@@ -21,7 +21,7 @@ pub fn cursor_mover() {
     print!("{}", CURSOR_MOVER.get_or_init(|| ""));
 }
 
-pub fn display(config: NeomimicConfig) {
+pub fn display(config: &NeomimicConfig) {
     if !simplify() {
         // Display logo
         config.logo.print();
@@ -41,7 +41,7 @@ pub fn display(config: NeomimicConfig) {
         })
         .expect("attempted to set already initialized cursor mover");
 
-    for module in config.modules {
+    for module in config.modules.iter() {
         if let Some(len) = run_module(&module) {
             if len > 0 {
                 LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);

@@ -1,4 +1,7 @@
-use std::sync::atomic::{AtomicU16, AtomicUsize, Ordering};
+use std::{
+    path::Path,
+    sync::atomic::{AtomicUsize, Ordering},
+};
 
 use regex_lite::Regex;
 
@@ -46,6 +49,11 @@ pub fn print_logo() {
 
 pub struct Logo(String);
 impl Logo {
+    pub fn from_path(path: impl AsRef<Path>) -> std::io::Result<Self> {
+        let readed = std::fs::read_to_string(path)?;
+
+        Ok(Self(readed))
+    }
     pub fn print(&self) {
         let mut logo = self.0.clone();
 
