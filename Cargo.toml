@@ -13,6 +13,7 @@ lto = true
 
 [dependencies]
 bitflags = "2.6.0"
+json = "0.12.4"
 libscu = { version = "3.0.0", git = "https://gitlab.com/omnid/libscu", features = [
     "full",
 ] }

@@ -16,6 +16,7 @@ all tables:
 
 use bitflags::bitflags;
 use libscu::software::users::fetch_current;
+use std::io::{Error, ErrorKind};
 use std::path::PathBuf;
 use std::{fs, path::Path};
 
@@ -163,29 +164,44 @@ use std::{fs, path::Path};
 
 use std::sync::atomic::{AtomicBool, Ordering};
 
-static RAW_MODELS: AtomicBool = AtomicBool::new(false);
-static SIMPLIFY: AtomicBool = AtomicBool::new(false);
-static MULTICPU: AtomicBool = AtomicBool::new(false);
-static NEOMIMIC: AtomicBool = AtomicBool::new(false);
-static FORCE_VERSIONS: AtomicBool = AtomicBool::new(false);
-
 macro_rules! setup_loaders {
-    ($($var:ident => $fn_name:ident),* $(,)?) => {
+    ($($var:ident in_config:$string_repr:tt default_val:$default:tt getter=> $fn_name:ident,)*) => {
         $(
+            static $var: AtomicBool = AtomicBool::new($default);
             pub(crate) fn $fn_name() -> bool {
                 $var.load(Ordering::Relaxed)
             }
         )*
+        const NUMBER_OF_BOOL_PROPERTIES: usize = {
+            let mut count = 0;
+            $(
+                let _ = $var;
+                count += 1;
+            )*
+            count
+        };
+        pub static PROPERTY_CONFIG_REPRESENTATION: &[(&str, &'static AtomicBool)] = &[
+            $(
+                ($string_repr, &$var),
+            )*
+        ];
+        fn find_atomic_by_key(name: &str) -> Option<&'static AtomicBool> {
+            for (key,atomic) in PROPERTY_CONFIG_REPRESENTATION {
+                if *key==name {return Some(atomic)}
+            }
+            None
+        }
     };
 }
 
 setup_loaders!(
-    RAW_MODELS => raw_models,
-    SIMPLIFY => simplify,
-    SIMPLIFY => disable_colors,
-    MULTICPU => multicpu,
-    NEOMIMIC => neomimic,
-    FORCE_VERSIONS => force_versions
+    RAW_MODELS     in_config:"raw_models"     default_val:false getter=> raw_models,
+    SIMPLIFY       in_config:"simplify"       default_val:false getter=> simplify,
+    NO_COLORS      in_config:"no_colors"      default_val:false getter=> no_colors,
+    NO_LOGO        in_config:"no_logo"        default_val:false getter=> no_logo,
+    MULTICPU       in_config:"multicpu"       default_val:false getter=> multicpu,
+    NEOMIMIC       in_config:"neomimic"       default_val:false getter=> neomimic,
+    FORCE_VERSIONS in_config:"force_versions" default_val:false getter=> force_versions,
 );
 
 pub(crate) enum ConfigData {
@@ -258,5 +274,30 @@ impl Config {
                     )
                 })
                 .is_ok()
+    }
+    pub fn parse(path: &Path) -> std::io::Result<()> {
+        let read_file = std::fs::read_to_string(path)?;
+        let parsed_json = json::parse(&read_file)
+            .map_err(|error| Error::new(ErrorKind::InvalidData, error.to_string()))?;
+
+        if let json::JsonValue::Object(global_object) = parsed_json["global"].clone() {
+            Self::parse_global(&global_object);
+        }
+
+        Ok(())
+    }
+    fn parse_global(object: &json::object::Object) {
+        for (key, value) in object.iter() {
+            let Some(atomic_ref) = find_atomic_by_key(key) else {
+                logs::warning!("unknown global property: `{key}`");
+                continue;
+            };
+            let Some(value) = value.as_bool() else {
+                logs::warning!("global property `{key}` must be boolean");
+                continue;
+            };
+
+            atomic_ref.store(value, Ordering::Relaxed);
+        }
     }
 }
