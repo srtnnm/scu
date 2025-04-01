@@ -8,7 +8,7 @@ use crate::{
 pub(super) fn collect_tables(config: config::TableConfig) -> Vec<table::Table> {
     let mut result: Vec<table::Table> = Vec::new();
 
-    for config_table in config.tables {
+    for config_table in config.categories {
         let mut table = Table::new(&config_table.title);
 
         gen_entries_for_modules(&mut table, &config_table.modules);

@@ -1,10 +1,10 @@
 use crate::modules::Module;
 
-pub struct Table {
+pub struct Category {
     pub title: String,
     pub modules: Vec<Module>,
 }
-impl Table {
+impl Category {
     fn new(title: &str, modules: Vec<Module>) -> Self {
         Self {
             title: title.to_string(),
@@ -14,26 +14,26 @@ impl Table {
 }
 
 pub struct TableConfig {
-    pub tables: Vec<Table>,
+    pub categories: Vec<Category>,
 }
 
 impl Default for TableConfig {
     fn default() -> Self {
         use Module::*;
         Self {
-            tables: vec![
-                Table::new(
+            categories: vec![
+                Category::new(
                     "System",
                     vec![
                         Hostname, Username, OS, Device, Init, Terminal, Shell, Uptime,
                     ],
                 ),
-                Table::new("Processor", vec![CPU]),
-                Table::new("Memory", vec![Memory]),
-                Table::new("Graphics", vec![GPU, DisplayServer, DE, WM, Brightness]),
-                Table::new("Packages", vec![Packages]),
-                Table::new("Disks", vec![Disks]),
-                Table::new("Batteries", vec![Battery]),
+                Category::new("Processor", vec![CPU]),
+                Category::new("Memory", vec![Memory]),
+                Category::new("Graphics", vec![GPU, DisplayServer, DE, WM, Brightness]),
+                Category::new("Packages", vec![Packages]),
+                Category::new("Disks", vec![Disks]),
+                Category::new("Batteries", vec![Battery]),
             ],
         }
     }
