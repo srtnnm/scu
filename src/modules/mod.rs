@@ -100,7 +100,6 @@ pub enum Module {
     WM,
 }
 
-/*
 const MODULE_STRING_REPRESENTATION: [(Module, &str); 24] = [
     (Module::Arch, "arch"),
     (Module::Battery, "battery"),
@@ -146,4 +145,3 @@ impl Module {
         panic!("string representation for {self:?} not found in MODULE_STRING_REPRESENT")
     }
 }
-*/

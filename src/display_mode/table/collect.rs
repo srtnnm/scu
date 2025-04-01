@@ -1,22 +1,64 @@
-use crate::{config, data::table};
+use super::{config, gen_table::*};
 
-pub(super) fn collect_tables(config: &config::Config) -> Vec<table::Table> {
+use crate::{
+    data::table::{self, Table},
+    modules::*,
+};
+
+pub(super) fn collect_tables(config: config::TableConfig) -> Vec<table::Table> {
     let mut result: Vec<table::Table> = Vec::new();
 
-    for table in &config.order {
-        if let Some(table) = match *table {
-            config::Table::BATTERY => super::battery::to_table(),
-            config::Table::DISKS => super::disks::to_table(),
-            config::Table::GRAPHICS => super::graphics::to_table(),
-            config::Table::MEMORY => super::memory::to_table(),
-            config::Table::PACKAGES => super::packages::to_table(),
-            config::Table::PROCESSOR => super::processor::to_table(),
-            config::Table::SYSTEM => super::system::to_table(),
-            _ => None,
-        } {
-            result.push(table);
-        }
+    for config_table in config.tables {
+        let mut table = Table::new(&config_table.title);
+
+        gen_entries_for_modules(&mut table, &config_table.modules);
+
+        result.push(table);
     }
 
     result
 }
+
+macro_rules! gen_entries_for_module_func {
+    ($($module:tt,)*) => {
+        fn gen_entries_for_modules(table: &mut Table, modules: &[Module]) -> std::io::Result<()> {
+            for module in modules {
+                match module {
+                    $(
+                        &Module::$module => { $module.gen_entries(table); },
+                    )*
+                    _ => {}
+                }
+            }
+            Ok(())
+        }
+    };
+}
+
+// TODO: maybe add Arch,Header and Separator modules for Table ?
+gen_entries_for_module_func!(
+    // Arch,
+    Battery,
+    Brightness,
+    CPU,
+    DE,
+    Device,
+    Disks,
+    DisplayServer,
+    GPU,
+    // Header,
+    Hostname,
+    Init,
+    Kernel,
+    Locale,
+    Memory,
+    OS,
+    Packages,
+    RootFS,
+    // Separator,
+    Shell,
+    Terminal,
+    Uptime,
+    Username,
+    WM,
+);

@@ -1,6 +1,8 @@
 mod neomimic;
 mod table;
 
+use neomimic::config::NeomimicConfig;
+
 use crate::config::{self, neomimic};
 
 #[derive(Default)]
@@ -19,6 +21,6 @@ pub fn run(config: &config::Config) {
 
     match mode {
         Mode::Table => table::run(config),
-        Mode::NeoMimic => neomimic::display(),
+        Mode::NeoMimic => neomimic::display(NeomimicConfig::default()),
     }
 }
