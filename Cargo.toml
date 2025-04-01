@@ -13,7 +13,7 @@ lto = true
 
 [dependencies]
 bitflags = "2.6.0"
-json = "0.12.4"
+json.git = "https://gitlab.com/omnid/rust-crates/json-rust"
 libscu = { version = "3.0.0", git = "https://gitlab.com/omnid/libscu", features = [
     "full",
 ] }
