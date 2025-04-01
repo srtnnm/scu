@@ -166,7 +166,7 @@ use std::{fs, path::Path};
 use std::sync::atomic::{AtomicBool, Ordering};
 
 macro_rules! setup_loaders {
-    ($($var:ident in_config:$string_repr:tt default_val:$default:tt getter=> $fn_name:ident,)*) => {
+    ($($var:ident in_config:$string_repr:tt default_val:$default:tt getter:$fn_name:ident,)*) => {
         $(
             static $var: AtomicBool = AtomicBool::new($default);
             pub(crate) fn $fn_name() -> bool {
@@ -196,13 +196,13 @@ macro_rules! setup_loaders {
 }
 
 setup_loaders!(
-    RAW_MODELS     in_config:"raw_models"     default_val:false getter=> raw_models,
-    SIMPLIFY       in_config:"simplify"       default_val:false getter=> simplify,
-    NO_COLORS      in_config:"no_colors"      default_val:false getter=> no_colors,
-    NO_LOGO        in_config:"no_logo"        default_val:false getter=> no_logo,
-    MULTICPU       in_config:"multicpu"       default_val:false getter=> multicpu,
-    NEOMIMIC       in_config:"neomimic"       default_val:false getter=> neomimic,
-    FORCE_VERSIONS in_config:"force_versions" default_val:false getter=> force_versions,
+    RAW_MODELS     in_config:"raw_models"     default_val:false getter:raw_models,
+    SIMPLIFY       in_config:"simplify"       default_val:false getter:simplify,
+    NO_COLORS      in_config:"no_colors"      default_val:false getter:no_colors,
+    NO_LOGO        in_config:"no_logo"        default_val:false getter:no_logo,
+    MULTICPU       in_config:"multicpu"       default_val:false getter:multicpu,
+    NEOMIMIC       in_config:"neomimic"       default_val:false getter:neomimic,
+    FORCE_VERSIONS in_config:"force_versions" default_val:false getter:force_versions,
 );
 
 pub static NEOMIMIC_CONFIG: OnceLock<NeomimicConfig> = OnceLock::new();
