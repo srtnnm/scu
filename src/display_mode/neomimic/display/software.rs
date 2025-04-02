@@ -1,8 +1,8 @@
 use super::{super::row::DataRow, Display};
 
-use crate::modules::{get_option, Detection, DisplayServer, Hostname, Init, RootFS};
 use crate::modules::{
-    Arch, Kernel, Locale, Packages, Shell, Terminal, Uptime, Username, DE, OS, WM,
+    get_option, Arch, Detection, DisplayServer, Hostname, Init, Kernel, Locale, Packages, RootFS,
+    Shell, Terminal, Uptime, Username, DE, OS, WM,
 };
 
 impl Display for Arch {

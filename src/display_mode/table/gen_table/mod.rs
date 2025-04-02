@@ -1,5 +1,5 @@
-mod hardware;
-mod software;
+pub mod hardware;
+pub mod software;
 
 use crate::{data::table::Table, modules::Detection};
 

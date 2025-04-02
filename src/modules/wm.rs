@@ -1,4 +1,4 @@
-use crate::config::force_versions;
+use crate::config::enable_versions;
 
 use super::Detection;
 
@@ -11,6 +11,6 @@ impl Detection for WM {
     const NAME: &'static str = "wm";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        graphics::fetch_window_manager(force_versions())
+        graphics::fetch_window_manager(enable_versions())
     }
 }

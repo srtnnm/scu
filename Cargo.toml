@@ -4,7 +4,7 @@ description = "a command line system info fetch utility is aimed at informativen
 homepage = "https://gitlab.com/omnid/scu"
 authors = ["Artem Sokolovskiy <a641557@gmail.com>"]
 license = "GPLv3"
-version = "1.6.1"
+version = "2.0.0"
 edition = "2021"
 
 [profile.release]
@@ -12,9 +12,10 @@ strip = true
 lto = true
 
 [dependencies]
-bitflags = "2.6.0"
+json.git = "https://gitlab.com/omnid/rust-crates/json-rust"
 libscu = { version = "3.0.0", git = "https://gitlab.com/omnid/libscu", features = [
     "full",
 ] }
+logs.git = "https://gitlab.com/omnid/rust-crates/logs"
 regex-lite = { version = "0.1.5" }
 simpleargs = "0.1.0"

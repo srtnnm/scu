@@ -1,7 +1,7 @@
 use super::GenerateTableEntries;
 
 use crate::{
-    config::{disable_colors, multicpu},
+    config::{multicpu, no_colors},
     data::table::{Table, TableEntry},
     modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
     util::{colorize::colorize_by_num, percentage},
@@ -28,7 +28,7 @@ impl GenerateTableEntries for Brightness {
         let percentage = percentage(brightness.max as u64, brightness.current as u64) as u16;
         table.add(
             "Brightness",
-            &if !disable_colors() {
+            &if !no_colors() {
                 colorize_by_num(
                     format!("{}%", percentage).as_str(),
                     percentage as u16,
@@ -66,7 +66,7 @@ impl GenerateTableEntries for CPU {
             if let Some(temp) = cpu_info.temperature {
                 subtable_entries.push(TableEntry::new(
                     "Temperature",
-                    if !disable_colors() {
+                    if !no_colors() {
                         colorize_by_num(
                             format!("{:.1}°C", temp).as_str(),
                             percentage(90, temp as u64) as u16,
@@ -163,7 +163,7 @@ impl GenerateTableEntries for Memory {
                 "{}MiB / {}MiB [{}]",
                 ram_info.used.mb,
                 ram_info.total.mb,
-                if !disable_colors() {
+                if !no_colors() {
                     colorize_by_num(
                         format!("{:.1}%", ram_usage_percents).as_str(),
                         ram_usage_percents as u16,
@@ -184,7 +184,7 @@ impl GenerateTableEntries for Memory {
                     "{}MiB / {}MiB [{}]",
                     swap_info.used.mb,
                     swap_info.total.mb,
-                    if !disable_colors() {
+                    if !no_colors() {
                         colorize_by_num(
                             format!("{:.1}%", swap_usage_percents).as_str(),
                             swap_usage_percents as u16,

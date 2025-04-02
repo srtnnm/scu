@@ -1,5 +1,5 @@
 <div align="center">
-  
+
 # SCU
 Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
@@ -37,22 +37,21 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
 ### CLI flags
 
+* `--config`
+
+  Name or absolute path to the config
+
 * `--simplify`
 
   Outputs information in a much simpler form, forced by default when output is piped
+
 * `--ignore-pipe`
 
   Outputs information in regular form, even if it's piped (disables --simplify forcing)
+
 * `--force-versions`
 
-  Enables version fetching (was disabled by default in commit [a0c0bada](https://gitlab.com/omnitix/scu/-/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#9541a669da5368e41d92810535106685569e34d0_54_52) due to bad performance)
-* `-v`, `--version`
-
-  Prints scu's version
-
-* `-h`, `--help`
-
-  Prints help page
+  Enables version fetching (was disabled by default in commit [a0c0bada](https://gitlab.com/omnid/scu/-/commit/a0c0badaa2b506496558797c3a02957ece0f3ff9#9541a669da5368e41d92810535106685569e34d0_54_52) due to bad performance)
 
 * `--raw-models`
 
@@ -62,11 +61,29 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 
   Show multiple cpus instead of single cpu (currently unstable!)
 
+* `--neomimic`
+
+  Mimic the legendary [neofetch](http://github.com/dylanaraps/neofetch/)
+
+* `--no-colors`
+
+  Disable colors in output
+
+* `--no-logo`
+
+  Don't print logo in neomimic mode
+
+* `-v`, `--version`
+
+  Prints scu's version
+
+* `-h`, `--help`
+
+  Prints help page
+
 ### Configuration
 
-scu generates default config at `~/.config/omnid/scu` when you first start it.
-Config format is ordered scu features, separated by commas, the default is `system,processor,graphics,memory,packages,drives,battery`.
-Entries that doesn't exists will be ignored.
+See [Configuration documentation](./CONFIGURATION.md) for details.
 
 ## Compilation
 
@@ -74,7 +91,7 @@ Entries that doesn't exists will be ignored.
 2. Clone scu and compile it with cargo.
 
 ``` shell
-$ git clone https://gitlab.com/omnitix/scu
+$ git clone --depth=1 https://gitlab.com/omnid/scu
 $ cd scu
 $ cargo build --release
 ```

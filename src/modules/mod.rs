@@ -1,5 +1,3 @@
-#![allow(unused_imports)]
-
 macro_rules! export_modules {
     ( $( $x:ident ),* ) => {
         $(
@@ -34,24 +32,6 @@ export_modules!(
     wm
 );
 
-use crate::{
-    args::Args,
-    config::{Config, Table},
-};
-
-use libscu::{
-    hardware::{
-        battery as libscu_battery, cpu as libscu_cpu, disk as libscu_disk,
-        display as libscu_display, gpu as libscu_gpu, ram as libscu_ram,
-    },
-    software::{
-        graphics, init as libscu_init, os as libscu_os, packages as libscu_packages,
-        shell as libscu_shell, terminal as libscu_terminal,
-    },
-    types::Time,
-    util::data::DesktopEnvironment,
-};
-
 pub fn get_option<T>(variable_name: &str, variable: &Option<T>) -> std::io::Result<T>
 where
     T: Clone,
@@ -72,78 +52,63 @@ pub trait Detection {
     fn fetch(&self) -> std::io::Result<Self::Result>;
 }
 
-#[derive(Debug, PartialEq)]
-pub enum Module {
-    Arch,
-    Battery,
-    Brightness,
-    CPU,
-    DE,
-    Device,
-    Disks,
-    DisplayServer,
-    GPU,
-    Header,
-    Hostname,
-    Init,
-    Kernel,
-    Locale,
-    Memory,
-    OS,
-    Packages,
-    RootFS,
-    Separator,
-    Shell,
-    Terminal,
-    Uptime,
-    Username,
-    WM,
+macro_rules! generate_modules_and_string_representation {
+    ($enum_name:tt, $($module:tt => $string:expr,)*) => {
+        const NUMBER_OF_MODULES: usize = {
+            let mut count = 0;
+            $(
+                let _ = stringify!($module);
+                count += 1;
+            )*
+            count
+        };
+        #[derive(Debug, PartialEq)]
+        pub enum $enum_name {
+            $($module,)*
+        }
+        const MODULE_STRING_REPRESENTATION: [($enum_name, &str); NUMBER_OF_MODULES] = [
+            $(
+                ($enum_name::$module, $string),
+            )*
+        ];
+    };
 }
+generate_modules_and_string_representation!(
+    Module,
 
-/*
-const MODULE_STRING_REPRESENTATION: [(Module, &str); 24] = [
-    (Module::Arch, "arch"),
-    (Module::Battery, "battery"),
-    (Module::Brightness, "brightness"),
-    (Module::CPU, "cpu"),
-    (Module::DE, "de"),
-    (Module::Device, "device"),
-    (Module::Disks, "disks"),
-    (Module::DisplayServer, "display_server"),
-    (Module::GPU, "gpu"),
-    (Module::Header, "header"),
-    (Module::Hostname, "hostname"),
-    (Module::Init, "init"),
-    (Module::Kernel, "kernel"),
-    (Module::Locale, "locale"),
-    (Module::Memory, "memory"),
-    (Module::OS, "os"),
-    (Module::Packages, "packages"),
-    (Module::RootFS, "rootfs"),
-    (Module::Separator, "separator"),
-    (Module::Shell, "shell"),
-    (Module::Terminal, "terminal"),
-    (Module::Uptime, "uptime"),
-    (Module::Username, "username"),
-    (Module::WM, "wm"),
-];
+    Arch => "arch",
+    Battery => "battery",
+    Brightness => "brightness",
+    CPU => "cpu",
+    DE => "de",
+    Device => "device",
+    Disks => "disks",
+    DisplayServer => "display_server",
+    GPU => "gpu",
+    Header => "header",
+    Hostname => "hostname",
+    Init => "init",
+    Kernel => "kernel",
+    Locale => "locale",
+    Memory => "memory",
+    OS => "os",
+    Packages => "packages",
+    RootFS => "rootfs",
+    Separator => "separator",
+    Shell => "shell",
+    Terminal => "terminal",
+    Uptime => "uptime",
+    Username => "username",
+    WM => "wm",
+);
 
 impl Module {
     pub fn from_str(name: &str) -> Option<Self> {
         for (module, string_representation) in MODULE_STRING_REPRESENTATION {
-            if string_representation.starts_with(name) {
+            if string_representation == name {
                 return Some(module);
             }
         }
         None
     }
-    pub fn to_str(&self) -> &'static str {
-        for (module, string_representation) in MODULE_STRING_REPRESENTATION.iter() {
-            if module == self {
-                return string_representation;
-            }
-        }
-        panic!("string representation for {self:?} not found in MODULE_STRING_REPRESENT")
-    }
 }
-*/

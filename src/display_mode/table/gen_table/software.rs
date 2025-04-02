@@ -1,7 +1,7 @@
 use super::GenerateTableEntries;
 
 use crate::{
-    config::disable_colors,
+    config::no_colors,
     data::{distro_colors, table::TableEntry},
     modules::{
         DisplayServer, Hostname, Init, Kernel, Locale, Packages, RootFS, Shell, Terminal, Uptime,
@@ -61,7 +61,7 @@ impl GenerateTableEntries for OS {
         table.add(
             "OS",
             match distro_colors::get_color(&name) {
-                Some(clr) if !disable_colors() => colorize_background(&name, clr.r, clr.g, clr.b),
+                Some(clr) if !no_colors() => colorize_background(&name, clr.r, clr.g, clr.b),
                 _ => name,
             }
             .as_str(),

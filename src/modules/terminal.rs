@@ -1,4 +1,4 @@
-use crate::config::force_versions;
+use crate::config::enable_versions;
 
 use super::Detection;
 
@@ -11,6 +11,6 @@ impl Detection for Terminal {
     const NAME: &'static str = "terminal";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        terminal::fetch_info(force_versions())
+        terminal::fetch_info(enable_versions())
     }
 }
