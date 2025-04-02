@@ -9,7 +9,7 @@ mod modules;
 mod util;
 
 fn main() {
-    let args = args::arg_parse();
+    let args = args::Args::arg_parse();
 
     config::Config::parse(Path::new("./config/default.json")).unwrap();
 

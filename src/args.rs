@@ -32,6 +32,47 @@ pub(super) struct Args {
     // Outputs information in a much simpler form, forced by default when output is piped
     pub simplify: bool,
 }
+impl Args {
+    pub(super) fn arg_parse() -> Self {
+        let mut env_args = simpleargs::Args::from(std::env::args());
+        let mut args = Args::default();
+
+        loop {
+            match env_args.next() {
+                Arg::Positional(_) => {}
+                Arg::Named(arg) => {
+                    let _ = arg.parse(|name, value| {
+                        match name {
+                            "v" | "version" => version(),
+                            "h" | "help" => help(),
+                            "force-versions" => args.force_versions = true,
+                            "simplify" => args.simplify = true,
+                            "ignore-pipe" => args.ignore_pipe = true,
+                            "no-colors" => args.no_colors = true,
+                            "no-logo" => args.no_logo = true,
+                            "raw-models" => args.raw_models = true,
+                            "multicpu" => args.multicpu = true,
+                            "neomimic" => args.neomimic = true,
+                            "config" => match value.as_str() {
+                                Ok(config) => args.config = Some(config.to_string()),
+                                Err(error) => {
+                                    logs::warning!("--config is a parameter, but: {error:?}");
+                                }
+                            },
+                            _ => {}
+                        };
+                        Ok(())
+                    });
+                }
+                Arg::End => break,
+                Arg::Error(_) => {}
+            }
+        }
+
+        args.simplify = !args.ignore_pipe && (output_is_piped() || args.simplify);
+        args
+    }
+}
 
 fn version() {
     println!("{} v{}", about::BIN_NAME, about::VERSION);
@@ -75,44 +116,4 @@ fn help() {
     }
 
     std::process::exit(0);
-}
-
-pub(super) fn arg_parse() -> Args {
-    let mut env_args = simpleargs::Args::from(std::env::args());
-    let mut args = Args::default();
-
-    loop {
-        match env_args.next() {
-            Arg::Positional(_) => {}
-            Arg::Named(arg) => {
-                let _ = arg.parse(|name, value| {
-                    match name {
-                        "v" | "version" => version(),
-                        "h" | "help" => help(),
-                        "force-versions" => args.force_versions = true,
-                        "simplify" => args.simplify = true,
-                        "ignore-pipe" => args.ignore_pipe = true,
-                        "no-colors" => args.no_colors = true,
-                        "no-logo" => args.no_logo = true,
-                        "raw-models" => args.raw_models = true,
-                        "multicpu" => args.multicpu = true,
-                        "neomimic" => args.neomimic = true,
-                        "config" => match value.as_str() {
-                            Ok(config) => args.config = Some(config.to_string()),
-                            Err(error) => {
-                                logs::warning!("--config is a parameter, but: {error:?}");
-                            }
-                        },
-                        _ => {}
-                    };
-                    Ok(())
-                });
-            }
-            Arg::End => break,
-            Arg::Error(_) => {}
-        }
-    }
-
-    args.simplify = !args.ignore_pipe && (output_is_piped() || args.simplify);
-    args
 }
