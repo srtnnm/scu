@@ -3,7 +3,12 @@ mod misc;
 pub use misc::*;
 mod software;
 
-use super::{color_blocks, config::NeomimicConfig, modules::run_module};
+use super::{
+    color_blocks,
+    config::NeomimicConfig,
+    modules::run_module,
+    row::{plus_n_lines, NUMBER_OF_ROWS_PRINTED},
+};
 
 use crate::{
     config::{no_colors, no_logo, simplify},
@@ -53,6 +58,15 @@ pub fn display(config: &NeomimicConfig) {
     // Display color blocks
     if !no_colors() {
         color_blocks::print();
+        plus_n_lines(3);
+    }
+
+    if !no_logo() {
+        let diff = logo_height() as isize
+            - NUMBER_OF_ROWS_PRINTED.load(std::sync::atomic::Ordering::Relaxed) as isize;
+        if diff > 0 {
+            print!("{}", "\n".repeat(diff as usize));
+        }
     }
 }
 
