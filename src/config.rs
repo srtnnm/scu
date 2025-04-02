@@ -168,7 +168,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 macro_rules! setup_loaders {
     ($($var:ident in_config:$string_repr:tt default_val:$default:tt getter:$fn_name:ident,)*) => {
         $(
-            static $var: AtomicBool = AtomicBool::new($default);
+            pub(super) static $var: AtomicBool = AtomicBool::new($default);
             pub(crate) fn $fn_name() -> bool {
                 $var.load(Ordering::Relaxed)
             }

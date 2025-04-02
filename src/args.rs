@@ -70,7 +70,40 @@ impl Args {
         }
 
         args.simplify = !args.ignore_pipe && (output_is_piped() || args.simplify);
+        if args.simplify {
+            args.no_colors = true;
+            args.no_logo = true;
+        }
         args
+    }
+    pub(super) fn apply_to_config(&self) {
+        use crate::config;
+
+        if let Some(config_path) = &self.config {
+            Self::load_config(config_path);
+        }
+
+        config::FORCE_VERSIONS.store(self.force_versions, std::sync::atomic::Ordering::Relaxed);
+        config::MULTICPU.store(self.multicpu, std::sync::atomic::Ordering::Relaxed);
+        config::NEOMIMIC.store(self.neomimic, std::sync::atomic::Ordering::Relaxed);
+        config::NO_COLORS.store(self.no_colors, std::sync::atomic::Ordering::Relaxed);
+        config::NO_LOGO.store(self.no_logo, std::sync::atomic::Ordering::Relaxed);
+        config::RAW_MODELS.store(self.raw_models, std::sync::atomic::Ordering::Relaxed);
+        config::SIMPLIFY.store(self.simplify, std::sync::atomic::Ordering::Relaxed);
+    }
+    fn load_config(config: &str) {
+        use crate::config::Config;
+
+        let found_config_path = match Config::find_config(Some(config)) {
+            Some(path) => path,
+            None => {
+                logs::warning!("config `{config}` not found");
+                return;
+            }
+        };
+        if let Err(error) = Config::parse(&found_config_path) {
+            logs::warning!("failed to load specified config: {error}");
+        }
     }
 }
 

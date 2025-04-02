@@ -1,5 +1,3 @@
-use std::path::Path;
-
 mod about;
 mod args;
 mod config;
@@ -10,10 +8,7 @@ mod util;
 
 fn main() {
     let args = args::Args::arg_parse();
-
-    config::Config::parse(Path::new("./config/default.json")).unwrap();
-
-    // let config = config::Config::load();
+    args.apply_to_config();
 
     display_mode::run();
 }
