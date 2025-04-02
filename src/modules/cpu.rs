@@ -12,12 +12,12 @@ impl Detection for CPU {
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
         if multicpu() {
+            cpu::fetch_multicpus(raw_models())
+        } else {
             Ok(vec![cpu::Unit {
                 physical_id: 0,
                 cpuinfo: cpu::fetch_info(raw_models())?,
             }])
-        } else {
-            cpu::fetch_multicpus(raw_models())
         }
     }
 }
