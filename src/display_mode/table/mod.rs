@@ -12,6 +12,6 @@ mod packages;
 mod processor;
 mod system;
 
-pub(crate) fn run(config: config::TableConfig) {
+pub(crate) fn run(config: &config::TableConfig) {
     print::print(config);
 }

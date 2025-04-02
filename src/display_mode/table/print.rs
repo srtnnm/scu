@@ -1,7 +1,7 @@
 use super::{collect::collect_tables, config::TableConfig};
 
 use crate::{
-    config::{self, simplify},
+    config::simplify,
     data::table::{self, TableEntry},
     util::len,
 };
@@ -131,8 +131,8 @@ fn print_simplified(tables: &Vec<table::Table>) {
     }
 }
 
-pub(super) fn print(config: TableConfig) {
-    let tables = collect_tables(TableConfig::default());
+pub(super) fn print(config: &TableConfig) {
+    let tables = collect_tables(config);
     if simplify() {
         print_simplified(&tables);
     } else {

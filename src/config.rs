@@ -206,6 +206,7 @@ setup_loaders!(
 );
 
 pub static NEOMIMIC_CONFIG: OnceLock<NeomimicConfig> = OnceLock::new();
+pub static TABLE_CONFIG: OnceLock<TableConfig> = OnceLock::new();
 
 pub(crate) enum ConfigData {
     RawModels,
@@ -286,6 +287,9 @@ impl Config {
         if let json::JsonValue::Object(global_object) = parsed_json["global"].clone() {
             Self::parse_global(&global_object);
         }
+        TABLE_CONFIG
+            .set(Self::parse_table_config(&parsed_json["table"]))
+            .unwrap();
         let _ = NEOMIMIC_CONFIG.set(Self::parse_neomimic_config(&parsed_json["neomimic"]));
 
         Ok(())
@@ -307,10 +311,16 @@ impl Config {
     fn parse_neomimic_config(value: &json::JsonValue) -> NeomimicConfig {
         NeomimicConfig::from_json(value).unwrap_or_default()
     }
+    fn parse_table_config(value: &json::JsonValue) -> TableConfig {
+        TableConfig::from_json(value).unwrap_or_default()
+    }
 }
 
 use crate::{
-    display_mode::neomimic::{config::NeomimicConfig, logo::Logo},
+    display_mode::{
+        neomimic::{config::NeomimicConfig, logo::Logo},
+        table::config::{TableCategory, TableConfig},
+    },
     modules::Module,
 };
 impl NeomimicConfig {
@@ -352,6 +362,60 @@ impl NeomimicConfig {
                 logs::warning!("neomimic `logo` unknown name or path: `{logo}`");
                 Logo::default()
             }
+        }
+    }
+}
+impl TableConfig {
+    fn from_json(json_value: &json::JsonValue) -> Option<Self> {
+        let table_config = match json_value.clone() {
+            json::JsonValue::Object(table_config) => table_config,
+            json::JsonValue::Null => {
+                return None;
+            }
+            _ => {
+                logs::warning!("`table` property has incorrect value. must be an Object");
+                return None;
+            }
+        };
+
+        let Some(categories) = table_config.get("categories") else {
+            logs::warning!("`table` does not contains key `categories`");
+            return None;
+        };
+        let json::JsonValue::Object(categories) = categories else {
+            logs::warning!("`table`:`categories` has incorrect value. must be an Object");
+            return None;
+        };
+
+        let mut table_config_categories: Vec<TableCategory> = Vec::new();
+
+        for (key, value) in categories.iter() {
+            if key.is_empty() {
+                logs::warning!("category title cannot be empty");
+                continue;
+            } else if !value.is_array() {
+                logs::warning!("category value must be an array of strings");
+                continue;
+            }
+
+            table_config_categories.push(TableCategory::from_json(key, value));
+        }
+
+        Some(Self {
+            categories: table_config_categories,
+        })
+    }
+}
+impl TableCategory {
+    fn from_json(title: &str, value: &json::JsonValue) -> Self {
+        let modules = match value {
+            json::JsonValue::Array(_) => Module::from_json_array(value),
+            _ => Vec::default(),
+        };
+
+        Self {
+            title: title.to_string(),
+            modules,
         }
     }
 }
