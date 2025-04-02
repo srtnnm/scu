@@ -4,7 +4,7 @@ description = "a command line system info fetch utility is aimed at informativen
 homepage = "https://gitlab.com/omnid/scu"
 authors = ["Artem Sokolovskiy <a641557@gmail.com>"]
 license = "GPLv3"
-version = "1.6.1"
+version = "2.0.0"
 edition = "2021"
 
 [profile.release]
