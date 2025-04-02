@@ -10,11 +10,6 @@ mod util;
 
 fn main() {
     let args = args::arg_parse();
-    config::set(config::ConfigData::RawModels, args.raw_models);
-    config::set(config::ConfigData::Simplify, args.simplify);
-    config::set(config::ConfigData::Multicpu, args.multicpu);
-    config::set(config::ConfigData::Neomimic, args.neomimic);
-    config::set(config::ConfigData::ForceVersions, args.force_versions);
 
     config::Config::parse(Path::new("./config/default.json")).unwrap();
 

@@ -5,23 +5,32 @@ use simpleargs::Arg;
 
 #[derive(Default)]
 pub(super) struct Args {
-    // Outputs information in a much simpler form, forced by default when output is piped
-    pub simplify: bool,
-
-    // Outputs information in regular form, even if it's piped (disables --simplify)
-    pub ignore_pipe: bool,
+    // Name or path to the config
+    pub config: Option<String>,
 
     // Enables version fetching for WMs (it was disabled by default due to bad performance on some WMs)
     pub force_versions: bool,
 
-    // Show raw models without processing
-    pub raw_models: bool,
+    // Outputs information in regular form, even if it's piped (disables --simplify)
+    pub ignore_pipe: bool,
 
     // Show multiple cpus instead of single cpu (UNSTABLE!)
     pub multicpu: bool,
 
     // Mimic the legendary neofetch
     pub neomimic: bool,
+
+    // Disable colors in output
+    pub no_colors: bool,
+
+    // Disable logo in neomimic
+    pub no_logo: bool,
+
+    // Show raw models without processing
+    pub raw_models: bool,
+
+    // Outputs information in a much simpler form, forced by default when output is piped
+    pub simplify: bool,
 }
 
 fn version() {
@@ -31,13 +40,16 @@ fn version() {
     std::process::exit(0);
 }
 
-const ARGS_WITH_DESCRIPTION: [(&str,&str); 8] = [
-    ("--simplify","Outputs information in a much simpler form, forced by default when output is piped."),
-    ("--ignore-pipe", "Outputs information in regular form, even if it's piped. (disables --simplify)"),
+const ARGS_WITH_DESCRIPTION: [(&str,&str); 11] = [
+    ("--config", "Name or path to the config"),
     ("--force-versions", "Enables version fetching for WMs. (it was disabled by default due to bad performance on some WMs)"),
-    ("--raw-models", "Show raw models without processing."),
+    ("--ignore-pipe", "Outputs information in regular form, even if it's piped. (disables --simplify)"),
     ("--multicpu", "Show multiple cpus instead of single cpu. (UNSTABLE!)"),
     ("--neomimic", "Mimic the legendary neofetch"),
+    ("--no-colors","Disable colors in output"),
+    ("--no-logo","Disable logo in neomimic"),
+    ("--raw-models", "Show raw models without processing."),
+    ("--simplify","Outputs information in a much simpler form, forced by default when output is piped."),
     ("--version", "Print version and exit."),
     ("--help", "Print this page and exit."),
 ];
@@ -73,7 +85,7 @@ pub(super) fn arg_parse() -> Args {
         match env_args.next() {
             Arg::Positional(_) => {}
             Arg::Named(arg) => {
-                let _ = arg.parse(|name, _| {
+                let _ = arg.parse(|name, value| {
                     match name {
                         "v" | "version" => version(),
                         "h" | "help" => help(),
@@ -83,6 +95,12 @@ pub(super) fn arg_parse() -> Args {
                         "raw-models" => args.raw_models = true,
                         "multicpu" => args.multicpu = true,
                         "neomimic" => args.neomimic = true,
+                        "config" => match value.as_str() {
+                            Ok(config) => args.config = Some(config.to_string()),
+                            Err(error) => {
+                                logs::warning!("--config is a parameter, but: {error:?}");
+                            }
+                        },
                         _ => {}
                     };
                     Ok(())
