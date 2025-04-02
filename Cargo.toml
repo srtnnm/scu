@@ -13,9 +13,7 @@ lto = true
 
 [dependencies]
 json.git = "https://gitlab.com/omnid/rust-crates/json-rust"
-libscu = { version = "3.0.0", git = "https://gitlab.com/omnid/libscu", features = [
-    "full",
-] }
+libscu = { git = "https://gitlab.com/omnid/libscu", features = ["full"] }
 logs.git = "https://gitlab.com/omnid/rust-crates/logs"
 regex-lite = { version = "0.1.5" }
 simpleargs = "0.1.0"
