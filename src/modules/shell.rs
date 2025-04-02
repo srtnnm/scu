@@ -1,4 +1,4 @@
-use crate::config::force_versions;
+use crate::config::enable_versions;
 
 use super::Detection;
 
@@ -11,6 +11,6 @@ impl Detection for Shell {
     const NAME: &'static str = "shell";
 
     fn fetch(&self) -> std::io::Result<Self::Result> {
-        shell::fetch_info(force_versions())
+        shell::fetch_info(enable_versions())
     }
 }

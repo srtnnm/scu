@@ -196,13 +196,13 @@ macro_rules! setup_loaders {
 }
 
 setup_loaders!(
-    RAW_MODELS     in_config:"raw_models"     default_val:false getter:raw_models,
-    SIMPLIFY       in_config:"simplify"       default_val:false getter:simplify,
-    NO_COLORS      in_config:"no_colors"      default_val:false getter:no_colors,
-    NO_LOGO        in_config:"no_logo"        default_val:false getter:no_logo,
-    MULTICPU       in_config:"multicpu"       default_val:false getter:multicpu,
-    NEOMIMIC       in_config:"neomimic"       default_val:false getter:neomimic,
-    FORCE_VERSIONS in_config:"force_versions" default_val:false getter:force_versions,
+    RAW_MODELS      in_config:"raw_models"      default_val:false getter:raw_models,
+    SIMPLIFY        in_config:"simplify"        default_val:false getter:simplify,
+    NO_COLORS       in_config:"no_colors"       default_val:false getter:no_colors,
+    NO_LOGO         in_config:"no_logo"         default_val:false getter:no_logo,
+    MULTICPU        in_config:"multicpu"        default_val:false getter:multicpu,
+    NEOMIMIC        in_config:"neomimic"        default_val:false getter:neomimic,
+    ENABLE_VERSIONS in_config:"enable_versions" default_val:false getter:enable_versions,
 );
 
 pub static NEOMIMIC_CONFIG: OnceLock<NeomimicConfig> = OnceLock::new();
@@ -213,7 +213,7 @@ pub(crate) enum ConfigData {
     Simplify,
     Multicpu,
     Neomimic,
-    ForceVersions,
+    EnableVersions,
 }
 
 pub(crate) fn set(data: ConfigData, value: bool) {
@@ -223,7 +223,7 @@ pub(crate) fn set(data: ConfigData, value: bool) {
         Simplify => SIMPLIFY.store(value, Ordering::Relaxed),
         Multicpu => MULTICPU.store(value, Ordering::Relaxed),
         Neomimic => NEOMIMIC.store(value, Ordering::Relaxed),
-        ForceVersions => FORCE_VERSIONS.store(value, Ordering::Relaxed),
+        EnableVersions => ENABLE_VERSIONS.store(value, Ordering::Relaxed),
     }
 }
 

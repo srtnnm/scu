@@ -9,7 +9,7 @@ pub(super) struct Args {
     pub config: Option<String>,
 
     // Enables version fetching for WMs (it was disabled by default due to bad performance on some WMs)
-    pub force_versions: bool,
+    pub enable_versions: bool,
 
     // Outputs information in regular form, even if it's piped (disables --simplify)
     pub ignore_pipe: bool,
@@ -45,7 +45,7 @@ impl Args {
                         match name {
                             "v" | "version" => version(),
                             "h" | "help" => help(),
-                            "force-versions" => args.force_versions = true,
+                            "enable-versions" => args.enable_versions = true,
                             "simplify" => args.simplify = true,
                             "ignore-pipe" => args.ignore_pipe = true,
                             "no-colors" => args.no_colors = true,
@@ -84,7 +84,7 @@ impl Args {
         }
 
         for (self_bool, atomic_bool) in [
-            (self.force_versions, &config::FORCE_VERSIONS),
+            (self.enable_versions, &config::ENABLE_VERSIONS),
             (self.multicpu, &config::MULTICPU),
             (self.neomimic, &config::NEOMIMIC),
             (self.no_colors, &config::NO_COLORS),
@@ -122,7 +122,7 @@ fn version() {
 
 const ARGS_WITH_DESCRIPTION: [(&str,&str); 11] = [
     ("--config", "Name or path to the config"),
-    ("--force-versions", "Enables version fetching for WMs. (it was disabled by default due to bad performance on some WMs)"),
+    ("--enable-versions", "Enables version fetching for WMs. (it was disabled by default due to bad performance on some WMs)"),
     ("--ignore-pipe", "Outputs information in regular form, even if it's piped. (disables --simplify)"),
     ("--multicpu", "Show multiple cpus instead of single cpu. (UNSTABLE!)"),
     ("--neomimic", "Mimic the legendary neofetch"),

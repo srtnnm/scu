@@ -7,5 +7,3 @@ neomimic:
 arg parsing:
 - move to config.rs
 - rewrite it to be less code
-
-- rename force-versions to enable-versions

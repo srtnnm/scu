@@ -6,7 +6,7 @@
     "no_logo": false,
     "multicpu": false,
     "mode": "table",
-    "force_versions": false
+    "enable_versions": true
   },
   "table": {
     "categories": {
