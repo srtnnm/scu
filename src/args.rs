@@ -83,13 +83,19 @@ impl Args {
             Self::load_config(config_path);
         }
 
-        config::FORCE_VERSIONS.store(self.force_versions, std::sync::atomic::Ordering::Relaxed);
-        config::MULTICPU.store(self.multicpu, std::sync::atomic::Ordering::Relaxed);
-        config::NEOMIMIC.store(self.neomimic, std::sync::atomic::Ordering::Relaxed);
-        config::NO_COLORS.store(self.no_colors, std::sync::atomic::Ordering::Relaxed);
-        config::NO_LOGO.store(self.no_logo, std::sync::atomic::Ordering::Relaxed);
-        config::RAW_MODELS.store(self.raw_models, std::sync::atomic::Ordering::Relaxed);
-        config::SIMPLIFY.store(self.simplify, std::sync::atomic::Ordering::Relaxed);
+        for (self_bool, atomic_bool) in [
+            (self.force_versions, &config::FORCE_VERSIONS),
+            (self.multicpu, &config::MULTICPU),
+            (self.neomimic, &config::NEOMIMIC),
+            (self.no_colors, &config::NO_COLORS),
+            (self.no_logo, &config::NO_LOGO),
+            (self.raw_models, &config::RAW_MODELS),
+            (self.simplify, &config::SIMPLIFY),
+        ] {
+            if self_bool {
+                atomic_bool.store(self_bool, std::sync::atomic::Ordering::Relaxed);
+            }
+        }
     }
     fn load_config(config: &str) {
         use crate::config::Config;
