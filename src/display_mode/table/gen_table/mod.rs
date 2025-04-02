@@ -10,13 +10,3 @@ pub trait GenerateTableEntries: Detection {
     }
     fn display(data: Self::Result, table: &mut Table);
 }
-
-// macro_rules! generate_table_entries_run {
-//     ($($struct:tt)*) => {
-//         $(
-//             impl GenerateTableEntries for $struct {
-
-//             }
-//         )*
-//     }
-// }

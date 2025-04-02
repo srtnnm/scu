@@ -111,12 +111,4 @@ impl Module {
         }
         None
     }
-    pub fn to_str(&self) -> &'static str {
-        for (module, string_representation) in MODULE_STRING_REPRESENTATION.iter() {
-            if module == self {
-                return string_representation;
-            }
-        }
-        panic!("string representation for {self:?} not found in MODULE_STRING_REPRESENT")
-    }
 }

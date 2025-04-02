@@ -8,7 +8,6 @@ use super::{color_blocks, config::NeomimicConfig, modules::run_module};
 use crate::{
     config::{no_colors, no_logo, simplify},
     display_mode::neomimic::logo::{logo_height, logo_width},
-    modules::Module,
 };
 
 use std::sync::atomic::AtomicUsize;
