@@ -5,7 +5,7 @@
     "no_colors": false,
     "no_logo": false,
     "multicpu": false,
-    "mode": "table",
+    "neomimic": false,
     "enable_versions": true
   },
   "table": {
