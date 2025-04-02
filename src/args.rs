@@ -92,6 +92,8 @@ pub(super) fn arg_parse() -> Args {
                         "force-versions" => args.force_versions = true,
                         "simplify" => args.simplify = true,
                         "ignore-pipe" => args.ignore_pipe = true,
+                        "no-colors" => args.no_colors = true,
+                        "no-logo" => args.no_logo = true,
                         "raw-models" => args.raw_models = true,
                         "multicpu" => args.multicpu = true,
                         "neomimic" => args.neomimic = true,
