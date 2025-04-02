@@ -49,6 +49,9 @@ fn print_formatted_info(tables: &Vec<table::Table>) {
         .saturating_add(2); // horizontal padding
 
     for (i, table) in tables.iter().enumerate() {
+        if table.is_empty() {
+            continue;
+        }
         let (left_corner, right_corner) = if i == 0 {
             (symbols::TOP_LEFT, symbols::TOP_RIGHT)
         } else {
