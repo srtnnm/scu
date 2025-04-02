@@ -5,6 +5,8 @@ use std::{
 
 use regex_lite::Regex;
 
+use crate::config::{no_colors, no_logo};
+
 const TUX: &str = "        $8#####
        $8#######
        $8##$7^$8#$7^$8##
@@ -55,6 +57,10 @@ impl Logo {
         Ok(Self(readed))
     }
     pub fn print(&self) {
+        if no_logo() {
+            return;
+        }
+
         let mut logo = self.0.clone();
 
         let color_re = Regex::new(r"\$\d").unwrap();
@@ -64,7 +70,11 @@ impl Logo {
                 .strip_prefix("$")
                 .and_then(|color| color.parse::<u64>().ok())
             {
-                logo = logo.replace(color.as_str(), &format!("\x1b[38;5;{color_int}m"));
+                if no_colors() {
+                    logo = logo.replace(color.as_str(), "");
+                } else {
+                    logo = logo.replace(color.as_str(), &format!("\x1b[38;5;{color_int}m"));
+                }
             }
         }
 

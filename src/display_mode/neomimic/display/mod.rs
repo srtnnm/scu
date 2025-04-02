@@ -6,7 +6,7 @@ mod software;
 use super::{color_blocks, config::NeomimicConfig, modules::run_module};
 
 use crate::{
-    config::simplify,
+    config::{no_colors, no_logo, simplify},
     display_mode::neomimic::logo::{logo_height, logo_width},
     modules::Module,
 };
@@ -30,16 +30,18 @@ pub fn display(config: &NeomimicConfig) {
     }
 
     let logo_width = logo_width();
-    CURSOR_MOVER
-        .set(if !simplify() {
-            Box::leak(
-                format!("\x1b[{}C", if logo_width == 0 { 0 } else { logo_width + 4 })
-                    .into_boxed_str(),
-            )
-        } else {
-            "".into()
-        })
-        .expect("attempted to set already initialized cursor mover");
+    if !no_logo() {
+        CURSOR_MOVER
+            .set(if !simplify() {
+                Box::leak(
+                    format!("\x1b[{}C", if logo_width == 0 { 0 } else { logo_width + 4 })
+                        .into_boxed_str(),
+                )
+            } else {
+                "".into()
+            })
+            .expect("attempted to set already initialized cursor mover");
+    }
 
     for module in config.modules.iter() {
         if let Some(len) = run_module(&module) {
@@ -50,7 +52,7 @@ pub fn display(config: &NeomimicConfig) {
     }
 
     // Display color blocks
-    if !simplify() {
+    if !no_colors() {
         color_blocks::print();
     }
 }
