@@ -53,20 +53,12 @@ pub trait Detection {
 }
 
 macro_rules! generate_modules_and_string_representation {
-    ($enum_name:tt, $($module:tt => $string:expr,)*) => {
-        const NUMBER_OF_MODULES: usize = {
-            let mut count = 0;
-            $(
-                let _ = stringify!($module);
-                count += 1;
-            )*
-            count
-        };
-        #[derive(Debug, PartialEq)]
+    (enum_name:$enum_name:tt, $($module:tt = $string:expr,)*) => {
+        #[derive(Clone, Copy, Debug, PartialEq)]
         pub enum $enum_name {
             $($module,)*
         }
-        const MODULE_STRING_REPRESENTATION: [($enum_name, &str); NUMBER_OF_MODULES] = [
+        const MODULE_STRING_REPRESENTATION: &[($enum_name, &str)] = &[
             $(
                 ($enum_name::$module, $string),
             )*
@@ -74,39 +66,38 @@ macro_rules! generate_modules_and_string_representation {
     };
 }
 generate_modules_and_string_representation!(
-    Module,
-
-    Arch => "arch",
-    Battery => "battery",
-    Brightness => "brightness",
-    CPU => "cpu",
-    DE => "de",
-    Device => "device",
-    Disks => "disks",
-    DisplayServer => "display_server",
-    GPU => "gpu",
-    Header => "header",
-    Hostname => "hostname",
-    Init => "init",
-    Kernel => "kernel",
-    Locale => "locale",
-    Memory => "memory",
-    OS => "os",
-    Packages => "packages",
-    RootFS => "rootfs",
-    Separator => "separator",
-    Shell => "shell",
-    Terminal => "terminal",
-    Uptime => "uptime",
-    Username => "username",
-    WM => "wm",
+    enum_name:Module,
+    Arch = "arch",
+    Battery = "battery",
+    Brightness = "brightness",
+    CPU = "cpu",
+    DE = "de",
+    Device = "device",
+    Disks = "disks",
+    DisplayServer = "display_server",
+    GPU = "gpu",
+    Header = "header",
+    Hostname = "hostname",
+    Init = "init",
+    Kernel = "kernel",
+    Locale = "locale",
+    Memory = "memory",
+    OS = "os",
+    Packages = "packages",
+    RootFS = "rootfs",
+    Separator = "separator",
+    Shell = "shell",
+    Terminal = "terminal",
+    Uptime = "uptime",
+    Username = "username",
+    WM = "wm",
 );
 
 impl Module {
     pub fn from_str(name: &str) -> Option<Self> {
         for (module, string_representation) in MODULE_STRING_REPRESENTATION {
-            if string_representation == name {
-                return Some(module);
+            if *string_representation == name {
+                return Some(*module);
             }
         }
         None
