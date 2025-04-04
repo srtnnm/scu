@@ -5,20 +5,21 @@ use std::{
     sync::atomic::{AtomicUsize, Ordering},
 };
 
+use libscu::util::string::extract_u64;
 use regex_lite::Regex;
 
-const TUX: &str = "        $8#####
-       $8#######
-       $8##$7^$8#$7^$8##
-       $8#$3#####$8#
-     $8##$7##$3###$7##$8##
-    $8#$7##########$8##
-   $8#$7############$8##
-   $8#$7############$8###
-  $3##$8#$7###########$8##$3#
-$3######$8#$7#######$8#$3######
-$3#######$8#$7#####$8#$3#######
-  $3#####$8#######$3#####";
+const TUX: &str = "        ${8}#####
+       #######
+       ##${7}^${8}#${7}^${8}##
+       #${3}#####${8}#
+     ##${7}##${3}###${7}##${8}##
+    #${7}##########${8}##
+   #${7}############${8}##
+   #${7}############${8}###
+  ${3}##${8}#${7}###########${8}##${3}#
+######${8}#${7}#######${8}#${3}######
+#######${8}#${7}#####${8}#${3}#######
+  ${3}#####${8}#######${3}#####";
 
 static LOGO_WIDTH: AtomicUsize = AtomicUsize::new(0);
 pub fn logo_width() -> usize {
@@ -43,34 +44,29 @@ impl Logo {
 
         let mut logo = self.0.clone();
 
-        let color_re = Regex::new(r"\$\d").unwrap();
-        for color in color_re.find_iter(&logo.clone()) {
-            if let Some(color_int) = color
-                .as_str()
-                .strip_prefix("$")
-                .and_then(|color| color.parse::<u64>().ok())
-            {
-                if no_colors() {
-                    logo = logo.replace(color.as_str(), "");
-                } else {
-                    logo = logo.replace(color.as_str(), &format!("\x1b[38;5;{color_int}m"));
-                }
-            }
+        let should_use_colors = !no_colors();
+        let color_re = Regex::new(r"\$\{(\d+)\}").unwrap();
+        if should_use_colors {
+            logo = color_re
+                .replace_all(&logo, |caps: &regex_lite::Captures| {
+                    format!("\x1b[38;5;{color_int}m", color_int = extract_u64(&caps[1]))
+                })
+                .to_string();
+        } else {
+            logo = color_re.replace_all(&logo, "").to_string();
         }
 
-        let color_re = Regex::new(r"\x1b\[38;5;\dm").unwrap();
+        let color_re = Regex::new(r"\x1b\[38;5;\d+m").unwrap();
         LOGO_WIDTH.store(
             logo.lines()
-                .map(|line| color_re.replace_all(line, ""))
-                .map(|line| line.chars().count())
+                .map(|line| color_re.replace_all(line, "").chars().count())
                 .max()
                 .unwrap_or(0),
             Ordering::Relaxed,
         );
         LOGO_HEIGHT.store(logo.lines().count(), Ordering::Relaxed);
 
-        print!("{logo}");
-        print!("\x1b[0m");
+        print!("{logo}\x1b[0m");
     }
 }
 impl Default for Logo {

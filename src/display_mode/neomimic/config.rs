@@ -14,8 +14,8 @@ impl Default for NeomimicConfig {
         Self {
             logo: Logo::default(),
             modules: vec![
-                Header, Separator, OS, Device, Kernel, Uptime, Packages, Shell, WM, Terminal, CPU,
-                GPU, Memory,
+                Header, Separator, OS, Device, Kernel, Uptime, Packages, Shell, DE, WM, Terminal,
+                CPU, GPU, Memory,
             ],
         }
     }

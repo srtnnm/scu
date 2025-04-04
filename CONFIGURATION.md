@@ -108,6 +108,7 @@ The `"neomimic"` section configures the neomimic display mode, which mimics util
 - **`logo`**:
   - `"default"`: Displays the default logo (a penguin named Tux, official mascot of the Linux kernel).
   - A full file path (e.g., `"/path/to/custom_logo.txt"`): SCU reads and displays a custom logo from this file.
+  - See [Custom Logo](./CUSTOM_LOGO.md) to learn how to create your own logo.
 - **`modules`**: An array of module names specifying which system information to show. Unlike the "table" mode, modules here aren’t grouped into categories.
 
 Example:
