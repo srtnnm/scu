@@ -32,7 +32,7 @@ pub fn logo_height() -> usize {
 pub struct Logo(String);
 impl Logo {
     pub fn from_path(path: impl AsRef<Path>) -> std::io::Result<Self> {
-        let readed = std::fs::read_to_string(path)?;
+        let readed = std::fs::read_to_string(path)?.trim_end().to_string();
 
         Ok(Self(readed))
     }
