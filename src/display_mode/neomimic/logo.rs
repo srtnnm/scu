@@ -30,6 +30,7 @@ pub fn logo_height() -> usize {
     LOGO_HEIGHT.load(Ordering::Relaxed)
 }
 
+#[derive(Clone)]
 pub struct Logo(String);
 impl Logo {
     pub fn from_path(path: impl AsRef<Path>) -> std::io::Result<Self> {

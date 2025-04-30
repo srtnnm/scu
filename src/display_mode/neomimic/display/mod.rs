@@ -13,9 +13,14 @@ use super::{
 use crate::{
     config::{no_colors, no_logo, simplify},
     display_mode::neomimic::logo::{logo_height, logo_width},
+    modules::Module,
 };
 
-use std::sync::atomic::AtomicUsize;
+use std::{
+    collections::VecDeque,
+    sync::{atomic::AtomicUsize, mpsc, Arc, Mutex},
+    thread,
+};
 
 pub(super) static LAST_ROW_LENGTH: AtomicUsize = AtomicUsize::new(0);
 
@@ -25,7 +30,7 @@ pub fn cursor_mover() {
     print!("{}", CURSOR_MOVER.get_or_init(|| ""));
 }
 
-pub fn display(config: &NeomimicConfig) {
+pub fn display(config: NeomimicConfig) {
     if !simplify() {
         // Display logo
         config.logo.print();
@@ -47,13 +52,7 @@ pub fn display(config: &NeomimicConfig) {
             .expect("attempted to set already initialized cursor mover");
     }
 
-    for module in config.modules.iter() {
-        if let Some(len) = run_module(&module) {
-            if len > 0 {
-                LAST_ROW_LENGTH.store(len, std::sync::atomic::Ordering::Relaxed);
-            }
-        }
-    }
+    run(config);
 
     // Display color blocks
     if !no_colors() {
@@ -70,9 +69,87 @@ pub fn display(config: &NeomimicConfig) {
     }
 }
 
+extern "C" {
+    pub fn get_nprocs_conf() -> std::ffi::c_int;
+}
+fn run(config: NeomimicConfig) {
+    let (s, r) = mpsc::channel::<(usize, String)>();
+    let s = Arc::new(s);
+
+    let num_of_modules = config.modules.len();
+    let q = Arc::new(Mutex::new(VecDeque::from(
+        config
+            .modules
+            .clone()
+            .into_iter()
+            .enumerate()
+            .collect::<Vec<(usize, Module)>>(),
+    )));
+    let num_of_threads = unsafe { get_nprocs_conf() } as usize;
+
+    let printer_thread = thread::spawn(move || {
+        let mut results = Vec::with_capacity(num_of_modules);
+        for _ in 0..num_of_modules {
+            results.push(Vec::new());
+        }
+
+        while let Ok((i, result)) = r.recv() {
+            results[i].push(result);
+        }
+
+        for (i, module_results) in results.iter().enumerate() {
+            if config.modules[i] == Module::Separator {
+                cursor_mover();
+                println!(
+                    "{}",
+                    "-".repeat(LAST_ROW_LENGTH.load(std::sync::atomic::Ordering::Relaxed))
+                )
+            } else {
+                for line in module_results {
+                    LAST_ROW_LENGTH.store(line.len(), std::sync::atomic::Ordering::Relaxed);
+                    cursor_mover();
+                    println!("{line}");
+                }
+            }
+        }
+    });
+
+    thread::scope(|scope| {
+        for _ in 0..num_of_threads - 1 {
+            let q = q.clone();
+            let s = s.clone();
+            scope.spawn(move || {
+                while let Some((i, module)) = q.lock().ok().and_then(|mut q| q.pop_front()) {
+                    let sender = RowSenderT::new(i, s.clone());
+                    run_module(&module, sender);
+                }
+            });
+        }
+    });
+
+    drop(s);
+
+    printer_thread.join().unwrap();
+}
+
 pub trait Display: crate::modules::Detection {
-    fn run(&self) -> std::io::Result<usize> {
-        Self::display(self.fetch()?)
+    fn run(&self, sender: RowSenderT) -> std::io::Result<()> {
+        Self::display(self.fetch()?, &sender)
     }
-    fn display(data: Self::Result) -> std::io::Result<usize>;
+    fn display(data: Self::Result, sender: &RowSenderT) -> std::io::Result<()>;
+}
+
+pub type RowSenderT = RowSender<usize, String>;
+#[derive(Clone)]
+pub struct RowSender<Index, T2> {
+    index: Index,
+    sender: Arc<mpsc::Sender<(Index, T2)>>,
+}
+impl<Index: Copy, T2> RowSender<Index, T2> {
+    pub fn new(index: Index, sender: Arc<mpsc::Sender<(Index, T2)>>) -> Self {
+        Self { index, sender }
+    }
+    pub fn send_row(&self, data: T2) {
+        let _ = self.sender.send((self.index, data));
+    }
 }

@@ -1,4 +1,4 @@
-use super::{super::row::DataRow, Display};
+use super::{super::row::DataRow, Display, RowSenderT};
 
 use crate::modules::{
     get_option, Arch, Detection, DisplayServer, Hostname, Init, Kernel, Locale, Packages, RootFS,
@@ -6,59 +6,61 @@ use crate::modules::{
 };
 
 impl Display for Arch {
-    fn display(arch: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("Arch", &arch))
+    fn display(arch: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("Arch", &arch, sender))
     }
 }
 
 impl Display for DE {
-    fn display(de: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("DE", de.to_str()))
+    fn display(de: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("DE", de.to_str(), sender))
     }
 }
 
 impl Display for DisplayServer {
-    fn display(display_server: Self::Result) -> std::io::Result<usize> {
+    fn display(display_server: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         Ok(DataRow::info(
             "Display server",
             &format!("{display_server:?}"),
+            sender,
         ))
     }
 }
 
 impl Display for Hostname {
-    fn display(hostname: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("Hostname", &hostname))
+    fn display(hostname: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("Hostname", &hostname, sender))
     }
 }
 
 impl Display for Init {
-    fn display(init: Self::Result) -> std::io::Result<usize> {
+    fn display(init: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let mut value = init.name;
         if let Some(number_of_services) = init.number_of_services {
             value.push_str(&format!(" ({number_of_services} services)"));
         }
-        Ok(DataRow::info("Init", &value))
+        Ok(DataRow::info("Init", &value, sender))
     }
 }
 
 impl Display for Kernel {
-    fn display(kernel: Self::Result) -> std::io::Result<usize> {
+    fn display(kernel: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         Ok(DataRow::info(
             "Kernel",
             &format!("{} {}", kernel.name, kernel.version),
+            sender,
         ))
     }
 }
 
 impl Display for Locale {
-    fn display(locale: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("Locale", &locale))
+    fn display(locale: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("Locale", &locale, sender))
     }
 }
 
 impl Display for OS {
-    fn display(os_release: Self::Result) -> std::io::Result<usize> {
+    fn display(os_release: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let os = if !os_release.pretty_name.is_empty() {
             os_release.pretty_name
         } else if !os_release.name.is_empty() {
@@ -70,12 +72,12 @@ impl Display for OS {
         };
         let arch = Arch.fetch().unwrap_or_default();
 
-        Ok(DataRow::info("OS", format!("{os} {arch}").trim()))
+        Ok(DataRow::info("OS", format!("{os} {arch}").trim(), sender))
     }
 }
 
 impl Display for Packages {
-    fn display(mut package_managers: Self::Result) -> std::io::Result<usize> {
+    fn display(mut package_managers: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         package_managers.sort_by(|pm1, pm2| pm2.number_of_packages.cmp(&pm1.number_of_packages));
 
         let mut value = String::default();
@@ -88,42 +90,42 @@ impl Display for Packages {
         }
         value.pop();
         value.pop();
-        Ok(DataRow::info("Packages", &value))
+        Ok(DataRow::info("Packages", &value, sender))
     }
 }
 
 impl Display for RootFS {
-    fn display(fstype: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("RootFS filesystem", &fstype))
+    fn display(fstype: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("RootFS filesystem", &fstype, sender))
     }
 }
 
 impl Display for Shell {
-    fn display(shell: Self::Result) -> std::io::Result<usize> {
+    fn display(shell: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let mut shell_str = shell.name;
         if let Some(ref version) = shell.version {
             shell_str.push(' ');
             shell_str.push_str(version);
         }
 
-        Ok(DataRow::info("Shell", &shell_str))
+        Ok(DataRow::info("Shell", &shell_str, sender))
     }
 }
 
 impl Display for Terminal {
-    fn display(terminal: Self::Result) -> std::io::Result<usize> {
+    fn display(terminal: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let mut terminal_str = terminal.name;
         if let Some(ref version) = terminal.version {
             terminal_str.push(' ');
             terminal_str.push_str(version);
         }
 
-        Ok(DataRow::info("Terminal", &terminal_str))
+        Ok(DataRow::info("Terminal", &terminal_str, sender))
     }
 }
 
 impl Display for Uptime {
-    fn display(uptime: Self::Result) -> std::io::Result<usize> {
+    fn display(uptime: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let mut value = String::default();
         for (int, name) in [
             (&uptime.days, "days"),
@@ -136,24 +138,24 @@ impl Display for Uptime {
         }
         value.pop();
         value.pop();
-        Ok(DataRow::info("Uptime", &value))
+        Ok(DataRow::info("Uptime", &value, sender))
     }
 }
 
 impl Display for Username {
-    fn display(username: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("Username", &username))
+    fn display(username: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("Username", &username, sender))
     }
 }
 
 impl Display for WM {
-    fn display(wm: Self::Result) -> std::io::Result<usize> {
+    fn display(wm: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let mut wm_str = get_option("window manager name", &wm.name)?.to_string();
         if let Some(ref version) = wm.version {
             wm_str.push(' ');
             wm_str.push_str(version);
         }
 
-        Ok(DataRow::info("WM", &wm_str))
+        Ok(DataRow::info("WM", &wm_str, sender))
     }
 }

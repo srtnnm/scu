@@ -1,4 +1,4 @@
-use super::{super::row::DataRow, Display};
+use super::{super::row::DataRow, Display, RowSenderT};
 
 use crate::{
     modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
@@ -6,13 +6,14 @@ use crate::{
 };
 
 impl Display for Battery {
-    fn display(batteries: Self::Result) -> std::io::Result<usize> {
+    fn display(batteries: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let len = batteries
             .iter()
             .map(|battery| {
                 DataRow::info(
                     &format!("Battery ({})", battery.model),
                     &format!("{}% [{}]", battery.level, battery.status.to_str()),
+                    sender,
                 )
             })
             .max()
@@ -23,14 +24,18 @@ impl Display for Battery {
 }
 
 impl Display for Brightness {
-    fn display(brightness: Self::Result) -> std::io::Result<usize> {
+    fn display(brightness: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let percentage = percentage(brightness.max as u64, brightness.current as u64);
-        Ok(DataRow::info("Brightness", &format!("{percentage}%")))
+        Ok(DataRow::info(
+            "Brightness",
+            &format!("{percentage}%"),
+            sender,
+        ))
     }
 }
 
 impl Display for CPU {
-    fn display(cpus: Self::Result) -> std::io::Result<usize> {
+    fn display(cpus: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let len = cpus
             .iter()
             .map(|unit| {
@@ -43,6 +48,7 @@ impl Display for CPU {
                         units = unit.cpuinfo.cores.max(unit.cpuinfo.threads),
                         frequency = unit.cpuinfo.frequency.ghz
                     ),
+                    sender,
                 )
             })
             .max()
@@ -53,13 +59,13 @@ impl Display for CPU {
 }
 
 impl Display for Device {
-    fn display(device: Self::Result) -> std::io::Result<usize> {
-        Ok(DataRow::info("Device", &device))
+    fn display(device: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+        Ok(DataRow::info("Device", &device, sender))
     }
 }
 
 impl Display for Disks {
-    fn display(disks: Self::Result) -> std::io::Result<usize> {
+    fn display(disks: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let len = disks
             .iter()
             .map(|disk| {
@@ -73,6 +79,7 @@ impl Display for Disks {
                         }
                     ),
                     &format!("{:.2}GiB", disk.size.gb),
+                    sender,
                 )
             })
             .max()
@@ -82,7 +89,7 @@ impl Display for Disks {
 }
 
 impl Display for GPU {
-    fn display(gpus: Self::Result) -> std::io::Result<usize> {
+    fn display(gpus: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let len = gpus
             .iter()
             .map(|gpu| {
@@ -93,6 +100,7 @@ impl Display for GPU {
                         vendor = gpu.vendor.to_string(),
                         model = gpu.model
                     ),
+                    sender,
                 )
             })
             .max()
@@ -103,7 +111,7 @@ impl Display for GPU {
 }
 
 impl Display for Memory {
-    fn display(memory: Self::Result) -> std::io::Result<usize> {
+    fn display(memory: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
         let len = [
             Some(DataRow::info(
                 "Memory",
@@ -112,6 +120,7 @@ impl Display for Memory {
                     used = memory.used.mb,
                     total = memory.total.mb
                 ),
+                sender,
             )),
             memory.swap.map(|swap_info| {
                 DataRow::info(
@@ -121,6 +130,7 @@ impl Display for Memory {
                         used = swap_info.used.mb,
                         total = swap_info.total.mb
                     ),
+                    sender,
                 )
             }),
         ]
