@@ -1,4 +1,4 @@
-use super::display::cursor_mover;
+use super::display::RowSenderT;
 
 use std::sync::atomic::{AtomicUsize, Ordering};
 
@@ -17,23 +17,12 @@ fn plus_one_line() {
 pub(crate) struct DataRow;
 
 impl DataRow {
-    pub fn info(name: &str, value: &str) -> usize {
-        cursor_mover();
-        println!("{name}: {value}");
+    pub fn info(name: &str, value: &str, sender: &RowSenderT) {
+        sender.send(name.to_string() + ": " + value);
         plus_one_line();
-        name.len().saturating_add(value.len()).saturating_add(2)
     }
-    pub fn nameless(value: &str) -> usize {
-        cursor_mover();
-        println!("{value}");
+    pub fn nameless(value: &str, sender: &RowSenderT) {
+        sender.send(value.to_string());
         plus_one_line();
-        value.len()
-    }
-    pub fn separator(r#char: char) -> usize {
-        cursor_mover();
-        let len = super::display::LAST_ROW_LENGTH.load(Ordering::Relaxed);
-        println!("{}", r#char.to_string().repeat(len));
-        plus_one_line();
-        len
     }
 }

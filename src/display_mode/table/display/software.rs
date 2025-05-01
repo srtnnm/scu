@@ -1,4 +1,4 @@
-use super::GenerateTableEntries;
+use super::{DisplaySenderT, GenerateTableEntries};
 
 use crate::{
     config::no_colors,
@@ -11,81 +11,94 @@ use crate::{
 };
 
 impl GenerateTableEntries for DE {
-    fn display(environment: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Environment", environment.to_str());
+    fn display(environment: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("Environment", environment.to_str()));
     }
 }
 
 impl GenerateTableEntries for DisplayServer {
-    fn display(display_server: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Display server", format!("{:?}", display_server).as_str());
+    fn display(display_server: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new(
+            "Display server",
+            format!("{:?}", display_server).as_str(),
+        ));
     }
 }
 
 impl GenerateTableEntries for Hostname {
-    fn display(hostname: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Hostname", &hostname);
+    fn display(hostname: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("Hostname", &hostname));
     }
 }
 
 impl GenerateTableEntries for Init {
-    fn display(init_system: Self::Result, table: &mut crate::data::table::Table) {
+    fn display(init_system: Self::Result, sender: DisplaySenderT) {
         let num_services = if let Some(number_of_services) = init_system.number_of_services {
             Vec::from([TableEntry::new("Services", &number_of_services.to_string())])
         } else {
             Vec::new()
         };
-        table.add_with_additional("Init system", &init_system.name, &num_services);
+        sender.send(TableEntry::new_with_additional(
+            "Init system",
+            &init_system.name,
+            &num_services,
+        ));
     }
 }
 
 impl GenerateTableEntries for Kernel {
-    fn display(kernel: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Kernel", &format!("{} {}", kernel.name, kernel.version))
+    fn display(kernel: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new(
+            "Kernel",
+            &format!("{} {}", kernel.name, kernel.version),
+        ))
     }
 }
 
 impl GenerateTableEntries for Locale {
-    fn display(locale: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Locale", &locale)
+    fn display(locale: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("Locale", &locale))
     }
 }
 
 impl GenerateTableEntries for OS {
-    fn display(os_release: Self::Result, table: &mut crate::data::table::Table) {
+    fn display(os_release: Self::Result, sender: DisplaySenderT) {
         let name = if os_release.pretty_name.is_empty() {
             os_release.name
         } else {
             os_release.pretty_name
         };
-        table.add(
+        sender.send(TableEntry::new(
             "OS",
             match distro_colors::get_color(&name) {
                 Some(clr) if !no_colors() => colorize_background(&name, clr.r, clr.g, clr.b),
                 _ => name,
             }
             .as_str(),
-        );
+        ));
     }
 }
 
 impl GenerateTableEntries for Packages {
-    fn display(package_managers: Self::Result, table: &mut crate::data::table::Table) {
+    fn display(package_managers: Self::Result, sender: DisplaySenderT) {
         for manager in package_managers {
-            table.add(&manager.name, &manager.number_of_packages.to_string())
+            sender.send(TableEntry::new(
+                &manager.name,
+                &manager.number_of_packages.to_string(),
+            ))
         }
     }
 }
 
 impl GenerateTableEntries for RootFS {
-    fn display(fstype: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("RootFS filesystem", &fstype)
+    fn display(fstype: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("RootFS filesystem", &fstype))
     }
 }
 
 impl GenerateTableEntries for Shell {
-    fn display(shell: Self::Result, table: &mut crate::data::table::Table) {
-        table.add(
+    fn display(shell: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new(
             "Shell",
             format!(
                 "{}{}",
@@ -97,13 +110,13 @@ impl GenerateTableEntries for Shell {
                 }
             )
             .as_str(),
-        );
+        ));
     }
 }
 
 impl GenerateTableEntries for Terminal {
-    fn display(terminal: Self::Result, table: &mut crate::data::table::Table) {
-        table.add(
+    fn display(terminal: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new(
             "Terminal",
             &format!(
                 "{}{}",
@@ -114,12 +127,12 @@ impl GenerateTableEntries for Terminal {
                     "".to_string()
                 }
             ),
-        );
+        ));
     }
 }
 
 impl GenerateTableEntries for Uptime {
-    fn display(uptime: Self::Result, table: &mut crate::data::table::Table) {
+    fn display(uptime: Self::Result, sender: DisplaySenderT) {
         let mut uptime_str = String::new();
         if uptime.days > 0 {
             uptime_str += format!("{}d", uptime.days).as_str();
@@ -129,20 +142,20 @@ impl GenerateTableEntries for Uptime {
             uptime.hours, uptime.minutes, uptime.seconds
         )
         .as_str();
-        table.add("Uptime", uptime_str.trim());
+        sender.send(TableEntry::new("Uptime", uptime_str.trim()));
     }
 }
 
 impl GenerateTableEntries for Username {
-    fn display(username: Self::Result, table: &mut crate::data::table::Table) {
-        table.add("Username", &username)
+    fn display(username: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("Username", &username))
     }
 }
 
 impl GenerateTableEntries for WM {
-    fn display(wm: Self::Result, table: &mut crate::data::table::Table) {
+    fn display(wm: Self::Result, sender: DisplaySenderT) {
         if let Some(ref name) = wm.name {
-            table.add(
+            sender.send(TableEntry::new(
                 "Window manager",
                 format!(
                     "{}{}",
@@ -153,7 +166,7 @@ impl GenerateTableEntries for WM {
                         .unwrap_or_default()
                 )
                 .as_str(),
-            );
+            ));
         }
     }
 }

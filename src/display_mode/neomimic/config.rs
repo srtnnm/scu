@@ -2,6 +2,7 @@ use crate::modules::Module;
 
 use super::logo::Logo;
 
+#[derive(Clone)]
 pub struct NeomimicConfig {
     pub logo: Logo,
     pub modules: Vec<Module>,

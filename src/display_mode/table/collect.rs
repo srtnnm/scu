@@ -1,34 +1,77 @@
-use super::{config, gen_table::*};
+use super::{config, display::*};
 
 use crate::{
-    data::table::{self, Table},
+    data::table::{self, TableEntry},
     modules::*,
+    util::libc::get_nprocs_conf,
+};
+
+use std::{
+    sync::{mpsc, Arc, Mutex},
+    thread,
 };
 
 pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> {
-    let mut result: Vec<table::Table> = Vec::new();
+    use std::collections::VecDeque;
 
-    for config_table in config.categories.iter() {
-        let mut table = Table::new(&config_table.title);
+    let categories_count = config.categories.len();
+    let modules_queue: Arc<Mutex<VecDeque<(usize, Module)>>> =
+        Arc::new(Mutex::new(VecDeque::new()));
 
-        gen_entries_for_modules(&mut table, &config_table.modules);
-
-        result.push(table);
+    let mut modules_queue_lock = modules_queue.lock().unwrap();
+    for (category_id, category) in config.categories.iter().enumerate() {
+        for module in &category.modules {
+            modules_queue_lock.push_back((category_id, *module));
+        }
     }
 
-    result
+    let titles: Vec<String> = config.categories.iter().map(|c| c.title.clone()).collect();
+
+    let (s, r) = mpsc::channel::<(usize, TableEntry)>();
+    let collector_thread = thread::spawn(move || {
+        let mut result: Vec<table::Table> = Vec::with_capacity(categories_count);
+        for title in titles {
+            result.push(table::Table::new(&title))
+        }
+
+        while let Ok((i, entry)) = r.recv() {
+            result[i].push_entry(entry);
+        }
+
+        result
+    });
+
+    let number_of_threads = unsafe { get_nprocs_conf() };
+    let s = Arc::new(s);
+
+    thread::scope(|scope| {
+        for _ in 0..number_of_threads - 1 {
+            let q = modules_queue.clone();
+            let s = s.clone();
+            scope.spawn(move || {
+                while let Some((i, module)) = q.lock().ok().and_then(|mut q| q.pop_front()) {
+                    let sender = DisplaySenderT::new(i, s.clone());
+                    let _ = run_module(module, sender);
+                }
+            });
+        }
+    });
+
+    drop(s);
+
+    collector_thread
+        .join()
+        .expect("failed to join data collector thread")
 }
 
 macro_rules! gen_entries_for_module_func {
     ($($module:tt,)*) => {
-        fn gen_entries_for_modules(table: &mut Table, modules: &[Module]) -> std::io::Result<()> {
-            for module in modules {
-                match module {
-                    $(
-                        &Module::$module => { $module.gen_entries(table); },
-                    )*
-                    _ => {}
-                }
+        fn run_module(module: Module, sender: DisplaySenderT) -> std::io::Result<()> {
+            match module {
+                $(
+                    Module::$module => { let _ = $module.run(sender); },
+                )*
+                _ => {}
             }
             Ok(())
         }

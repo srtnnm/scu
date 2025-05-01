@@ -1,16 +1,16 @@
-use super::GenerateTableEntries;
+use super::{DisplaySenderT, GenerateTableEntries};
 
 use crate::{
     config::{multicpu, no_colors},
-    data::table::{Table, TableEntry},
+    data::table::TableEntry,
     modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
     util::{colorize::colorize_by_num, percentage},
 };
 
 impl GenerateTableEntries for Battery {
-    fn display(batteries: Self::Result, table: &mut Table) {
+    fn display(batteries: Self::Result, sender: DisplaySenderT) {
         for battery in batteries {
-            table.add_with_additional(
+            sender.send(TableEntry::new_with_additional(
                 "Battery",
                 &battery.model,
                 &[
@@ -18,15 +18,15 @@ impl GenerateTableEntries for Battery {
                     TableEntry::new("Status", &battery.status.to_str()),
                     TableEntry::new("Technology", &battery.technology.to_string()),
                 ],
-            )
+            ))
         }
     }
 }
 
 impl GenerateTableEntries for Brightness {
-    fn display(brightness: Self::Result, table: &mut Table) {
+    fn display(brightness: Self::Result, sender: DisplaySenderT) {
         let percentage = percentage(brightness.max as u64, brightness.current as u64) as u16;
-        table.add(
+        sender.send(TableEntry::new(
             "Brightness",
             &if !no_colors() {
                 colorize_by_num(
@@ -38,12 +38,12 @@ impl GenerateTableEntries for Brightness {
             } else {
                 format!("{}%", percentage)
             },
-        );
+        ));
     }
 }
 
 impl GenerateTableEntries for CPU {
-    fn display(units: Self::Result, table: &mut Table) {
+    fn display(units: Self::Result, sender: DisplaySenderT) {
         for unit in units {
             let cpu_info = unit.cpuinfo;
 
@@ -80,7 +80,7 @@ impl GenerateTableEntries for CPU {
                 ));
             }
 
-            table.add_with_additional(
+            sender.send(TableEntry::new_with_additional(
                 if multicpu() {
                     format!("CPU #{}", unit.physical_id)
                 } else {
@@ -89,14 +89,14 @@ impl GenerateTableEntries for CPU {
                 .as_str(),
                 "",
                 &subtable_entries,
-            );
+            ));
         }
     }
 }
 
 impl GenerateTableEntries for Device {
-    fn display(device: Self::Result, table: &mut Table) {
-        table.add("Device", &device)
+    fn display(device: Self::Result, sender: DisplaySenderT) {
+        sender.send(TableEntry::new("Device", &device))
     }
 }
 
@@ -111,18 +111,18 @@ fn size_to_string(size: &libscu::types::Memory) -> String {
     }
 }
 impl GenerateTableEntries for Disks {
-    fn display(disks: Self::Result, table: &mut Table) {
+    fn display(disks: Self::Result, sender: DisplaySenderT) {
         for disk in disks.iter() {
-            table.add(
+            sender.send(TableEntry::new(
                 &disk.model.clone().unwrap_or("unknown model".to_string()),
                 format!("{} [{:?}]", size_to_string(&disk.size), disk.technology).as_str(),
-            )
+            ))
         }
     }
 }
 
 impl GenerateTableEntries for GPU {
-    fn display(gpus: Self::Result, table: &mut Table) {
+    fn display(gpus: Self::Result, sender: DisplaySenderT) {
         let mut gpu_sub_info: Vec<TableEntry> = Vec::new();
         for (gpu_id, gpu_info) in gpus.iter().enumerate() {
             if let Some(gpu_temp) = gpu_info.temperature {
@@ -136,7 +136,7 @@ impl GenerateTableEntries for GPU {
             if let Some(gpu_driver) = gpu_info.driver.as_ref() {
                 gpu_sub_info.push(TableEntry::new("Driver", &gpu_driver))
             }
-            table.add_with_additional(
+            sender.send(TableEntry::new_with_additional(
                 format!(
                     "GPU{}",
                     if gpus.len() > 1 {
@@ -148,16 +148,16 @@ impl GenerateTableEntries for GPU {
                 .as_str(),
                 format!("{} {}", gpu_info.vendor, gpu_info.model).as_str(),
                 &gpu_sub_info,
-            );
+            ));
             gpu_sub_info.clear();
         }
     }
 }
 
 impl GenerateTableEntries for Memory {
-    fn display(ram_info: Self::Result, table: &mut Table) {
+    fn display(ram_info: Self::Result, sender: DisplaySenderT) {
         let ram_usage_percents = percentage(ram_info.total.mb as u64, ram_info.used.mb as u64);
-        table.add(
+        sender.send(TableEntry::new(
             "RAM",
             &format!(
                 "{}MiB / {}MiB [{}]",
@@ -174,11 +174,11 @@ impl GenerateTableEntries for Memory {
                     format!("{:.1}%", ram_usage_percents)
                 }
             ),
-        );
+        ));
         if let Some(swap_info) = ram_info.swap {
             let swap_usage_percents =
                 percentage(swap_info.total.mb as u64, swap_info.used.mb as u64);
-            table.add(
+            sender.send(TableEntry::new(
                 "Swap",
                 &format!(
                     "{}MiB / {}MiB [{}]",
@@ -195,7 +195,7 @@ impl GenerateTableEntries for Memory {
                         format!("{:.1}%", swap_usage_percents)
                     }
                 ),
-            );
+            ));
         };
     }
 }

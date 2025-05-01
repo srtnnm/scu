@@ -3,3 +3,6 @@ neomimic:
 - WM Theme
 - Theme
 - Icons
+
+misc:
+- add debugging flag for checking time spend and possible errors on each module
