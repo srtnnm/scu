@@ -52,6 +52,9 @@ impl Table {
             additional,
         ))
     }
+    pub fn push_entry(&mut self, entry: TableEntry) {
+        self.entries.push(entry)
+    }
     pub fn is_empty(&self) -> bool {
         self.entries.is_empty()
     }

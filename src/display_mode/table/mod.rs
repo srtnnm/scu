@@ -1,6 +1,6 @@
 mod collect;
 pub mod config;
-mod gen_table;
+mod display;
 mod print;
 
 pub(crate) fn run(config: &config::TableConfig) {

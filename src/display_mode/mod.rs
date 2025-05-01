@@ -38,7 +38,7 @@ impl<Index: Copy, T2> DisplaySender<Index, T2> {
     pub fn new(index: Index, sender: Arc<mpsc::Sender<(Index, T2)>>) -> Self {
         Self { index, sender }
     }
-    pub fn send_row(&self, data: T2) {
+    pub fn send(&self, data: T2) {
         let _ = self.sender.send((self.index, data));
     }
 }

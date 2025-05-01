@@ -17,6 +17,7 @@ use crate::{
         DisplaySender,
     },
     modules::Module,
+    util::libc::get_nprocs_conf,
 };
 
 use std::{
@@ -72,9 +73,6 @@ pub fn display(config: NeomimicConfig) {
     }
 }
 
-extern "C" {
-    pub fn get_nprocs_conf() -> std::ffi::c_int;
-}
 fn run(config: NeomimicConfig) {
     let (s, r) = mpsc::channel::<(usize, String)>();
     let s = Arc::new(s);

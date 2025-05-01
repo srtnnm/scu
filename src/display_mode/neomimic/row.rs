@@ -18,11 +18,11 @@ pub(crate) struct DataRow;
 
 impl DataRow {
     pub fn info(name: &str, value: &str, sender: &RowSenderT) {
-        sender.send_row(name.to_string() + ": " + value);
+        sender.send(name.to_string() + ": " + value);
         plus_one_line();
     }
     pub fn nameless(value: &str, sender: &RowSenderT) {
-        sender.send_row(value.to_string());
+        sender.send(value.to_string());
         plus_one_line();
     }
 }
