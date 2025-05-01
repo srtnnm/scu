@@ -1,4 +1,4 @@
-use super::display::{Display, Header, RowSender, RowSenderT, Separator};
+use super::display::{Display, Header, RowSenderT, Separator};
 
 use crate::modules::*;
 
@@ -34,6 +34,6 @@ impl Module {
 }
 
 // TODO: show possible errors for debugging
-pub fn run_module(module: &Module, sender: RowSender<usize, String>) -> Option<()> {
+pub fn run_module(module: &Module, sender: RowSenderT) -> Option<()> {
     module.run_neomimic(sender).ok()
 }

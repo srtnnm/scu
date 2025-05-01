@@ -12,7 +12,10 @@ use super::{
 
 use crate::{
     config::{no_colors, no_logo, simplify},
-    display_mode::neomimic::logo::{logo_height, logo_width},
+    display_mode::{
+        neomimic::logo::{logo_height, logo_width},
+        DisplaySender,
+    },
     modules::Module,
 };
 
@@ -139,17 +142,4 @@ pub trait Display: crate::modules::Detection {
     fn display(data: Self::Result, sender: &RowSenderT) -> std::io::Result<()>;
 }
 
-pub type RowSenderT = RowSender<usize, String>;
-#[derive(Clone)]
-pub struct RowSender<Index, T2> {
-    index: Index,
-    sender: Arc<mpsc::Sender<(Index, T2)>>,
-}
-impl<Index: Copy, T2> RowSender<Index, T2> {
-    pub fn new(index: Index, sender: Arc<mpsc::Sender<(Index, T2)>>) -> Self {
-        Self { index, sender }
-    }
-    pub fn send_row(&self, data: T2) {
-        let _ = self.sender.send((self.index, data));
-    }
-}
+pub type RowSenderT = DisplaySender<usize, String>;
