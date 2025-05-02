@@ -1,6 +1,6 @@
-use crate::modules::Detection;
+use crate::modules::{Detection, DisplayModule};
 
-use super::{super::row::DataRow, Display, RowSenderT};
+use super::{super::row::DataRow, RowSenderT};
 
 pub struct Separator;
 
@@ -12,10 +12,8 @@ impl Detection for Separator {
         Ok(())
     }
 }
-impl Display for Separator {
-    fn display(_: Self::Result, _sender: &RowSenderT) -> std::io::Result<()> {
-        Ok(())
-    }
+impl DisplayModule<RowSenderT> for Separator {
+    fn display(_: Self::Result, _: &RowSenderT) {}
 }
 
 pub struct Header;
@@ -35,8 +33,8 @@ impl Detection for Header {
         Ok(format!("{username}@{hostname}"))
     }
 }
-impl Display for Header {
-    fn display(value: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        Ok(DataRow::nameless(&value, sender))
+impl DisplayModule<RowSenderT> for Header {
+    fn display(value: Self::Result, sender: &RowSenderT) {
+        DataRow::nameless(&value, sender);
     }
 }

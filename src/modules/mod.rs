@@ -1,3 +1,5 @@
+use std::io;
+
 macro_rules! export_modules {
     ( $( $x:ident ),* ) => {
         $(
@@ -102,4 +104,13 @@ impl Module {
         }
         None
     }
+}
+
+pub trait DisplayModule<DisplaySenderT>: Detection {
+    fn run(&self, display_sender: &DisplaySenderT) -> io::Result<()> {
+        Self::display(self.fetch()?, display_sender);
+
+        Ok(())
+    }
+    fn display(result: Self::Result, sender: &DisplaySenderT);
 }

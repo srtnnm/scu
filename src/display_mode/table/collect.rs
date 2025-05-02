@@ -44,7 +44,7 @@ pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> 
             scope.spawn(move || {
                 while let Some((i, module)) = q.lock().ok().and_then(|mut q| q.pop_front()) {
                     let sender = DisplaySenderT::new(i, s.clone());
-                    let _ = run_module(module, sender);
+                    let _ = run_module(module, &sender);
                 }
             });
         }
@@ -93,9 +93,9 @@ fn collector(
     result
 }
 
-macro_rules! gen_entries_for_module_func {
+macro_rules! generate_run_module_func {
     ($($module:tt,)*) => {
-        fn run_module(module: Module, sender: DisplaySenderT) -> std::io::Result<()> {
+        fn run_module(module: Module, sender: &DisplaySenderT) -> std::io::Result<()> {
             match module {
                 $(
                     Module::$module => { let _ = $module.run(sender); },
@@ -108,7 +108,7 @@ macro_rules! gen_entries_for_module_func {
 }
 
 // TODO: maybe add Arch,Header and Separator modules for Table ?
-gen_entries_for_module_func!(
+generate_run_module_func!(
     // Arch,
     Battery,
     Brightness,

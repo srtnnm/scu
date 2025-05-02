@@ -1,41 +1,31 @@
-use super::{super::row::DataRow, Display, RowSenderT};
+use super::{super::row::DataRow, RowSenderT};
 
 use crate::{
-    modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
+    modules::{Battery, Brightness, Device, Disks, DisplayModule, Memory, CPU, GPU},
     util::percentage,
 };
 
-impl Display for Battery {
-    fn display(batteries: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        let len = batteries
-            .iter()
-            .map(|battery| {
-                DataRow::info(
-                    &format!("Battery ({})", battery.model),
-                    &format!("{}% [{}]", battery.level, battery.status.to_str()),
-                    sender,
-                )
-            })
-            .max()
-            .unwrap_or_default();
-
-        Ok(len)
+impl DisplayModule<RowSenderT> for Battery {
+    fn display(batteries: Self::Result, sender: &RowSenderT) {
+        batteries.iter().map(|battery| {
+            DataRow::info(
+                &format!("Battery ({})", battery.model),
+                &format!("{}% [{}]", battery.level, battery.status.to_str()),
+                sender,
+            )
+        });
     }
 }
 
-impl Display for Brightness {
-    fn display(brightness: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+impl DisplayModule<RowSenderT> for Brightness {
+    fn display(brightness: Self::Result, sender: &RowSenderT) {
         let percentage = percentage(brightness.max as u64, brightness.current as u64);
-        Ok(DataRow::info(
-            "Brightness",
-            &format!("{percentage}%"),
-            sender,
-        ))
+        DataRow::info("Brightness", &format!("{percentage}%"), sender);
     }
 }
 
-impl Display for CPU {
-    fn display(cpus: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
+impl DisplayModule<RowSenderT> for CPU {
+    fn display(cpus: Self::Result, sender: &RowSenderT) {
         let len = cpus
             .iter()
             .map(|unit| {
@@ -53,20 +43,18 @@ impl Display for CPU {
             })
             .max()
             .unwrap_or_default();
-
-        Ok(len)
     }
 }
 
-impl Display for Device {
-    fn display(device: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        Ok(DataRow::info("Device", &device, sender))
+impl DisplayModule<RowSenderT> for Device {
+    fn display(device: Self::Result, sender: &RowSenderT) {
+        DataRow::info("Device", &device, sender)
     }
 }
 
-impl Display for Disks {
-    fn display(disks: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        let len = disks
+impl DisplayModule<RowSenderT> for Disks {
+    fn display(disks: Self::Result, sender: &RowSenderT) {
+        disks
             .iter()
             .map(|disk| {
                 DataRow::info(
@@ -84,14 +72,12 @@ impl Display for Disks {
             })
             .max()
             .unwrap_or_default();
-        Ok(len)
     }
 }
 
-impl Display for GPU {
-    fn display(gpus: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        let len = gpus
-            .iter()
+impl DisplayModule<RowSenderT> for GPU {
+    fn display(gpus: Self::Result, sender: &RowSenderT) {
+        gpus.iter()
             .map(|gpu| {
                 DataRow::info(
                     "GPU",
@@ -105,14 +91,12 @@ impl Display for GPU {
             })
             .max()
             .unwrap_or_default();
-
-        Ok(len)
     }
 }
 
-impl Display for Memory {
-    fn display(memory: Self::Result, sender: &RowSenderT) -> std::io::Result<()> {
-        let len = [
+impl DisplayModule<RowSenderT> for Memory {
+    fn display(memory: Self::Result, sender: &RowSenderT) {
+        [
             Some(DataRow::info(
                 "Memory",
                 &format!(
@@ -133,11 +117,6 @@ impl Display for Memory {
                     sender,
                 )
             }),
-        ]
-        .into_iter()
-        .flatten()
-        .max()
-        .unwrap_or_default();
-        Ok(len)
+        ];
     }
 }

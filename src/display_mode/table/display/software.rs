@@ -1,4 +1,4 @@
-use super::{DisplaySenderT, GenerateTableEntries};
+use super::{DisplayModule, DisplaySenderT};
 
 use crate::{
     config::no_colors,
@@ -10,14 +10,14 @@ use crate::{
     util::colorize::colorize_background,
 };
 
-impl GenerateTableEntries for DE {
-    fn display(environment: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for DE {
+    fn display(environment: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("Environment", environment.to_str()));
     }
 }
 
-impl GenerateTableEntries for DisplayServer {
-    fn display(display_server: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for DisplayServer {
+    fn display(display_server: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new(
             "Display server",
             format!("{:?}", display_server).as_str(),
@@ -25,14 +25,14 @@ impl GenerateTableEntries for DisplayServer {
     }
 }
 
-impl GenerateTableEntries for Hostname {
-    fn display(hostname: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Hostname {
+    fn display(hostname: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("Hostname", &hostname));
     }
 }
 
-impl GenerateTableEntries for Init {
-    fn display(init_system: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Init {
+    fn display(init_system: Self::Result, sender: &DisplaySenderT) {
         let num_services = if let Some(number_of_services) = init_system.number_of_services {
             Vec::from([TableEntry::new("Services", &number_of_services.to_string())])
         } else {
@@ -46,8 +46,8 @@ impl GenerateTableEntries for Init {
     }
 }
 
-impl GenerateTableEntries for Kernel {
-    fn display(kernel: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Kernel {
+    fn display(kernel: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new(
             "Kernel",
             &format!("{} {}", kernel.name, kernel.version),
@@ -55,14 +55,14 @@ impl GenerateTableEntries for Kernel {
     }
 }
 
-impl GenerateTableEntries for Locale {
-    fn display(locale: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Locale {
+    fn display(locale: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("Locale", &locale))
     }
 }
 
-impl GenerateTableEntries for OS {
-    fn display(os_release: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for OS {
+    fn display(os_release: Self::Result, sender: &DisplaySenderT) {
         let name = if os_release.pretty_name.is_empty() {
             os_release.name
         } else {
@@ -79,8 +79,8 @@ impl GenerateTableEntries for OS {
     }
 }
 
-impl GenerateTableEntries for Packages {
-    fn display(package_managers: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Packages {
+    fn display(package_managers: Self::Result, sender: &DisplaySenderT) {
         for manager in package_managers {
             sender.send(TableEntry::new(
                 &manager.name,
@@ -90,14 +90,14 @@ impl GenerateTableEntries for Packages {
     }
 }
 
-impl GenerateTableEntries for RootFS {
-    fn display(fstype: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for RootFS {
+    fn display(fstype: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("RootFS filesystem", &fstype))
     }
 }
 
-impl GenerateTableEntries for Shell {
-    fn display(shell: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Shell {
+    fn display(shell: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new(
             "Shell",
             format!(
@@ -114,8 +114,8 @@ impl GenerateTableEntries for Shell {
     }
 }
 
-impl GenerateTableEntries for Terminal {
-    fn display(terminal: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Terminal {
+    fn display(terminal: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new(
             "Terminal",
             &format!(
@@ -131,8 +131,8 @@ impl GenerateTableEntries for Terminal {
     }
 }
 
-impl GenerateTableEntries for Uptime {
-    fn display(uptime: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Uptime {
+    fn display(uptime: Self::Result, sender: &DisplaySenderT) {
         let mut uptime_str = String::new();
         if uptime.days > 0 {
             uptime_str += format!("{}d", uptime.days).as_str();
@@ -146,14 +146,14 @@ impl GenerateTableEntries for Uptime {
     }
 }
 
-impl GenerateTableEntries for Username {
-    fn display(username: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Username {
+    fn display(username: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("Username", &username))
     }
 }
 
-impl GenerateTableEntries for WM {
-    fn display(wm: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for WM {
+    fn display(wm: Self::Result, sender: &DisplaySenderT) {
         if let Some(ref name) = wm.name {
             sender.send(TableEntry::new(
                 "Window manager",

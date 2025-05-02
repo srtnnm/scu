@@ -1,4 +1,4 @@
-use super::{DisplaySenderT, GenerateTableEntries};
+use super::{DisplayModule, DisplaySenderT};
 
 use crate::{
     config::{multicpu, no_colors},
@@ -7,8 +7,8 @@ use crate::{
     util::{colorize::colorize_by_num, percentage},
 };
 
-impl GenerateTableEntries for Battery {
-    fn display(batteries: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Battery {
+    fn display(batteries: Self::Result, sender: &DisplaySenderT) {
         for battery in batteries {
             sender.send(TableEntry::new_with_additional(
                 "Battery",
@@ -23,8 +23,8 @@ impl GenerateTableEntries for Battery {
     }
 }
 
-impl GenerateTableEntries for Brightness {
-    fn display(brightness: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Brightness {
+    fn display(brightness: Self::Result, sender: &DisplaySenderT) {
         let percentage = percentage(brightness.max as u64, brightness.current as u64) as u16;
         sender.send(TableEntry::new(
             "Brightness",
@@ -42,8 +42,8 @@ impl GenerateTableEntries for Brightness {
     }
 }
 
-impl GenerateTableEntries for CPU {
-    fn display(units: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for CPU {
+    fn display(units: Self::Result, sender: &DisplaySenderT) {
         for unit in units {
             let cpu_info = unit.cpuinfo;
 
@@ -94,8 +94,8 @@ impl GenerateTableEntries for CPU {
     }
 }
 
-impl GenerateTableEntries for Device {
-    fn display(device: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Device {
+    fn display(device: Self::Result, sender: &DisplaySenderT) {
         sender.send(TableEntry::new("Device", &device))
     }
 }
@@ -110,8 +110,8 @@ fn size_to_string(size: &libscu::types::Memory) -> String {
         format!("{:.1}TiB", size.gb as f64 / 1024_f64)
     }
 }
-impl GenerateTableEntries for Disks {
-    fn display(disks: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Disks {
+    fn display(disks: Self::Result, sender: &DisplaySenderT) {
         for disk in disks.iter() {
             sender.send(TableEntry::new(
                 &disk.model.clone().unwrap_or("unknown model".to_string()),
@@ -121,8 +121,8 @@ impl GenerateTableEntries for Disks {
     }
 }
 
-impl GenerateTableEntries for GPU {
-    fn display(gpus: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for GPU {
+    fn display(gpus: Self::Result, sender: &DisplaySenderT) {
         let mut gpu_sub_info: Vec<TableEntry> = Vec::new();
         for (gpu_id, gpu_info) in gpus.iter().enumerate() {
             if let Some(gpu_temp) = gpu_info.temperature {
@@ -154,8 +154,8 @@ impl GenerateTableEntries for GPU {
     }
 }
 
-impl GenerateTableEntries for Memory {
-    fn display(ram_info: Self::Result, sender: DisplaySenderT) {
+impl DisplayModule<DisplaySenderT> for Memory {
+    fn display(ram_info: Self::Result, sender: &DisplaySenderT) {
         let ram_usage_percents = percentage(ram_info.total.mb as u64, ram_info.used.mb as u64);
         sender.send(TableEntry::new(
             "RAM",
