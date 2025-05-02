@@ -116,7 +116,7 @@ fn run(config: NeomimicConfig) {
             scope.spawn(move || {
                 while let Some((i, module)) = q.lock().ok().and_then(|mut q| q.pop_front()) {
                     let sender = RowSenderT::new(i, s.clone());
-                    run_module(module, &sender);
+                    let _ = run_module(module, &sender);
                 }
             });
         }
@@ -134,7 +134,6 @@ macro_rules! generate_run_module_func {
                 $(
                     Module::$module => $module.run(sender),
                 )*
-                _ => Ok(())
             };
             Ok(())
         }
