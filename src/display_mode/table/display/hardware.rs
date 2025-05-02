@@ -1,8 +1,7 @@
-use super::{DisplayModule, DisplaySenderT};
+use super::{DisplayModule, DisplaySenderT, TableEntry};
 
 use crate::{
     config::{multicpu, no_colors},
-    data::table::TableEntry,
     modules::{Battery, Brightness, Device, Disks, Memory, CPU, GPU},
     util::{colorize::colorize_by_num, percentage},
 };

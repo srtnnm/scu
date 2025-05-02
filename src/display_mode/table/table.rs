@@ -1,5 +1,3 @@
-#![allow(dead_code)]
-
 #[derive(Clone, Debug)]
 pub struct TableEntry {
     pub name: String,
@@ -36,21 +34,6 @@ impl Table {
             title: title.to_string(),
             entries: Vec::new(),
         }
-    }
-    pub fn add(&mut self, entry_name: &str, entry_value: &str) {
-        self.entries.push(TableEntry::new(entry_name, entry_value))
-    }
-    pub fn add_with_additional(
-        &mut self,
-        entry_name: &str,
-        entry_value: &str,
-        additional: &[TableEntry],
-    ) {
-        self.entries.push(TableEntry::new_with_additional(
-            entry_name,
-            entry_value,
-            additional,
-        ))
     }
     pub fn push_entry(&mut self, entry: TableEntry) {
         self.entries.push(entry)

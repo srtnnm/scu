@@ -1,10 +1,6 @@
-use super::{config, display::*};
+use super::{config, display::*, table};
 
-use crate::{
-    data::table::{self, TableEntry},
-    modules::*,
-    util::libc::get_nprocs_conf,
-};
+use crate::{modules::*, util::libc::get_nprocs_conf};
 
 use std::{
     sync::{mpsc, Arc, Mutex},
@@ -30,7 +26,7 @@ pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> 
         }
     }
 
-    let (s, r) = mpsc::channel::<((usize, usize), TableEntry)>();
+    let (s, r) = mpsc::channel::<((usize, usize), table::TableEntry)>();
     let collector_thread = thread::spawn(move || collector(&category_titles, r));
 
     let number_of_threads = unsafe { get_nprocs_conf() };
@@ -60,7 +56,7 @@ pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> 
 
 fn collector(
     titles: &Vec<String>,
-    results_receiver: mpsc::Receiver<((usize, usize), TableEntry)>,
+    results_receiver: mpsc::Receiver<((usize, usize), table::TableEntry)>,
 ) -> Vec<table::Table> {
     let mut result: Vec<table::Table> = titles
         .iter()
@@ -68,7 +64,7 @@ fn collector(
         .collect();
 
     // buffer for unsorted results
-    let mut category_entries: Vec<Vec<(usize, TableEntry)>> = vec![Vec::new(); titles.len()];
+    let mut category_entries: Vec<Vec<(usize, table::TableEntry)>> = vec![Vec::new(); titles.len()];
 
     // collect results of all modules
     while let Ok(((category_id, module_id), entry)) = results_receiver.recv() {

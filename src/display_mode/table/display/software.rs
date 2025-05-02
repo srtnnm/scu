@@ -1,8 +1,8 @@
-use super::{DisplayModule, DisplaySenderT};
+use super::{DisplayModule, DisplaySenderT, TableEntry};
 
 use crate::{
     config::no_colors,
-    data::{distro_colors, table::TableEntry},
+    data::distro_colors,
     modules::{
         DisplayServer, Hostname, Init, Kernel, Locale, Packages, RootFS, Shell, Terminal, Uptime,
         Username, DE, OS, WM,

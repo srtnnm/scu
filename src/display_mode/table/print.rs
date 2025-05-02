@@ -1,10 +1,6 @@
-use super::{collect::collect_tables, config::TableConfig};
+use super::{collect::collect_tables, config::TableConfig, table};
 
-use crate::{
-    config::simplify,
-    data::table::{self, TableEntry},
-    util::len,
-};
+use crate::{config::simplify, util::len};
 
 fn update_max_len(max_len_buf: &mut usize, str: &String, plus_integer: usize) {
     let len = len::len(str).saturating_add(plus_integer);
@@ -72,7 +68,7 @@ fn print_formatted_info(tables: &Vec<table::Table>) {
 
         // print entries
         {
-            let print_entry = |entry: &TableEntry, additional_corner: Option<&str>| {
+            let print_entry = |entry: &table::TableEntry, additional_corner: Option<&str>| {
                 println!(
                 "{border} {additional_corner}{name}: {name_spacing}{value}{value_spacing} {border}",
                     border = symbols::VERTICAL,
