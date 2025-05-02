@@ -1,3 +1,4 @@
+#[derive(Clone, Copy)]
 pub struct Color {
     pub r: u16,
     pub g: u16,
@@ -10,25 +11,23 @@ impl Color {
     }
 }
 
-pub static COLORS: [(&str, (u16, u16, u16)); 11] = [
-    ("Android", (61, 220, 132)),
-    ("Arch", (23, 147, 209)),
-    ("Artix", (23, 147, 209)),
-    ("Debian", (206, 0, 86)),
-    ("EndeavourOS", (127, 63, 191)),
-    ("Fedora", (60, 110, 180)),
-    ("Gentoo", (84, 72, 122)),
-    ("Linux Mint", (146, 182, 98)),
-    ("Manjaro", (52, 190, 91)),
-    ("NixOS", (126, 186, 228)),
-    ("Ubuntu", (233, 84, 32)),
+pub static COLORS: [(&str, Color); 11] = [
+    ("Android", Color::new(61, 220, 132)),
+    ("Arch", Color::new(23, 147, 209)),
+    ("Artix", Color::new(23, 147, 209)),
+    ("Debian", Color::new(206, 0, 86)),
+    ("EndeavourOS", Color::new(127, 63, 191)),
+    ("Fedora", Color::new(60, 110, 180)),
+    ("Gentoo", Color::new(84, 72, 122)),
+    ("Linux Mint", Color::new(146, 182, 98)),
+    ("Manjaro", Color::new(52, 190, 91)),
+    ("NixOS", Color::new(126, 186, 228)),
+    ("Ubuntu", Color::new(233, 84, 32)),
 ];
 
 pub fn get_color(distro_name: &str) -> Option<Color> {
-    for (distro, (r, g, b)) in &COLORS {
-        if distro_name.contains(distro) {
-            return Some(Color::new(*r, *g, *b));
-        }
-    }
-    None
+    COLORS
+        .iter()
+        .find(|(distro, _)| distro_name.contains(distro))
+        .map(|(_, color)| *color)
 }
