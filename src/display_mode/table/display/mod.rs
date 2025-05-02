@@ -11,4 +11,4 @@ pub trait GenerateTableEntries: Detection {
     fn display(data: Self::Result, sender: DisplaySenderT);
 }
 
-pub type DisplaySenderT = DisplaySender<usize, TableEntry>;
+pub type DisplaySenderT = DisplaySender<(usize, usize), TableEntry>;
