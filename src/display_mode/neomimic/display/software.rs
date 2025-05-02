@@ -19,11 +19,7 @@ impl DisplayModule<RowSenderT> for DE {
 
 impl DisplayModule<RowSenderT> for DisplayServer {
     fn display(display_server: Self::Result, sender: &RowSenderT) {
-        DataRow::info(
-            "DisplayModule<RowSenderT> server",
-            &format!("{display_server:?}"),
-            sender,
-        )
+        DataRow::info("Display server", &format!("{display_server:?}"), sender)
     }
 }
 
