@@ -18,10 +18,13 @@ pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> 
     let modules_queue: Arc<Mutex<VecDeque<(usize, Module)>>> =
         Arc::new(Mutex::new(VecDeque::new()));
 
-    let mut modules_queue_lock = modules_queue.lock().unwrap();
-    for (category_id, category) in config.categories.iter().enumerate() {
-        for module in &category.modules {
-            modules_queue_lock.push_back((category_id, *module));
+    // dropping modules_queue lock to prevent deadlock
+    {
+        let mut modules_queue_lock = modules_queue.lock().unwrap();
+        for (category_id, category) in config.categories.iter().enumerate() {
+            for module in &category.modules {
+                modules_queue_lock.push_back((category_id, *module));
+            }
         }
     }
 
@@ -57,6 +60,7 @@ pub(super) fn collect_tables(config: &config::TableConfig) -> Vec<table::Table> 
         }
     });
 
+    // manually drop mpsc::Sender to stop collector_thread on collecting results
     drop(s);
 
     collector_thread
