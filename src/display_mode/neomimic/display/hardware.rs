@@ -20,7 +20,7 @@ impl DisplayModule<RowSenderT> for Battery {
 impl DisplayModule<RowSenderT> for Brightness {
     fn display(brightness: Self::Result, sender: &RowSenderT) {
         let percentage = percentage(brightness.max as u64, brightness.current as u64);
-        DataRow::info("Brightness", &format!("{percentage}%"), sender);
+        DataRow::info("Brightness", &format!("{percentage:.0}%"), sender);
     }
 }
 

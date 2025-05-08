@@ -24,18 +24,18 @@ impl DisplayModule<DisplaySenderT> for Battery {
 
 impl DisplayModule<DisplaySenderT> for Brightness {
     fn display(brightness: Self::Result, sender: &DisplaySenderT) {
-        let percentage = percentage(brightness.max as u64, brightness.current as u64) as u16;
+        let percentage = percentage(brightness.max as u64, brightness.current as u64);
         sender.send(TableEntry::new(
             "Brightness",
             &if !no_colors() {
                 colorize_by_num(
-                    format!("{}%", percentage).as_str(),
+                    format!("{percentage:.0}%").as_str(),
                     percentage as u16,
                     40,
                     true,
                 )
             } else {
-                format!("{}%", percentage)
+                format!("{percentage:.0}%")
             },
         ));
     }
