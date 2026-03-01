@@ -24,24 +24,19 @@ Command-line system fetch utility written in [Rust](https://www.rust-lang.org)
 </div>
 </details>
 
-<details height="100px"><summary>with --simplify</summary>
-
-![gentoo_simplify](images/gentoo_simplify.png)
-</details>
-
 <details height="100px"><summary>Android</summary>
 <div>
+
+> Running in termux
+
+![android](images/android.jpg)
+</div>
+</details>
 
 <details height="100px"><summary>Neofetch mimic mode (`--neomimic`)</summary>
 <div>
 
 ![neomimic](images/neomimic.png)
-</div>
-</details>
-
-> Running in termux
-
-![android](images/android.jpg)
 </div>
 </details>
 
