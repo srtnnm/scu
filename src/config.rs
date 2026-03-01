@@ -48,7 +48,7 @@ pub static TABLE_CONFIG: OnceLock<TableConfig> = OnceLock::new();
 pub struct Config;
 impl Config {
     pub fn find_config(name: Option<&str>) -> Option<PathBuf> {
-        const CONFIG_DIRECTORY: &str = "$HOME/.config/omnid/scu";
+        const CONFIG_DIRECTORY: &str = "$HOME/.config/scu";
         let mut name = name?.to_string();
         if !name.ends_with(".json") {
             name.push_str(".json");

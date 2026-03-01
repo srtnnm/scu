@@ -36,6 +36,8 @@ export_modules!(
 
 pub trait Detection {
     type Result;
+    // TODO: Use it :>
+    #[allow(unused)]
     const NAME: &'static str;
 
     fn fetch(&self) -> std::io::Result<Self::Result>;

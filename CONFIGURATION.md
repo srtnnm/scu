@@ -6,7 +6,7 @@ SCU is a fetch utility designed to display system information. It supports two d
 
 ## Configuration Directory
 
-By default, SCU creates a configuration directory at `$HOME/.config/omnid/scu`. This directory stores configuration files in `.json` format. You can create multiple configuration files and select which one to use by passing the `--config` argument when running SCU. The argument can be either:
+By default, SCU creates a configuration directory at `$HOME/.config/charidot/scu`. This directory stores configuration files in `.json` format. You can create multiple configuration files and select which one to use by passing the `--config` argument when running SCU. The argument can be either:
 
 - The name of the configuration file (e.g., `custom` or `custom.json`), if it’s located in the default directory.
 - The absolute path to the `.json` file (e.g., `/path/to/custom.json`).
@@ -191,7 +191,7 @@ This configuration:
 
 To run SCU with a specific configuration, use the `--config` parameter followed by:
 
-- The configuration file name (e.g., `custom`), if it’s in `$HOME/.config/omnid/scu`.
+- The configuration file name (e.g., `custom`), if it’s in `$HOME/.config/charidot/scu`.
 - The absolute path to the file (e.g., `/path/to/custom.json`).
 
 Examples:
